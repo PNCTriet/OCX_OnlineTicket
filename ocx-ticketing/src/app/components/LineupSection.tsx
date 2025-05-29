@@ -6,52 +6,62 @@ const ARTISTS = [
   {
     name: { vi: "Nghệ sĩ A", en: "Artist A" },
     desc: { vi: "Indie Rock", en: "Indie Rock" },
-    img: "https://picsum.photos/seed/a/300/300",
+    img: "/images/client_logo_ss3.jpg",
   },
   {
     name: { vi: "Nghệ sĩ B", en: "Artist B" },
     desc: { vi: "Indie Pop", en: "Indie Pop" },
-    img: "https://picsum.photos/seed/b/300/300",
+    img: "/images/client_logo_ss3.jpg",
   },
   {
     name: { vi: "Nghệ sĩ C", en: "Artist C" },
     desc: { vi: "Folk", en: "Folk" },
-    img: "https://picsum.photos/seed/c/300/300",
+    img: "/images/client_logo_ss3.jpg",
   },
   {
     name: { vi: "Nghệ sĩ D", en: "Artist D" },
     desc: { vi: "Alternative", en: "Alternative" },
-    img: "https://picsum.photos/seed/d/300/300",
+    img: "/images/client_logo_ss3.jpg",
   },
   {
     name: { vi: "Nghệ sĩ E", en: "Artist E" },
     desc: { vi: "Indie Rock", en: "Indie Rock" },
-    img: "https://picsum.photos/seed/e/300/300",
+    img: "/images/client_logo_ss3.jpg",
   },
   {
     name: { vi: "Nghệ sĩ F", en: "Artist F" },
     desc: { vi: "Indie Pop", en: "Indie Pop" },
-    img: "https://picsum.photos/seed/f/300/300",
+    img: "/images/client_logo_ss3.jpg",
   },
   {
     name: { vi: "Nghệ sĩ G", en: "Artist G" },
     desc: { vi: "Folk", en: "Folk" },
-    img: "https://picsum.photos/seed/g/300/300",
+    img: "/images/client_logo_ss3.jpg",
   },
   {
     name: { vi: "Nghệ sĩ H", en: "Artist H" },
     desc: { vi: "Alternative", en: "Alternative" },
-    img: "https://picsum.photos/seed/h/300/300",
+    img: "/images/client_logo_ss3.jpg",
   },
   {
     name: { vi: "Nghệ sĩ I", en: "Artist I" },
     desc: { vi: "Indie Rock", en: "Indie Rock" },
-    img: "https://picsum.photos/seed/i/300/300",
+    img: "/images/client_logo_ss3.jpg",
   },
   {
     name: { vi: "Nghệ sĩ J", en: "Artist J" },
     desc: { vi: "Indie Pop", en: "Indie Pop" },
-    img: "https://picsum.photos/seed/j/300/300",
+    img: "/images/client_logo_ss3.jpg",
+  },
+  {
+    name: { vi: "Nghệ sĩ I", en: "Artist I" },
+    desc: { vi: "Indie Rock", en: "Indie Rock" },
+    img: "/images/client_logo_ss3.jpg",
+  },
+  {
+    name: { vi: "Nghệ sĩ J", en: "Artist J" },
+    desc: { vi: "Indie Pop", en: "Indie Pop" },
+    img: "/images/client_logo_ss3.jpg",
   },
 ];
 
