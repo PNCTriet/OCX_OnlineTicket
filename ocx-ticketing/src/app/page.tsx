@@ -9,15 +9,14 @@ import Footer from "./components/Footer";
 
 export default function Home() {
   const [lang, setLang] = useState<"vi" | "en">("vi");
-  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, [theme]);
+    document.documentElement.classList.add("dark");
+  }, []);
 
   return (
-    <div className="bg-white dark:bg-black min-h-screen font-sans">
-      <Header lang={lang} setLang={setLang} theme={theme} setTheme={setTheme} />
+    <div className="bg-black min-h-screen font-sans text-white">
+      <Header lang={lang} setLang={setLang} />
       <main className="flex flex-col gap-0">
         <HeroSection lang={lang} />
         <LineupSection lang={lang} />

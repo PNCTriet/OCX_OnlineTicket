@@ -8,9 +8,9 @@ const MENU = [
   { label: { vi: "FAQ", en: "FAQ" }, href: "#faq" },
 ];
 
-export default function Header({ lang, setLang, theme, setTheme }: { lang: "vi" | "en"; setLang: (lang: "vi" | "en") => void; theme: "light" | "dark"; setTheme: (theme: "light" | "dark") => void }) {
+export default function Header({ lang, setLang }: { lang: "vi" | "en"; setLang: (lang: "vi" | "en") => void }) {
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white/80 dark:bg-black/80 backdrop-blur border-b border-black/10 dark:border-white/10 flex items-center justify-between px-4 sm:px-12 py-2">
+    <header className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur border-b border-white/10 flex items-center justify-between px-4 sm:px-12 py-2">
       <div className="flex items-center gap-2 font-bold text-xl text-red-600">
         <span role="img" aria-label="ớt">🌶️</span> Ớt Cay Xè
       </div>
@@ -23,16 +23,9 @@ export default function Header({ lang, setLang, theme, setTheme }: { lang: "vi" 
       </nav>
       <div className="flex items-center gap-2">
         <button
-          aria-label="Toggle light/dark mode"
-          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          className="rounded-full p-2 hover:bg-black/10 dark:hover:bg-white/10"
-        >
-          {theme === "light" ? "🌗" : "🌞"}
-        </button>
-        <button
           aria-label="Chuyển ngôn ngữ"
           onClick={() => setLang(lang === "vi" ? "en" : "vi")}
-          className="rounded-full p-2 hover:bg-black/10 dark:hover:bg-white/10"
+          className="rounded-full p-2 hover:bg-white/10"
         >
           {lang === "vi" ? "🇻🇳" : "🇺🇸"}
         </button>

@@ -1,4 +1,6 @@
+"use client";
 import Image from "next/image";
+import { useState } from "react";
 
 const ARTISTS = [
   {
@@ -21,9 +23,41 @@ const ARTISTS = [
     desc: { vi: "Alternative", en: "Alternative" },
     img: "https://picsum.photos/seed/d/300/300",
   },
+  {
+    name: { vi: "Nghệ sĩ E", en: "Artist E" },
+    desc: { vi: "Indie Rock", en: "Indie Rock" },
+    img: "https://picsum.photos/seed/e/300/300",
+  },
+  {
+    name: { vi: "Nghệ sĩ F", en: "Artist F" },
+    desc: { vi: "Indie Pop", en: "Indie Pop" },
+    img: "https://picsum.photos/seed/f/300/300",
+  },
+  {
+    name: { vi: "Nghệ sĩ G", en: "Artist G" },
+    desc: { vi: "Folk", en: "Folk" },
+    img: "https://picsum.photos/seed/g/300/300",
+  },
+  {
+    name: { vi: "Nghệ sĩ H", en: "Artist H" },
+    desc: { vi: "Alternative", en: "Alternative" },
+    img: "https://picsum.photos/seed/h/300/300",
+  },
+  {
+    name: { vi: "Nghệ sĩ I", en: "Artist I" },
+    desc: { vi: "Indie Rock", en: "Indie Rock" },
+    img: "https://picsum.photos/seed/i/300/300",
+  },
+  {
+    name: { vi: "Nghệ sĩ J", en: "Artist J" },
+    desc: { vi: "Indie Pop", en: "Indie Pop" },
+    img: "https://picsum.photos/seed/j/300/300",
+  },
 ];
 
 export default function LineupSection({ lang }: { lang: "vi" | "en" }) {
+  const [hovered, setHovered] = useState<number | null>(null);
+
   return (
     <section id="lineup" className="py-16 bg-[#fff8f2] dark:bg-[#1a1a1a]">
       <div className="max-w-5xl mx-auto px-4">
@@ -32,10 +66,27 @@ export default function LineupSection({ lang }: { lang: "vi" | "en" }) {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
           {ARTISTS.map((a, i) => (
-            <div key={i} className="flex flex-col items-center bg-white dark:bg-black rounded-xl shadow p-4">
-              <Image src={a.img} alt={a.name[lang]} width={112} height={112} className="rounded-full object-cover mb-3 border-4 border-red-600" />
+            <div
+              key={i}
+              className="relative flex flex-col items-center bg-white dark:bg-black rounded-xl shadow p-4 transition-transform duration-300 hover:scale-105 cursor-pointer"
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+            >
+              <Image
+                src={a.img}
+                alt={a.name[lang]}
+                width={112}
+                height={112}
+                className="rounded-full object-cover mb-3 border-4 border-red-600"
+              />
               <div className="font-semibold text-lg text-black dark:text-white">{a.name[lang]}</div>
               <div className="text-sm text-gray-600 dark:text-gray-300">{a.desc[lang]}</div>
+              {hovered === i && (
+                <div className="absolute inset-0 bg-black/80 text-white rounded-xl flex flex-col items-center justify-center p-4 animate-fade-in">
+                  <div className="font-bold text-xl mb-2">{a.name[lang]}</div>
+                  <div className="text-center">{a.desc[lang]}</div>
+                </div>
+              )}
             </div>
           ))}
         </div>
