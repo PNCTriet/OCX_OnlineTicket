@@ -23,7 +23,7 @@ export default function Home() {
         <TicketsSection lang={lang} />
         <FAQSection lang={lang} />
       </main>
-      <Footer lang={lang} />
+      <Footer />
     </div>
   );
 }

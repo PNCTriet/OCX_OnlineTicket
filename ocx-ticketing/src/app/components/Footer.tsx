@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 const SPONSORS = [
   { name: "Sponsor 1", logo: "/images/sponsor_logo_1.png" },
@@ -29,7 +30,7 @@ export default function Footer() {
           >
             {SPONSORS.map((s, i) => (
               <div key={i} className="w-full flex-shrink-0 flex justify-center">
-                <img src={s.logo} alt={s.name} className="h-16 w-16 object-contain" />
+                <Image src={s.logo} alt={s.name} width={64} height={64} className="h-16 w-16 object-contain" />
               </div>
             ))}
           </div>
