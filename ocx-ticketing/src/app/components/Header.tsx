@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+// Removed unused import: import { useState } from "react";
 
 const MENU = [
   { label: { vi: "Giới thiệu", en: "About" }, href: "#about" },
@@ -8,7 +8,7 @@ const MENU = [
   { label: { vi: "FAQ", en: "FAQ" }, href: "#faq" },
 ];
 
-export default function Header({ lang, setLang, theme, setTheme }: any) {
+export default function Header({ lang, setLang, theme, setTheme }: { lang: "vi" | "en"; setLang: (lang: "vi" | "en") => void; theme: "light" | "dark"; setTheme: (theme: "light" | "dark") => void }) {
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white/80 dark:bg-black/80 backdrop-blur border-b border-black/10 dark:border-white/10 flex items-center justify-between px-4 sm:px-12 py-2">
       <div className="flex items-center gap-2 font-bold text-xl text-red-600">

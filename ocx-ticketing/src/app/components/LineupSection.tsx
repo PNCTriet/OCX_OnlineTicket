@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const ARTISTS = [
   {
     name: { vi: "Nghệ sĩ A", en: "Artist A" },
@@ -31,7 +33,7 @@ export default function LineupSection({ lang }: { lang: "vi" | "en" }) {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
           {ARTISTS.map((a, i) => (
             <div key={i} className="flex flex-col items-center bg-white dark:bg-black rounded-xl shadow p-4">
-              <img src={a.img} alt={a.name[lang]} className="w-28 h-28 rounded-full object-cover mb-3 border-4 border-red-600" />
+              <Image src={a.img} alt={a.name[lang]} width={112} height={112} className="rounded-full object-cover mb-3 border-4 border-red-600" />
               <div className="font-semibold text-lg text-black dark:text-white">{a.name[lang]}</div>
               <div className="text-sm text-gray-600 dark:text-gray-300">{a.desc[lang]}</div>
             </div>
