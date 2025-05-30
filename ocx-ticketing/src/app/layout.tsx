@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ớt cay xè 4",
+  title: "ỚT CAY XÈ 4",
   description: "Builed by Howls Studio",
 };
 

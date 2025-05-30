@@ -4,9 +4,9 @@ import Image from "next/image";
 
 const SPONSORS = [
   { name: "Sponsor 1", logo: "/images/sponsor_logo_2.png" },
-  { name: "Sponsor 2", logo: "/images/sponsor_logo_2.png" },
+  { name: "Sponsor 2", logo: "/images/client_logo_ss3.png" },
   { name: "Sponsor 3", logo: "/images/sponsor_logo_2.png" },
-  { name: "Sponsor 4", logo: "/images/sponsor_logo_2.png" },
+  { name: "Sponsor 4", logo: "/images/client_logo_ss3.png" },
   { name: "Sponsor 5", logo: "/images/sponsor_logo_2.png" },
 ];
 
