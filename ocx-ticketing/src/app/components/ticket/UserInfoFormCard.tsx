@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 
-export default function UserInfoFormCard({ info, setInfo }: { info: any; setInfo: (v: any) => void }) {
+type UserInfo = { name: string; email: string; phone: string };
+export default function UserInfoFormCard({ info, setInfo }: { info: UserInfo; setInfo: (v: UserInfo) => void }) {
   return (
     <div className="bg-zinc-900 rounded-xl shadow p-6 flex flex-col gap-4 w-full max-w-md mx-auto">
       <div className="font-bold text-white mb-2">Recipient Information</div>

@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 
 export default function PaymentMethodCard({ method, setMethod }: { method: string; setMethod: (m: string) => void }) {
   return (

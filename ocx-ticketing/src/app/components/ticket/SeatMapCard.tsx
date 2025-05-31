@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 
 const SEATS = [
   // Mock 5x5 grid, mỗi ghế có id, type, status
@@ -16,7 +15,7 @@ const SEATS = [
   )
 ];
 
-const TYPE_COLOR = {
+const TYPE_COLOR: Record<string, string> = {
   VVIP: "bg-fuchsia-600",
   VIP: "bg-green-500",
   PREMIUM: "bg-yellow-400",
