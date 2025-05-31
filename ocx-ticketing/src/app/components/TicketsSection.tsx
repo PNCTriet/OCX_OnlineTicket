@@ -43,6 +43,7 @@ export default function TicketsSection({ lang }: { lang: "vi" | "en" }) {
                 <button
                   disabled={t.status !== "available"}
                   className={`ml-auto px-5 py-2 rounded-full font-semibold text-white ${t.status === "available" ? "bg-red-600 hover:bg-black" : "bg-gray-400 cursor-not-allowed"} transition-colors`}
+                  onClick={() => { if (t.status === "available") window.location.href = "/ticket"; }}
                 >
                   {lang === "vi" ? "Mua vé" : "Buy"}
                 </button>
