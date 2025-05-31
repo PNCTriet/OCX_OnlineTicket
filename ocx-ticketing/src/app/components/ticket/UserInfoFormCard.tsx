@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 
 type UserInfo = { name: string; email: string; phone: string };
 export default function UserInfoFormCard({ info, setInfo }: { info: UserInfo; setInfo: (v: UserInfo) => void }) {
