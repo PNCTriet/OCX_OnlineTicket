@@ -13,7 +13,7 @@ export default function Header({ lang, setLang }: { lang: "vi" | "en"; setLang: 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur border-b border-white/10 flex items-center justify-between px-4 sm:px-12 py-2">
       <div className="flex items-center gap-2 font-bold text-xl text-red-600">
-        <Image src="/images/client_logo_ss3.jpg" alt="Logo" width={64} height={64} className="w-8 h-8 rounded-full object-cover mr-2" />
+        <Image src="/images/client_logo_ss4.jpg" alt="Logo" width={64} height={64} className="w-8 h-8 rounded-full object-cover mr-2" />
         <span role="img" aria-label="ớt"></span> ỚT CAY XÈ
       </div>
       <nav className="hidden md:flex gap-8 text-base font-medium">
