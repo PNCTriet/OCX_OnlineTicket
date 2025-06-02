@@ -102,8 +102,3 @@ images/
 - ✅ Dễ tìm kiếm, tái sử dụng
 - ✅ Phối hợp nhanh chóng giữa thiết kế, frontend và backend
 - ✅ Hạn chế lỗi mapping sai ảnh
-
----
-
-Bạn có thể dùng chuẩn này cho mọi loại tài nguyên hình ảnh trong hệ thống (poster, check-in, nghệ sĩ, truyền thông, v.v.)
-
