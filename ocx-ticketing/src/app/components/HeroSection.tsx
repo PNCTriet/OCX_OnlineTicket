@@ -11,7 +11,11 @@ const TEXT = {
   },
 };
 
+<<<<<<< Updated upstream
 export default function HeroSection({ lang }: { lang: "vi" | "en" }) {
+=======
+export default function HeroSection() {
+>>>>>>> Stashed changes
   return (
     <section id="about" className="min-h-[80vh] flex flex-col items-center justify-center text-center gap-6 pt-24 pb-12">
       <h1 className="text-4xl sm:text-6xl font-extrabold text-black dark:text-white mb-2">
