@@ -1,55 +1,77 @@
+"use client";
+import Image from "next/image";
+
 const TICKETS = [
   {
-    name: { vi: "VIP", en: "VIP" },
-    price: "1.200.000₫",
-    priceEn: "$50",
-    benefits: { vi: ["Khu vực riêng", "Quà tặng đặc biệt", "Gặp gỡ nghệ sĩ"], en: ["Private area", "Special gift", "Meet & greet"] },
-    status: "available",
-  },
-  {
-    name: { vi: "Regular", en: "Regular" },
+    name: { vi: "STANDARD", en: "STANDARD" },
     price: "500.000₫",
     priceEn: "$20",
-    benefits: { vi: ["Vào cổng sự kiện", "Khu vực chung"], en: ["Event entry", "General area"] },
-    status: "soldout",
+    benefits: { 
+      vi: [
+        "Vào cổng sự kiện",
+        "Khu vực chung",
+        "Quà tặng đặc biệt",
+        "Gặp gỡ nghệ sĩ"
+      ], 
+      en: [
+        "Event entry",
+        "General area",
+        "Special gift",
+        "Meet & greet"
+      ] 
+    },
+    status: "available",
   },
 ];
 
 export default function TicketsSection({ lang }: { lang: "vi" | "en" }) {
   return (
-    <section id="tickets" className="py-16 bg-white dark:bg-black">
-      <div className="max-w-4xl mx-auto px-4">
-        <h2 className="text-3xl sm:text-4xl font-bold text-red-600 mb-8 text-center">
-          {lang === "vi" ? "Các loại vé" : "Ticket Types"}
+    <section 
+      id="tickets" 
+      className="py-16 relative"
+      style={{
+        backgroundImage: 'url(/images/hero_backround_ss3_alt1.svg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      <div className="max-w-2xl mx-auto px-4">
+        <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 text-center" style={{ fontFamily: 'BDStreetSignSans' }}>
+          {lang === "vi" ? "LOẠI VÉ" : "Ticket Types"}
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-          {TICKETS.map((t, i) => (
-            <div key={i} className="rounded-xl border border-red-200 dark:border-red-800 p-6 flex flex-col gap-3 shadow bg-[#fff8f2] dark:bg-[#1a1a1a]">
-              <div className="flex items-center justify-between">
-                <div className="text-xl font-bold text-black dark:text-white">{t.name[lang]}</div>
-                <div className="text-lg font-semibold text-red-600">{lang === "vi" ? t.price : t.priceEn}</div>
+        <div className="grid grid-cols-1 gap-8">
+          <div 
+            className="group perspective cursor-pointer hover:scale-105 transition-transform duration-300"
+            onClick={() => window.location.href = "/ticket"}
+          >
+            <div className="relative w-full h-[400px] transition-transform duration-500 transform-style-3d group-hover:rotate-y-180">
+              {/* Front of ticket */}
+              <div className="absolute w-full h-full backface-hidden">
+                <div className="relative w-full h-full">
+                  <Image
+                    src="/images/ticket_front_alt1.png"
+                    alt="Ticket Front"
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                </div>
               </div>
-              <ul className="list-disc ml-5 text-gray-700 dark:text-gray-200">
-                {t.benefits[lang].map((b: string, j: number) => (
-                  <li key={j}>{b}</li>
-                ))}
-              </ul>
-              <div className="flex items-center gap-2 mt-2">
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${t.status === "available" ? "bg-green-100 text-green-700" : "bg-gray-300 text-gray-500"}`}>
-                  {t.status === "available"
-                    ? lang === "vi" ? "Còn vé" : "Available"
-                    : "Sold Out"}
-                </span>
-                <button
-                  disabled={t.status !== "available"}
-                  className={`ml-auto px-5 py-2 rounded-full font-semibold text-white ${t.status === "available" ? "bg-red-600 hover:bg-black" : "bg-gray-400 cursor-not-allowed"} transition-colors`}
-                  onClick={() => { if (t.status === "available") window.location.href = "/ticket"; }}
-                >
-                  {lang === "vi" ? "Mua vé" : "Buy"}
-                </button>
+              
+              {/* Back of ticket */}
+              <div className="absolute w-full h-full backface-hidden rotate-y-180">
+                <div className="relative w-full h-full">
+                  <Image
+                    src="/images/ticket_back_alt1.png"
+                    alt="Ticket Back"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
               </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>
