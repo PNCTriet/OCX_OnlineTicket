@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ỚT CAY XÈ 4",
-  description: "Builed by Howls Studio",
+  description: "Built by Howls Studio",
 };
 
 export default function RootLayout({
