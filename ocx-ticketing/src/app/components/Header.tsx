@@ -1,24 +1,55 @@
 "use client";
-// Removed unused import: import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const MENU = [
-  { label: { vi: "GIỚI THIỆU", en: "ABOUT" }, href: "#about" },
-  { label: { vi: "LINE-UP", en: "LINE-UP" }, href: "#lineup" },
-  { label: { vi: "VÉ", en: "TICKETS" }, href: "#tickets" },
-  { label: { vi: "FAQ", en: "FAQ" }, href: "#faq" },
+  { label: { vi: "TỔNG QUAN", en: "ABOUT" }, href: "#about" },
+  { label: { vi: "NGHỆ SĨ", en: "LINE-UP" }, href: "#lineup" },
+  { label: { vi: "MUA VÉ", en: "TICKETS" }, href: "#tickets" },
+  { label: { vi: "FAQS", en: "FAQS" }, href: "#faq" },
 ];
 
 export default function Header({ lang, setLang }: { lang: "vi" | "en"; setLang: (lang: "vi" | "en") => void }) {
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY < lastScrollY) {
+        // Scrolling up
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down and past threshold
+        setIsVisible(false);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur border-b border-white/10 flex items-center justify-between px-4 sm:px-12 py-2">
-      <div className="flex items-center gap-2 font-bold text-xl text-red-600">
-        <Image src="/images/client_logo_ss4.jpg" alt="Logo" width={64} height={64} className="w-8 h-8 rounded-full object-cover mr-2" />
-        <span role="img" aria-label="ớt"></span> ỚT CAY XÈ
+    <header className={`fixed top-0 left-0 w-full z-50 bg-[#c53e00] flex items-center justify-between px-4 sm:px-12 py-3 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`} style={{ fontFamily: 'BDStreetSignSans' }}>
+      <div className="flex items-center gap-2 font-bold text-xl text-red-600" >
+        <Image 
+          src="/images/client_logo_ss4.svg" 
+          alt="Logo" 
+          width={100} 
+          height={100} 
+          className="w-20 h-20 rounded-full object-cover mr-2 transition-transform duration-300 hover:scale-110" 
+        />
       </div>
-      <nav className="hidden md:flex gap-8 text-base font-medium">
+      <nav className="hidden md:flex gap-25 text-2xl font-medium" >
         {MENU.map((item) => (
-          <a key={item.href} href={item.href} className="hover:text-red-600 transition-colors">
+          <a 
+            key={item.href} 
+            href={item.href} 
+            className="transition-transform duration-300 hover:scale-110"
+          >
             {item.label[lang]}
           </a>
         ))}
@@ -27,7 +58,7 @@ export default function Header({ lang, setLang }: { lang: "vi" | "en"; setLang: 
         <button
           aria-label="Chuyển ngôn ngữ"
           onClick={() => setLang(lang === "vi" ? "en" : "vi")}
-          className="rounded-full p-2 hover:bg-white/10"
+          className="rounded-full p-2 transition-transform duration-300 hover:scale-110"
         >
           {lang === "vi" ? "VI" : "EN"}
         </button>

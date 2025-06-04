@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const TEXT = {
   vi: {
     title: "OCX MÙA 3 – Đốt cháy đam mê cùng Indie",
@@ -13,16 +15,25 @@ const TEXT = {
 
 export default function HeroSection({ lang }: { lang: "vi" | "en" }) {
   return (
-    <section id="about" className="min-h-[80vh] flex flex-col items-center justify-center text-center gap-6 pt-24 pb-12">
-      <h1 className="text-4xl sm:text-6xl font-extrabold text-black dark:text-white mb-2">
-        {TEXT[lang].title}
-      </h1>
-      <p className="text-lg sm:text-2xl text-gray-700 dark:text-gray-200 max-w-2xl mx-auto">
-        {TEXT[lang].desc}
-      </p>
-      <a href="#tickets" className="mt-6 inline-block bg-red-600 text-white px-8 py-3 rounded-full text-lg font-semibold shadow hover:bg-black transition-colors">
-        {TEXT[lang].cta}
-      </a>
+    <section id="about" className="min-h-[80vh] flex flex-col items-center justify-center text-center gap-6 pt-24 pb-12 relative" style={{
+      backgroundImage: 'url(/images/hero_backround_ss3_alt1.svg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }}>
+      <div className="relative flex flex-col items-center justify-center text-center px-4">
+        <Image 
+          src="/images/hero_logo_ss3_alt1.svg" 
+          alt="Hero Logo" 
+          width={4000} 
+          height={4000} 
+          className="w-[50vw] mx-auto transition-transform duration-300 hover:scale-105"
+          priority
+        />
+        {/* <a href="#tickets" className="mt-6 inline-block bg-red-600 text-white px-8 py-2 rounded-full text-lg font-semibold shadow hover:bg-black transition-colors">
+          {TEXT[lang].cta}
+        </a> */}
+      </div>
     </section>
   );
 } 
