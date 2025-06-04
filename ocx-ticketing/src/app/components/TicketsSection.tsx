@@ -1,28 +1,7 @@
 "use client";
 import Image from "next/image";
 
-const TICKETS = [
-  {
-    name: { vi: "STANDARD", en: "STANDARD" },
-    price: "500.000₫",
-    priceEn: "$20",
-    benefits: { 
-      vi: [
-        "Vào cổng sự kiện",
-        "Khu vực chung",
-        "Quà tặng đặc biệt",
-        "Gặp gỡ nghệ sĩ"
-      ], 
-      en: [
-        "Event entry",
-        "General area",
-        "Special gift",
-        "Meet & greet"
-      ] 
-    },
-    status: "available",
-  },
-];
+// const TICKETS = [...]
 
 export default function TicketsSection({ lang }: { lang: "vi" | "en" }) {
   return (
