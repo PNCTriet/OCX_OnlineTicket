@@ -18,7 +18,7 @@ export default function Home() {
     <div className="bg-black min-h-screen font-sans text-white">
       <Header lang={lang} setLang={setLang} />
       <main className="flex flex-col gap-0">
-        <HeroSection lang={lang} />
+        <HeroSection />
         <LineupSection lang={lang} />
         <TicketsSection lang={lang} />
         <FAQSection lang={lang} />
