@@ -344,4 +344,3 @@ Table checkin_logs {
 
 Tất cả flow này được support toàn diện trong DB hiện tại.
 
-👉 Gợi ý: có thể nhúng sơ đồ ERD từ [dbdiagram.io](https://dbdiagram.io/) để minh hoạ tổng thể.
