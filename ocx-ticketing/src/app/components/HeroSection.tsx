@@ -1,17 +1,5 @@
 import Image from "next/image";
 
-const TEXT = {
-  vi: {
-    title: "OCX MÙA 3 – Đốt cháy đam mê cùng Indie",
-    desc: "Sự kiện âm nhạc Indie lớn nhất TP.HCM, nơi hội tụ đam mê và cá tính Gen Z.",
-    cta: "Mua vé ngay",
-  },
-  en: {
-    title: "OCX SEASON 3 – Ignite Your Indie Passion",
-    desc: "The biggest Indie music event in HCMC, where Gen Z's passion and style unite.",
-    cta: "Buy Tickets Now",
-  },
-};
 
 export default function HeroSection({ lang }: { lang: "vi" | "en" }) {
   return (
