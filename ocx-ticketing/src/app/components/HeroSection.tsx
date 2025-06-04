@@ -1,7 +1,8 @@
+"use client";
 import Image from "next/image";
 
 
-export default function HeroSection({ lang }: { lang: "vi" | "en" }) {
+export default function HeroSection() {
   return (
     <section id="about" className="min-h-[80vh] flex flex-col items-center justify-center text-center gap-6 pt-24 pb-12 relative" style={{
       backgroundImage: 'url(/images/hero_backround_ss3_alt1.svg)',
