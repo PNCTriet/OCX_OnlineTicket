@@ -2,101 +2,56 @@
 import Image from "next/image";
 import { useState } from "react";
 
-const ARTISTS = [
-  {
-    name: { vi: "Nghệ sĩ A", en: "Artist A" },
-    desc: { vi: "Indie Rock", en: "Indie Rock" },
-    img: "/images/client_logo_ss3.jpg",
-  },
-  {
-    name: { vi: "Nghệ sĩ B", en: "Artist B" },
-    desc: { vi: "Indie Pop", en: "Indie Pop" },
-    img: "/images/client_logo_ss3.jpg",
-  },
-  {
-    name: { vi: "Nghệ sĩ C", en: "Artist C" },
-    desc: { vi: "Folk", en: "Folk" },
-    img: "/images/client_logo_ss3.jpg",
-  },
-  {
-    name: { vi: "Nghệ sĩ D", en: "Artist D" },
-    desc: { vi: "Alternative", en: "Alternative" },
-    img: "/images/client_logo_ss3.jpg",
-  },
-  {
-    name: { vi: "Nghệ sĩ E", en: "Artist E" },
-    desc: { vi: "Indie Rock", en: "Indie Rock" },
-    img: "/images/client_logo_ss3.jpg",
-  },
-  {
-    name: { vi: "Nghệ sĩ F", en: "Artist F" },
-    desc: { vi: "Indie Pop", en: "Indie Pop" },
-    img: "/images/client_logo_ss3.jpg",
-  },
-  {
-    name: { vi: "Nghệ sĩ G", en: "Artist G" },
-    desc: { vi: "Folk", en: "Folk" },
-    img: "/images/client_logo_ss3.jpg",
-  },
-  {
-    name: { vi: "Nghệ sĩ H", en: "Artist H" },
-    desc: { vi: "Alternative", en: "Alternative" },
-    img: "/images/client_logo_ss3.jpg",
-  },
-  {
-    name: { vi: "Nghệ sĩ I", en: "Artist I" },
-    desc: { vi: "Indie Rock", en: "Indie Rock" },
-    img: "/images/client_logo_ss3.jpg",
-  },
-  {
-    name: { vi: "Nghệ sĩ J", en: "Artist J" },
-    desc: { vi: "Indie Pop", en: "Indie Pop" },
-    img: "/images/client_logo_ss3.jpg",
-  },
-  {
-    name: { vi: "Nghệ sĩ I", en: "Artist I" },
-    desc: { vi: "Indie Rock", en: "Indie Rock" },
-    img: "/images/client_logo_ss3.jpg",
-  },
-  {
-    name: { vi: "Nghệ sĩ J", en: "Artist J" },
-    desc: { vi: "Indie Pop", en: "Indie Pop" },
-    img: "/images/client_logo_ss3.jpg",
-  },
-];
+const CARD_COUNT = 12;
 
 export default function LineupSection({ lang }: { lang: "vi" | "en" }) {
+  // Track hovered card index
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
-    <section id="lineup" className="py-16 bg-black" >
+    <section 
+      id="lineup" 
+      className="pt-5 pb-16 relative"
+      style={{
+        backgroundImage: 'url(/images/hero_backround_ss3_alt2.svg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="max-w-5xl mx-auto px-4">
-        <h2 className="text-3xl sm:text-4xl font-bold text-red-600 mb-8 text-center" style={{ fontFamily: 'BDStreetSignSans' }}>
+        <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 text-center" style={{ fontFamily: 'BDStreetSignSans' }}>
           {lang === "vi" ? "NGHỆ SĨ" : "Artist Line-up"}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-          {ARTISTS.map((a, i) => (
+          {Array.from({ length: CARD_COUNT }).map((_, i) => (
             <div
               key={i}
-              className="relative flex flex-col items-center bg-black rounded-xl shadow p-4 transition-transform duration-300 hover:scale-105 cursor-pointer border border-white/10"
+              className="relative w-full aspect-[3/5] overflow-hidden rounded-xl cursor-pointer shadow-2xl hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-shadow duration-300"
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
             >
+              {/* Main Image */}
               <Image
-                src={a.img}
-                alt={a.name[lang]}
-                width={112}
-                height={112}
-                className="rounded-full object-cover mb-3 border-4 border-red-600"
+                src="/images/lineup_main_ss3_theflop_alt1.png"
+                alt={`Lineup Main ${i+1}`}
+                fill
+                className="object-contain transition-transform duration-500 rounded-xl"
+                priority={i === 0}
               />
-              <div className="font-semibold text-lg text-white">{a.name[lang]}</div>
-              <div className="text-sm text-gray-300">{a.desc[lang]}</div>
-              {hovered === i && (
-                <div className="absolute inset-0 bg-black/80 text-white rounded-xl flex flex-col items-center justify-center p-4 animate-fade-in">
-                  <div className="font-bold text-xl mb-2">{a.name[lang]}</div>
-                  <div className="text-center">{a.desc[lang]}</div>
-                </div>
-              )}
+              {/* Sub Image with Slice Effect */}
+              <div
+                className={`absolute inset-0 transition-all duration-500 ${
+                  hovered === i ? 'translate-y-0' : 'translate-y-full'
+                }`}
+              >
+                <Image
+                  src="/images/lineup_sub_ss3_theflop_alt1.png"
+                  alt={`Lineup Sub ${i+1}`}
+                  fill
+                  className="object-contain rounded-xl"
+                />
+              </div>
             </div>
           ))}
         </div>
