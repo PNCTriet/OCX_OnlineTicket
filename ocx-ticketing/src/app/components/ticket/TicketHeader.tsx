@@ -6,15 +6,9 @@ export default function TicketHeader() {
   const router = useRouter();
   return (
     <header className="w-full bg-zinc-950 border-b border-zinc-800 flex items-center justify-between px-4 sm:px-12 py-3 sticky top-0 z-50">
-      <div className="flex items-center">
-        <Image 
-          src="/images/client_logo_ss4.svg" 
-          alt="Logo" 
-          width={48} 
-          height={48} 
-          className="rounded-full object-cover cursor-pointer" 
-          onClick={() => router.push("/")}
-        />
+      <div className="flex items-center gap-2 font-bold text-xl text-red-600">
+        <Image src="/images/client_logo_ss3.jpg" alt="Logo" width={36} height={36} className="rounded-full object-cover" />
+        ỚT CAY XÈ
       </div>
       <button
         onClick={() => router.push("/")}
