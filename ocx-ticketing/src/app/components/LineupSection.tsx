@@ -2,7 +2,39 @@
 import Image from "next/image";
 import { useState } from "react";
 
-const CARD_COUNT = 12;
+// List of 6 artist groups, each with its own main and sub image
+const ARTISTS = [
+  {
+    main: "/images/lineup_main_ss3_betband_alt1.png",
+    sub: "/images/lineup_sub_ss3_betband_alt1.png",
+    name: "Artist 1"
+  },
+  {
+    main: "/images/lineup_main_ss3_dauvantay_alt1.png",
+    sub: "/images/lineup_sub_ss3_dauvantay_alt1.png",
+    name: "Artist 2"
+  },
+  {
+    main: "/images/lineup_main_ss3_emellata_alt1.png",
+    sub: "/images/lineup_sub_ss3_emellata_alt1.png",
+    name: "Artist 3"
+  },
+  {
+    main: "/images/lineup_main_ss3_minhtoclam_alt1.png",
+    sub: "/images/lineup_sub_ss3_minhtoclam_alt1.png",
+    name: "Artist 4"
+  },
+  {
+    main: "/images/lineup_main_ss3_thecassette_alt1.png",
+    sub: "/images/lineup_sub_ss3_thecassette_alt1.png",
+    name: "Artist 5"
+  },
+  {
+    main: "/images/lineup_main_ss3_theflop_alt1.png",
+    sub: "/images/lineup_sub_ss3_theflop_alt1.png",
+    name: "Artist 6"
+  },
+];
 
 export default function LineupSection({ lang }: { lang: "vi" | "en" }) {
   // Track hovered card index
@@ -23,8 +55,8 @@ export default function LineupSection({ lang }: { lang: "vi" | "en" }) {
         <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 text-center" style={{ fontFamily: 'BDStreetSignSans' }}>
           {lang === "vi" ? "NGHỆ SĨ" : "Artist Line-up"}
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-          {Array.from({ length: CARD_COUNT }).map((_, i) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+          {ARTISTS.map((artist, i) => (
             <div
               key={i}
               className="relative w-full aspect-[3/5] overflow-hidden rounded-xl cursor-pointer shadow-2xl hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-shadow duration-300"
@@ -33,7 +65,7 @@ export default function LineupSection({ lang }: { lang: "vi" | "en" }) {
             >
               {/* Main Image */}
               <Image
-                src="/images/lineup_main_ss3_theflop_alt1.png"
+                src={artist.main}
                 alt={`Lineup Main ${i+1}`}
                 fill
                 className="object-contain transition-transform duration-500 rounded-xl"
@@ -46,7 +78,7 @@ export default function LineupSection({ lang }: { lang: "vi" | "en" }) {
                 }`}
               >
                 <Image
-                  src="/images/lineup_sub_ss3_theflop_alt1.png"
+                  src={artist.sub}
                   alt={`Lineup Sub ${i+1}`}
                   fill
                   className="object-contain rounded-xl"
