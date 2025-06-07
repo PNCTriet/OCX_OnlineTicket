@@ -3,7 +3,7 @@ import Lottie from "lottie-react";
 
 export default function FlameLottie({ className = "", style = {} }: { className?: string, style?: React.CSSProperties }) {
   const lottieRef = useRef(null);
-  const [animationData, setAnimationData] = useState<any>(null);
+  const [animationData, setAnimationData] = useState<object | null>(null);
 
   useEffect(() => {
     fetch("/lottie/flame.json")
