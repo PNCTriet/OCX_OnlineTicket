@@ -1,10 +1,18 @@
 "use client";
-export default function EventInfoCard() {
+import { EventInfo } from "../../types/ticket";
+
+type EventInfoCardProps = {
+  event: EventInfo;
+};
+
+export default function EventInfoCard({ event }: EventInfoCardProps) {
   return (
-    <div className="bg-zinc-900 rounded-xl shadow p-6 mb-4 flex flex-col gap-2 w-full max-w-md mx-auto">
-      <div className="text-lg font-bold text-purple-400">OCX Indie Music Night 2025</div>
-      <div className="text-white/80">Time: 19:00, 20/12/2025</div>
-      <div className="text-white/80">Venue: Youth Culture House, HCMC</div>
+    <div className="bg-zinc-800/50 rounded-lg p-6 flex flex-col h-full">
+      <h2 className="text-xl font-bold text-white mb-4">{event.name}</h2>
+      <div className="space-y-2 text-zinc-300">
+        <p>Thời gian: {event.time}</p>
+        <p>Địa điểm: {event.location}</p>
+      </div>
     </div>
   );
 } 

@@ -15,7 +15,7 @@ const Tooltip = ({ showTooltip, lang }: { showTooltip: boolean; lang: "vi" | "en
     "If not now, then when?",
     "You're already here, why haven't you paid yet? 😗",
     "Act fast, or you'll regret it",
-  ];
+  ];  
 
   const randomMessage = useMemo(() => {
     const msgs = lang === "vi" ? messagesVi : messagesEn;

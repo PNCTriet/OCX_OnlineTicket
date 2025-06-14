@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "lottie-react": "^2.4.1",
     "next": "^15.3.2",
     "react": "^19.1.0",
