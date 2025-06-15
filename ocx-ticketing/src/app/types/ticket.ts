@@ -5,6 +5,7 @@ export type TicketType = {
   color: string;
   quantity: number;
   sold: number;
+  label?: string;
 };
 
 export type Zone = {
@@ -14,6 +15,15 @@ export type Zone = {
   ticketTypeId: string;
   capacity: number;
   sold: number;
+  description?: string;
+};
+
+export type Seat = {
+  id: string;
+  x: number;
+  y: number;
+  type: string; // e.g., 'A', 'B', 'VIP', corresponds to a zone
+  status: 'available' | 'selected' | 'sold';
 };
 
 export type EventInfo = {
@@ -21,4 +31,6 @@ export type EventInfo = {
   name: string;
   time: string;
   location: string;
+  avatar?: string;
+  date?: string;
 }; 
