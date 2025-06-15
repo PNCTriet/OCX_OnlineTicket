@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { SEAT_LAYOUT_CONFIG, TICKETS, ZONES } from "../../constants/ticket";
+import { SEAT_LAYOUT_CONFIG, TICKETS } from "../../constants/ticket";
 
 type SeatMapProps = {
   selectedZoneId: string | null;
