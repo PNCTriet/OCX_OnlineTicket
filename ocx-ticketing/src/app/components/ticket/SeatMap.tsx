@@ -30,7 +30,7 @@ export default function SeatMap({ selectedZoneId, onZoneSelect }: SeatMapProps) 
           step: 0.1
         }}
       >
-        {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
+        {({ zoomIn, zoomOut, resetTransform }) => (
           <>
             <div className="tools absolute top-4 right-4 z-20 flex flex-col space-y-2">
               <button onClick={() => zoomIn()} className="p-2 rounded-full bg-zinc-700 text-white hover:bg-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-500">

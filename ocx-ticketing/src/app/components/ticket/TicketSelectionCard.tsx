@@ -1,5 +1,5 @@
 import { TicketType } from "../../types/ticket";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 type TicketSelectionCardProps = {
   tickets: TicketType[];
