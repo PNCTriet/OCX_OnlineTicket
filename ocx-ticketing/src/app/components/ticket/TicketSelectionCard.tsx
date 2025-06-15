@@ -24,6 +24,11 @@ export default function TicketSelectionCard({ tickets, onQuantityChange }: Ticke
               <div>
                 <span className="font-medium text-white">{ticket.name}</span>
                 <span className="ml-2 text-sm text-zinc-400">[{ticket.label || "Khu vực tiêu chuẩn"}]</span>
+                <span 
+                  className={`ml-2 text-xs font-semibold ${ticket.status === 'available' ? 'text-green-500' : ticket.status === 'sold-out' ? 'text-red-500' : 'text-yellow-500'}`}
+                >
+                  {ticket.status === 'available' ? 'Còn vé' : ticket.status === 'sold-out' ? 'Hết vé' : 'Chưa mở bán'}
+                </span>
                 {ticket.quantity > 0 && (
                   <span className="ml-2 text-sm text-[#c53e00]">({ticket.quantity} vé)</span>
                 )}
@@ -34,7 +39,7 @@ export default function TicketSelectionCard({ tickets, onQuantityChange }: Ticke
               <div className="flex items-center space-x-4">
                 <button
                   onClick={() => onQuantityChange(ticket.id, -1)}
-                  disabled={ticket.quantity === 0}
+                  disabled={ticket.quantity === 0 || ticket.status === 'not-yet-on-sale'}
                   className="w-10 h-10 rounded-full bg-zinc-700 text-white disabled:opacity-50 hover:bg-zinc-600 transition-colors flex items-center justify-center text-xl"
                 >
                   -
@@ -42,7 +47,7 @@ export default function TicketSelectionCard({ tickets, onQuantityChange }: Ticke
                 <span className="text-white w-8 text-center text-lg">{ticket.quantity}</span>
                 <button
                   onClick={() => onQuantityChange(ticket.id, 1)}
-                  disabled={ticket.sold >= 100}
+                  disabled={ticket.sold >= 100 || ticket.status === 'sold-out' || ticket.status === 'not-yet-on-sale'}
                   className="w-10 h-10 rounded-full bg-zinc-700 text-white disabled:opacity-50 hover:bg-zinc-600 transition-colors flex items-center justify-center text-xl"
                 >
                   +

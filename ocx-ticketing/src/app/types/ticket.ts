@@ -6,6 +6,7 @@ export type TicketType = {
   quantity: number;
   sold: number;
   label?: string;
+  status: 'not-yet-on-sale' | 'available' | 'sold-out';
 };
 
 export type Zone = {

@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { SEAT_LAYOUT_CONFIG } from "../../constants/ticket";
+import { SEAT_LAYOUT_CONFIG, TICKETS, ZONES } from "../../constants/ticket";
 
 type SeatMapProps = {
   selectedZoneId: string | null;
@@ -82,36 +82,44 @@ export default function SeatMap({ selectedZoneId, onZoneSelect }: SeatMapProps) 
                 </text>
 
                 {/* Seat Sections */}
-                {SEAT_LAYOUT_CONFIG.SECTIONS.map(section => (
-                  <React.Fragment key={section.id}>
-                    <rect
-                      x={section.x}
-                      y={section.y}
-                      width={section.width}
-                      height={section.height}
-                      fill={section.color}
-                      opacity="0.2" // Slightly transparent background for sections
-                      rx="5"
-                      ry="5"
-                      className={`cursor-pointer transition-all duration-100 ${
-                        selectedZoneId === section.id ? "ring-2 ring-white" : ""
-                      }`}
-                      onClick={() => onZoneSelect(section.id)}
-                    />
-                    <text
-                      x={section.x + section.width / 2}
-                      y={section.y + section.height / 2}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fill="white"
-                      fontSize="20"
-                      fontWeight="bold"
-                      className="pointer-events-none" // Prevent text from blocking click
-                    >
-                      {section.label}
-                    </text>
-                  </React.Fragment>
-                ))}
+                {SEAT_LAYOUT_CONFIG.SECTIONS.map(section => {
+                  const ticketInfo = TICKETS.find(ticket => ticket.id === section.ticketTypeId);
+                  const tooltipText = ticketInfo ? 
+                    `${ticketInfo.name} - ${ticketInfo.price.toLocaleString()}đ` :
+                    `Khu vực ${section.label}`;
+                  return (
+                    <React.Fragment key={section.id}>
+                      <rect
+                        x={section.x}
+                        y={section.y}
+                        width={section.width}
+                        height={section.height}
+                        fill={section.color}
+                        opacity="0.2" // Slightly transparent background for sections
+                        rx="5"
+                        ry="5"
+                        className={`cursor-pointer transition-all duration-100 ${
+                          selectedZoneId === section.id ? "ring-2 ring-white" : ""
+                        }`}
+                        onClick={() => onZoneSelect(section.id)}
+                      >
+                        <title>{tooltipText}</title>
+                      </rect>
+                      <text
+                        x={section.x + section.width / 2}
+                        y={section.y + section.height / 2}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        fill="white"
+                        fontSize="20"
+                        fontWeight="bold"
+                        className="pointer-events-none" // Prevent text from blocking click
+                      >
+                        {section.label}
+                      </text>
+                    </React.Fragment>
+                  );
+                })}
               </svg>
             </TransformComponent>
           </>

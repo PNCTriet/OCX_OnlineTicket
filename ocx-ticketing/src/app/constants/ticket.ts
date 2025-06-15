@@ -9,6 +9,7 @@ export const TICKETS: TicketType[] = [
     quantity: 0,
     sold: 50,
     label: "Khu vực A",
+    status: 'available',
   },
   {
     id: "farmers-ngoi-chill",
@@ -18,6 +19,7 @@ export const TICKETS: TicketType[] = [
     quantity: 0,
     sold: 30,
     label: "Khu vực B",
+    status: 'available',
   },
   {
     id: "farmers-vip",
@@ -27,6 +29,7 @@ export const TICKETS: TicketType[] = [
     quantity: 0,
     sold: 20,
     label: "Khu vực C",
+    status: 'available',
   },
   {
     id: "farmers-premium",
@@ -36,6 +39,7 @@ export const TICKETS: TicketType[] = [
     quantity: 0,
     sold: 25,
     label: "Khu vực D",
+    status: 'available',
   },
   {
     id: "farmers-standard",
@@ -45,6 +49,7 @@ export const TICKETS: TicketType[] = [
     quantity: 0,
     sold: 40,
     label: "Khu vực E",
+    status: 'available',
   },
 ];
 
