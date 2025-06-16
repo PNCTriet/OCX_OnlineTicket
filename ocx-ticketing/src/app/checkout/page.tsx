@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, Suspense } from "react";
 import TicketHeader from "../components/ticket/TicketHeader";
 import Footer from "../components/Footer";
 import EventInfoCard from "../components/ticket/EventInfoCard";
@@ -105,82 +105,84 @@ export default function CheckoutPage() {
   );
 
   return (
-    <div className="min-h-screen relative">
-      <div
-        className="fixed inset-0 z-0"
-        style={{
-          backgroundImage: "url(/images/hero_backround_ss3_alt1.svg)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          opacity: 0.8,
-        }}
-      />
-      <div className="relative z-10">
-        {mounted && <TicketHeader lang={"vi"} setLang={() => {}} />}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 sm:pt-28 md:pt-32">
-          <h1 className="text-3xl font-bold text-white text-center mb-8">
-            Thanh Toán
-          </h1>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Column */}
-            <div className="space-y-6">
-              <div className="max-h-[300px] overflow-hidden">
-                <EventInfoCard event={EVENT_INFO} />
-              </div>
-              <TicketSummaryTable
-                selectedTickets={selectedTickets}
-                totalAmount={totalAmount}
-              />
-              <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
-                <PolicyCheckbox
-                  agreedToPolicies={agreedToPolicies}
-                  onAgreementChange={setAgreedToPolicies}
-                />
-                <button
-                  onClick={handlePayment}
-                  disabled={!agreedToPolicies}
-                  className="w-full py-3 px-4 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Thanh toán
-                </button>
-              </div>
-            </div>
-
-            {/* Right Column */}
-            <div className="space-y-6">
-              <CountdownTimer
-                seconds={checkoutCountdown}
-                onExpire={useCallback(() => setIsSessionExpiryModalOpen(true), [])}
-              />
-              <UserInfoForm
-                userInfo={userInfo}
-                onUserInfoChange={handleUserInfoChange}
-              />
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-
-      {mounted && isPaymentModalOpen && (
-        <PaymentModal
-          isOpen={isPaymentModalOpen}
-          onClose={() => setIsPaymentModalOpen(false)}
-          selectedTickets={selectedTickets}
-          totalAmount={totalAmount}
-          userInfo={userInfo}
-          paymentRemainingSeconds={checkoutCountdown}
-          paymentStatus={paymentStatus}
-          orderNumber={orderNumber}
-          orderDate={orderDate}
-          orderTime={orderTime}
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="min-h-screen relative">
+        <div
+          className="fixed inset-0 z-0"
+          style={{
+            backgroundImage: "url(/images/hero_backround_ss3_alt1.svg)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 0.8,
+          }}
         />
-      )}
+        <div className="relative z-10">
+          {mounted && <TicketHeader lang={"vi"} setLang={() => {}} />}
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 sm:pt-28 md:pt-32">
+            <h1 className="text-3xl font-bold text-white text-center mb-8">
+              Thanh Toán
+            </h1>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column */}
+              <div className="space-y-6">
+                <div className="max-h-[300px] overflow-hidden">
+                  <EventInfoCard event={EVENT_INFO} />
+                </div>
+                <TicketSummaryTable
+                  selectedTickets={selectedTickets}
+                  totalAmount={totalAmount}
+                />
+                <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+                  <PolicyCheckbox
+                    agreedToPolicies={agreedToPolicies}
+                    onAgreementChange={setAgreedToPolicies}
+                  />
+                  <button
+                    onClick={handlePayment}
+                    disabled={!agreedToPolicies}
+                    className="w-full py-3 px-4 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Thanh toán
+                  </button>
+                </div>
+              </div>
 
-      <SessionExpiryModal
-        isOpen={isSessionExpiryModalOpen}
-      />
-    </div>
+              {/* Right Column */}
+              <div className="space-y-6">
+                <CountdownTimer
+                  seconds={checkoutCountdown}
+                  onExpire={useCallback(() => setIsSessionExpiryModalOpen(true), [])}
+                />
+                <UserInfoForm
+                  userInfo={userInfo}
+                  onUserInfoChange={handleUserInfoChange}
+                />
+              </div>
+            </div>
+          </main>
+          <Footer />
+        </div>
+
+        {mounted && isPaymentModalOpen && (
+          <PaymentModal
+            isOpen={isPaymentModalOpen}
+            onClose={() => setIsPaymentModalOpen(false)}
+            selectedTickets={selectedTickets}
+            totalAmount={totalAmount}
+            userInfo={userInfo}
+            paymentRemainingSeconds={checkoutCountdown}
+            paymentStatus={paymentStatus}
+            orderNumber={orderNumber}
+            orderDate={orderDate}
+            orderTime={orderTime}
+          />
+        )}
+
+        <SessionExpiryModal
+          isOpen={isSessionExpiryModalOpen}
+        />
+      </div>
+    </Suspense>
   );
 }
