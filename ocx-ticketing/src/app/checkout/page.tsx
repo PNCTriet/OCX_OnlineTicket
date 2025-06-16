@@ -180,7 +180,6 @@ export default function CheckoutPage() {
 
       <SessionExpiryModal
         isOpen={isSessionExpiryModalOpen}
-        onClose={() => setIsSessionExpiryModalOpen(false)}
       />
     </div>
   );
