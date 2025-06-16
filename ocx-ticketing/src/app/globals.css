@@ -21,6 +21,7 @@ body {
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 .animate-fade-in {
@@ -69,4 +70,8 @@ html {
   .hide-scrollbar::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
   }
+}
+
+.no-scroll {
+  overflow: hidden !important;
 }

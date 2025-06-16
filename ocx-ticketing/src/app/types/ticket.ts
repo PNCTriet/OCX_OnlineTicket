@@ -1,3 +1,14 @@
+export type Ticket = {
+  id: string;
+  name: string;
+  price: number;
+  color: string;
+  sold: number;
+  label?: string;
+  status: "not-yet-on-sale" | "available" | "sold-out";
+  quantity: number;
+};
+
 export type TicketType = {
   id: string;
   name: string;
@@ -28,10 +39,9 @@ export type Seat = {
 };
 
 export type EventInfo = {
-  id: string;
   name: string;
+  date: string;
   time: string;
   location: string;
   avatar?: string;
-  date?: string;
 }; 

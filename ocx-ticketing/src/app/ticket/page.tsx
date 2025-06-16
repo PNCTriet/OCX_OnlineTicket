@@ -9,6 +9,7 @@ import ZoneConfirmationModal from "../components/ticket/ZoneConfirmationModal";
 import Footer from "../components/Footer";
 import { TICKETS, ZONES, EVENT_INFO, SEAT_LAYOUT_CONFIG } from "../constants/ticket";
 import { TicketType, Zone } from "../types/ticket";
+import { useRouter } from 'next/navigation';
 
 export default function TicketPage() {
   const [tickets, setTickets] = useState<TicketType[]>(TICKETS);
@@ -16,6 +17,8 @@ export default function TicketPage() {
   const [lang, setLang] = useState<"vi" | "en">("vi");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingZone, setPendingZone] = useState<Zone | null>(null);
+
+  const router = useRouter();
 
   const totalAmount = tickets.reduce((sum, ticket) => sum + ticket.price * ticket.quantity, 0);
   const hasTickets = tickets.some(ticket => ticket.quantity > 0);
@@ -84,7 +87,16 @@ export default function TicketPage() {
   };
 
   const handleContinue = () => {
-    console.log("Continue with:", { tickets, selectedZone, totalAmount });
+    const ticketsToPass = tickets.filter(ticket => ticket.quantity > 0);
+    const encodedTickets = encodeURIComponent(JSON.stringify(ticketsToPass));
+    router.push(`/checkout?tickets=${encodedTickets}`);
+  };
+
+  const handleBuyTicket = (ticketId: string) => {
+    const ticket = TICKETS.find(t => t.id === ticketId);
+    if (ticket) {
+      router.push(`/checkout?ticketId=${ticketId}&quantity=1`);
+    }
   };
 
   return (
@@ -122,6 +134,7 @@ export default function TicketPage() {
                     totalAmount={totalAmount} 
                     onContinue={handleContinue}
                     hasTickets={hasTickets}
+                    selectedTickets={tickets}
                   />
                 </div>
               </div>
