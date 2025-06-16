@@ -3,10 +3,10 @@ import { useRouter } from "next/navigation";
 
 type SessionExpiryModalProps = {
   isOpen: boolean;
-  onClose: () => void;
+  onConfirm: () => void;
 };
 
-export default function SessionExpiryModal({ isOpen, onClose }: SessionExpiryModalProps) {
+export default function SessionExpiryModal({ isOpen, onConfirm }: SessionExpiryModalProps) {
   const router = useRouter();
 
   if (!isOpen) return null;

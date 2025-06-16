@@ -20,7 +20,7 @@ const Tooltip = ({ showTooltip, lang }: { showTooltip: boolean; lang: "vi" | "en
   const randomMessage = useMemo(() => {
     const msgs = lang === "vi" ? messagesVi : messagesEn;
     return msgs[Math.floor(Math.random() * msgs.length)];
-  }, [lang, messagesVi, messagesEn]);
+  }, [lang]);
 
   return (
     showTooltip && (

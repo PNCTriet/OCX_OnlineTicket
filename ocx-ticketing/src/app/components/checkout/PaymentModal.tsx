@@ -21,16 +21,7 @@ type PaymentModalProps = {
 };
 
 export default function PaymentModal({ isOpen, onClose, selectedTickets, totalAmount, userInfo, paymentRemainingSeconds, paymentStatus, orderNumber, orderDate, orderTime }: PaymentModalProps) {
-  if (!isOpen) return null;
-
-  // Chỉ tạo qrUrl khi các giá trị orderNumber, orderDate, orderTime đã có
-  // Nếu chưa có, sử dụng một ảnh placeholder tĩnh
-  const qrUrl = (orderNumber && orderDate && orderTime)
-    ? `https://img.vietqr.io/image/VPB-214244527-compact.png?amount=${totalAmount}&addInfo=${encodeURIComponent("#OCX4 - Order " + orderNumber + " - " + orderDate + " " + orderTime)}&accountName=${encodeURIComponent("PHAM NG CAO TRIET")}`
-    : "/images/qr_code_placeholder.png"; // Đảm bảo bạn có ảnh này trong thư mục public/images
-
-  const currentPaymentStatus = paymentStatus;
-
+  // Effect để ngăn cuộn trang chính khi modal mở (di chuyển lên trên)
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('no-scroll');
@@ -44,6 +35,16 @@ export default function PaymentModal({ isOpen, onClose, selectedTickets, totalAm
       document.documentElement.classList.remove('no-scroll');
     };
   }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  // Chỉ tạo qrUrl khi các giá trị orderNumber, orderDate, orderTime đã có
+  // Nếu chưa có, sử dụng một ảnh placeholder tĩnh
+  const qrUrl = (orderNumber && orderDate && orderTime)
+    ? `https://img.vietqr.io/image/VPB-214244527-compact.png?amount=${totalAmount}&addInfo=${encodeURIComponent("#OCX4 - Order " + orderNumber + " - " + orderDate + " " + orderTime)}&accountName=${encodeURIComponent("PHAM NG CAO TRIET")}`
+    : "/images/qr_code_placeholder.png"; // Đảm bảo bạn có ảnh này trong thư mục public/images
+
+  const currentPaymentStatus = paymentStatus;
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);

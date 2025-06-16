@@ -10,6 +10,7 @@ import Footer from "../components/Footer";
 import { TICKETS, ZONES, EVENT_INFO, SEAT_LAYOUT_CONFIG } from "../constants/ticket";
 import { TicketType, Zone } from "../types/ticket";
 import { useRouter } from 'next/navigation';
+import Tooltip from "../components/Tooltip";
 
 export default function TicketPage() {
   const [tickets, setTickets] = useState<TicketType[]>(TICKETS);
@@ -17,6 +18,7 @@ export default function TicketPage() {
   const [lang, setLang] = useState<"vi" | "en">("vi");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingZone, setPendingZone] = useState<Zone | null>(null);
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
 
   const router = useRouter();
 
@@ -90,13 +92,6 @@ export default function TicketPage() {
     const ticketsToPass = tickets.filter(ticket => ticket.quantity > 0);
     const encodedTickets = encodeURIComponent(JSON.stringify(ticketsToPass));
     router.push(`/checkout?tickets=${encodedTickets}`);
-  };
-
-  const handleBuyTicket = (ticketId: string) => {
-    const ticket = TICKETS.find(t => t.id === ticketId);
-    if (ticket) {
-      router.push(`/checkout?ticketId=${ticketId}&quantity=1`);
-    }
   };
 
   return (

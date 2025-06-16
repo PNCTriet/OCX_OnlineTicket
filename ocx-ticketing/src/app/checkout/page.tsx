@@ -3,7 +3,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import TicketHeader from "../components/ticket/TicketHeader";
 import Footer from "../components/Footer";
 import EventInfoCard from "../components/ticket/EventInfoCard";
-import { EVENT_INFO, TICKETS } from "../constants/ticket";
+import { EVENT_INFO } from "../constants/ticket";
 import TicketSummaryTable from "../components/checkout/TicketSummaryTable";
 import UserInfoForm from "../components/checkout/UserInfoForm";
 import CountdownTimer from "../components/checkout/CountdownTimer";
