@@ -10,32 +10,30 @@ import Footer from "../components/Footer";
 import { TICKETS, ZONES, EVENT_INFO, SEAT_LAYOUT_CONFIG } from "../constants/ticket";
 import { TicketType, Zone } from "../types/ticket";
 import { useRouter } from 'next/navigation';
-import Tooltip from "../components/Tooltip";
 
 export default function TicketPage() {
-  const [tickets, setTickets] = useState<TicketType[]>(TICKETS);
+  const [selectedTickets, setSelectedTickets] = useState<(TicketType & { quantity: number })[]>(
+    TICKETS.map(ticket => ({ ...ticket, quantity: 0 }))
+  );
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [lang, setLang] = useState<"vi" | "en">("vi");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingZone, setPendingZone] = useState<Zone | null>(null);
-  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
 
   const router = useRouter();
 
-  const totalAmount = tickets.reduce((sum, ticket) => sum + ticket.price * ticket.quantity, 0);
-  const hasTickets = tickets.some(ticket => ticket.quantity > 0);
-
-  const handleQuantityChange = (ticketId: string, change: number) => {
-    setTickets(prev =>
-      prev.map(ticket => {
-        if (ticket.id === ticketId) {
-          const newQuantity = Math.max(0, ticket.quantity + change);
-          return { ...ticket, quantity: newQuantity };
-        }
-        return ticket;
-      })
+  const handleQuantityChange = (ticketId: string, newQuantity: number) => {
+    setSelectedTickets(prev =>
+      prev.map(ticket =>
+        ticket.id === ticketId ? { ...ticket, quantity: newQuantity } : ticket
+      )
     );
   };
+
+  const totalAmount = selectedTickets.reduce(
+    (sum, ticket) => sum + ticket.price * ticket.quantity,
+    0
+  );
 
   const handleZoneSelect = (sectionId: string) => {
     const sectionConfig = SEAT_LAYOUT_CONFIG.SECTIONS.find(s => s.id === sectionId);
@@ -51,7 +49,7 @@ export default function TicketPage() {
 
     if (selectedZone === sectionId) {
       setSelectedZone(null);
-      setTickets(prevTickets =>
+      setSelectedTickets(prevTickets =>
         prevTickets.map(ticket => {
           if (ticket.id === correspondingZone.ticketTypeId && ticket.quantity > 0) {
             return { ...ticket, quantity: ticket.quantity - 1 };
@@ -70,7 +68,7 @@ export default function TicketPage() {
       const sectionIdForPendingZone = SEAT_LAYOUT_CONFIG.SECTIONS.find(s => s.ticketTypeId === pendingZone.ticketTypeId)?.id || null;
       setSelectedZone(sectionIdForPendingZone);
 
-      setTickets(prevTickets =>
+      setSelectedTickets(prevTickets =>
         prevTickets.map(ticket => {
           if (ticket.id === pendingZone.ticketTypeId) {
             return { ...ticket, quantity: ticket.quantity + 1 };
@@ -89,8 +87,10 @@ export default function TicketPage() {
   };
 
   const handleContinue = () => {
-    const ticketsToPass = tickets.filter(ticket => ticket.quantity > 0);
-    const encodedTickets = encodeURIComponent(JSON.stringify(ticketsToPass));
+    const ticketsToBuy = selectedTickets.filter(t => t.quantity > 0);
+    if (ticketsToBuy.length === 0) return;
+
+    const encodedTickets = encodeURIComponent(JSON.stringify(ticketsToBuy));
     router.push(`/checkout?tickets=${encodedTickets}`);
   };
 
@@ -122,14 +122,14 @@ export default function TicketPage() {
                 <div className="space-y-6">
                   <EventInfoCard event={EVENT_INFO} />
                   <TicketSelectionCard 
-                    tickets={tickets} 
+                    tickets={selectedTickets} 
                     onQuantityChange={handleQuantityChange}
                   />
                   <OrderSummaryCard 
                     totalAmount={totalAmount} 
                     onContinue={handleContinue}
-                    hasTickets={hasTickets}
-                    selectedTickets={tickets}
+                    hasTickets={selectedTickets.some(ticket => ticket.quantity > 0)}
+                    selectedTickets={selectedTickets}
                   />
                 </div>
               </div>

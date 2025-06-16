@@ -3,33 +3,27 @@ import { useRouter } from "next/navigation";
 
 type SessionExpiryModalProps = {
   isOpen: boolean;
-  onConfirm: () => void;
 };
 
-export default function SessionExpiryModal({ isOpen, onConfirm }: SessionExpiryModalProps) {
-  const router = useRouter();
-
+export default function SessionExpiryModal({ isOpen }: SessionExpiryModalProps) {
   if (!isOpen) return null;
 
-  const handleReturnToTickets = () => {
-    router.push("/ticket");
-  };
+  const router = useRouter();
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-zinc-900 rounded-xl p-6 max-w-md w-full">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">Phiên đã hết hạn</h2>
-          <p className="text-zinc-400 mb-6">
-            Thời gian giữ vé của bạn đã hết. Vui lòng quay lại trang mua vé để chọn lại.
-          </p>
-          <button
-            onClick={handleReturnToTickets}
-            className="w-full py-3 px-6 bg-[#c53e00] hover:bg-[#b33800] text-white font-bold rounded-lg transition-colors"
-          >
-            Quay lại mua vé
-          </button>
-        </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div className="relative bg-zinc-900 rounded-xl p-6 max-w-md w-full shadow-2xl border border-white/10">
+        <h2 className="text-2xl font-bold text-white mb-4">Phiên làm việc đã hết hạn</h2>
+        <p className="text-zinc-400 mb-6">
+          Phiên làm việc của bạn đã hết hạn. Vui lòng quay lại trang chủ để bắt đầu lại.
+        </p>
+        <button
+          onClick={() => router.push('/')}
+          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300"
+        >
+          Quay lại trang chủ
+        </button>
       </div>
     </div>
   );
