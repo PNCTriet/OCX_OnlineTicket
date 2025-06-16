@@ -16,13 +16,13 @@ export default function SessionExpiryModal({ isOpen }: SessionExpiryModalProps) 
       <div className="relative bg-zinc-900 rounded-xl p-6 max-w-md w-full shadow-2xl border border-white/10">
         <h2 className="text-2xl font-bold text-white mb-4">Phiên làm việc đã hết hạn</h2>
         <p className="text-zinc-400 mb-6">
-          Phiên làm việc của bạn đã hết hạn. Vui lòng quay lại trang chủ để bắt đầu lại.
+          Phiên làm việc của bạn đã hết hạn. Vui lòng quay lại trang mua vé để bắt đầu lại.
         </p>
         <button
-          onClick={() => router.push('/')}
+          onClick={() => router.push('/ticket')}
           className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300"
         >
-          Quay lại trang chủ
+          Quay lại mua vé
         </button>
       </div>
     </div>

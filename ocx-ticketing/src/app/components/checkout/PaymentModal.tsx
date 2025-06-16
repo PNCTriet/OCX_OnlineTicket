@@ -94,7 +94,7 @@ export default function PaymentModal({ isOpen, onClose, selectedTickets, totalAm
               <h3 className="text-lg font-bold text-white mb-2">Thông tin thanh toán</h3>
               <div className="space-y-2 text-white">
                 <p><span className="text-zinc-400">Số tiền:</span> {totalAmount.toLocaleString()}đ</p>
-                <p><span className="text-zinc-400">Người nhận:</span> {userInfo.fullName}</p>
+                <p><span className="text-zinc-400">Người mua:</span> {userInfo.fullName}</p>
                 <p><span className="text-zinc-400">Email:</span> {userInfo.email}</p>
                 <p><span className="text-zinc-400">Số điện thoại:</span> {userInfo.phone}</p>
               </div>

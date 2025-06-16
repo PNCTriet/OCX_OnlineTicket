@@ -39,6 +39,7 @@ export type Seat = {
 };
 
 export type EventInfo = {
+  id: string;
   name: string;
   date: string;
   time: string;
