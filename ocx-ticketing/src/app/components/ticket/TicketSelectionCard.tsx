@@ -4,10 +4,9 @@ import { useRef } from "react";
 type TicketSelectionCardProps = {
   tickets: TicketType[];
   onQuantityChange: (ticketId: string, change: number) => void;
-  selectedZoneId?: string | null;
 };
 
-export default function TicketSelectionCard({ tickets, onQuantityChange, selectedZoneId }: TicketSelectionCardProps) {
+export default function TicketSelectionCard({ tickets, onQuantityChange }: TicketSelectionCardProps) {
   const ticketRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const hasSeatmapSelections = tickets.some(ticket => ticket.quantity > 0);

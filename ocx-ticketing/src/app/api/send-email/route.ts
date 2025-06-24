@@ -1,8 +1,6 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 // Define the ticket type inline to avoid import issues
 type TicketWithQuantity = {
   id: string;
@@ -17,6 +15,13 @@ type TicketWithQuantity = {
 
 export async function POST(request: Request) {
   try {
+    // Debug: Check if API key is loaded
+    console.log('🔑 API Key loaded:', process.env.RESEND_API_KEY ? 'Yes' : 'No');
+    console.log('🔑 API Key value:', process.env.RESEND_API_KEY ? `${process.env.RESEND_API_KEY.substring(0, 10)}...` : 'Not found');
+    
+    // Initialize Resend inside the function to ensure env vars are loaded
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    
     const { to, subject, tickets, customerInfo, orderNumber, orderDate, orderTime, totalAmount } = await request.json();
     
     // Tạo HTML template cho email vé điện tử
