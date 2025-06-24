@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, Suspense } from "react";
 import TicketHeader from "../components/ticket/TicketHeader";
 import Footer from "../components/Footer";
 import EventInfoCard from "../components/ticket/EventInfoCard";
@@ -13,7 +13,7 @@ import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
 import { useSearchParams } from "next/navigation";
 import { Ticket } from "../types/ticket";
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams();
   const [userInfo, setUserInfo] = useState({
     fullName: "",
@@ -245,5 +245,13 @@ export default function CheckoutPage() {
         isOpen={isSessionExpiryModalOpen}
       />
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 }
