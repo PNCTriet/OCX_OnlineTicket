@@ -4,12 +4,14 @@ import { useRef } from "react";
 type TicketSelectionCardProps = {
   tickets: TicketType[];
   onQuantityChange: (ticketId: string, change: number) => void;
+  selectedZoneId?: string | null;
 };
 
-export default function TicketSelectionCard({ tickets, onQuantityChange }: TicketSelectionCardProps) {
+export default function TicketSelectionCard({ tickets, onQuantityChange, selectedZoneId }: TicketSelectionCardProps) {
   const ticketRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  const hasSeatmapSelections = tickets.some(ticket => ticket.quantity > 0);
+  // Use selectedZoneId to determine if seatmap selections are available
+  const hasSeatmapSelections = selectedZoneId !== null;
 
   return (
     <div className="bg-zinc-800/50 rounded-lg p-6 flex flex-col h-[300px]">
