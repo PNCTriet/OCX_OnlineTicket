@@ -1,7 +1,7 @@
 "use client";
 import { Ticket } from "../../types/ticket";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type PaymentModalProps = {
   isOpen: boolean;
@@ -18,9 +18,25 @@ type PaymentModalProps = {
   orderNumber: number | null;
   orderDate: string | null;
   orderTime: string | null;
+  onPaymentSuccess?: () => void; // Add callback for payment success
 };
 
-export default function PaymentModal({ isOpen, onClose, selectedTickets, totalAmount, userInfo, paymentRemainingSeconds, paymentStatus, orderNumber, orderDate, orderTime }: PaymentModalProps) {
+export default function PaymentModal({ 
+  isOpen, 
+  onClose, 
+  selectedTickets, 
+  totalAmount, 
+  userInfo, 
+  paymentRemainingSeconds, 
+  paymentStatus, 
+  orderNumber, 
+  orderDate, 
+  orderTime,
+  onPaymentSuccess 
+}: PaymentModalProps) {
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+
   // Effect để ngăn cuộn trang chính khi modal mở (di chuyển lên trên)
   useEffect(() => {
     if (isOpen) {
@@ -35,6 +51,63 @@ export default function PaymentModal({ isOpen, onClose, selectedTickets, totalAm
       document.documentElement.classList.remove('no-scroll');
     };
   }, [isOpen]);
+
+  // Send real email with electronic tickets using Resend API
+  const sendEmailWithTickets = async () => {
+    setIsProcessingPayment(true);
+    
+    try {
+      // Log the data being sent for verification
+      console.log('📧 Preparing to send email with data:');
+      console.log('👤 User Info:', userInfo);
+      console.log('🎫 Selected Tickets:', selectedTickets.filter(t => t.quantity > 0));
+      console.log('🔢 Order Details:', { orderNumber, orderDate, orderTime, totalAmount });
+      
+      // Prepare email data
+      const emailData = {
+        to: userInfo.email,
+        subject: `🎫 Vé điện tử OCX4 - Đơn hàng #${orderNumber}`,
+        tickets: selectedTickets.filter(t => t.quantity > 0),
+        customerInfo: userInfo,
+        orderNumber: orderNumber,
+        orderDate: orderDate,
+        orderTime: orderTime,
+        totalAmount: totalAmount
+      };
+
+      console.log('📧 Sending email to:', userInfo.email);
+      console.log('📧 Email subject:', emailData.subject);
+
+      // Call our API route to send email
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(emailData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ Email sent successfully:', result.data);
+        setEmailSent(true);
+        
+        // Call success callback if provided
+        if (onPaymentSuccess) {
+          onPaymentSuccess();
+        }
+      } else {
+        console.error('❌ Failed to send email:', result.error);
+        alert('❌ Có lỗi khi gửi email. Vui lòng thử lại sau.');
+      }
+    } catch (error) {
+      console.error('❌ Error sending email:', error);
+      alert('❌ Có lỗi khi gửi email. Vui lòng thử lại sau.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -130,6 +203,55 @@ export default function PaymentModal({ isOpen, onClose, selectedTickets, totalAm
                 </p>
               </div>
             </div>
+
+            {/* New: Simulate Payment Success Button */}
+            {!emailSent && (
+              <div className="bg-zinc-800 rounded-lg p-4">
+                <h3 className="text-lg font-bold text-white mb-2">Gửi email vé điện tử</h3>
+                <p className="text-zinc-400 text-sm mb-4">
+                  Nhấn nút bên dưới để gửi email vé điện tử tới {userInfo.email}
+                </p>
+                <button
+                  onClick={sendEmailWithTickets}
+                  disabled={isProcessingPayment}
+                  className="w-full py-3 px-4 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                >
+                  {isProcessingPayment ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Đang gửi email...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span>Gửi email vé điện tử</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* Success Message */}
+            {emailSent && (
+              <div className="bg-green-900/30 border border-green-500/30 rounded-lg p-4">
+                <div className="flex items-center space-x-3">
+                  <svg className="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <h3 className="text-lg font-bold text-green-500">Thanh toán thành công!</h3>
+                    <p className="text-green-400 text-sm">
+                      Email vé điện tử đã được gửi tới {userInfo.email}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
           </div>
         </div>

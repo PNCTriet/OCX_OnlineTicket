@@ -76,7 +76,8 @@ export default function SeatMap({ selectedZoneId, onZoneSelect }: SeatMapProps) 
                   dominantBaseline="middle"
                   fill="white"
                   fontSize="16"
-                  fontWeight="bold"
+                  fontWeight="800"
+                  fontFamily="Inter, sans-serif"
                 >
                   STAGE
                 </text>
@@ -112,7 +113,8 @@ export default function SeatMap({ selectedZoneId, onZoneSelect }: SeatMapProps) 
                         dominantBaseline="middle"
                         fill="white"
                         fontSize="20"
-                        fontWeight="bold"
+                        fontWeight="800"
+                        fontFamily="Inter, sans-serif"
                         className="pointer-events-none" // Prevent text from blocking click
                       >
                         {section.label}

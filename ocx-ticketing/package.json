@@ -15,7 +15,8 @@
     "qrcode.react": "^4.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-zoom-pan-pinch": "^3.7.0"
+    "react-zoom-pan-pinch": "^3.7.0",
+    "resend": "^4.6.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

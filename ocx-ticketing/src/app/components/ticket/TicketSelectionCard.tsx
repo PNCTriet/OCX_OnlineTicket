@@ -4,10 +4,13 @@ import { useRef } from "react";
 type TicketSelectionCardProps = {
   tickets: TicketType[];
   onQuantityChange: (ticketId: string, change: number) => void;
+  selectedZoneId?: string | null;
 };
 
-export default function TicketSelectionCard({ tickets, onQuantityChange }: TicketSelectionCardProps) {
+export default function TicketSelectionCard({ tickets, onQuantityChange, selectedZoneId }: TicketSelectionCardProps) {
   const ticketRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const hasSeatmapSelections = tickets.some(ticket => ticket.quantity > 0);
 
   return (
     <div className="bg-zinc-800/50 rounded-lg p-6 flex flex-col h-[300px]">
@@ -39,7 +42,12 @@ export default function TicketSelectionCard({ tickets, onQuantityChange }: Ticke
               <div className="flex items-center space-x-4">
                 <button
                   onClick={() => onQuantityChange(ticket.id, -1)}
-                  disabled={ticket.quantity === 0 || ticket.status === 'not-yet-on-sale'}
+                  disabled={
+                    ticket.quantity === 0 || 
+                    ticket.status === 'not-yet-on-sale' || 
+                    ticket.status === 'sold-out' ||
+                    !hasSeatmapSelections
+                  }
                   className="w-10 h-10 rounded-full bg-zinc-700 text-white disabled:opacity-50 hover:bg-zinc-600 transition-colors flex items-center justify-center text-xl"
                 >
                   -
@@ -47,7 +55,12 @@ export default function TicketSelectionCard({ tickets, onQuantityChange }: Ticke
                 <span className="text-white w-8 text-center text-lg">{ticket.quantity}</span>
                 <button
                   onClick={() => onQuantityChange(ticket.id, 1)}
-                  disabled={ticket.sold >= 100 || ticket.status === 'sold-out' || ticket.status === 'not-yet-on-sale'}
+                  disabled={
+                    ticket.quantity >= 5 ||
+                    ticket.status === 'sold-out' || 
+                    ticket.status === 'not-yet-on-sale' ||
+                    !hasSeatmapSelections
+                  }
                   className="w-10 h-10 rounded-full bg-zinc-700 text-white disabled:opacity-50 hover:bg-zinc-600 transition-colors flex items-center justify-center text-xl"
                 >
                   +

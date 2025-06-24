@@ -4,7 +4,7 @@ const messagesVi = [
   "Mua đi em, do dự, idol nghỉ hưu mất 😗",
   "Đại đại đi, nghèo mà có kỷ niệm",
   "Không bây giờ thì bao giờ?",
-  "Vô tới đây rồi sao còn chưa thanh toán 😗",
+  "Vô tới đây rồi sao còn chưa mua vé 😗",
   "Nhanh tay thì còn chậm tay thì tiếc",
 ];
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useEffect, Suspense } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import TicketHeader from "../components/ticket/TicketHeader";
 import Footer from "../components/Footer";
 import EventInfoCard from "../components/ticket/EventInfoCard";
@@ -13,7 +13,7 @@ import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
 import { useSearchParams } from "next/navigation";
 import { Ticket } from "../types/ticket";
 
-function CheckoutContent() {
+export default function CheckoutPage() {
   const searchParams = useSearchParams();
   const [userInfo, setUserInfo] = useState({
     fullName: "",
@@ -99,6 +99,25 @@ function CheckoutContent() {
     setIsPaymentModalOpen(true);
   };
 
+  const handlePaymentSuccess = () => {
+    // Handle successful payment
+    console.log('🎉 Thanh toán thành công!');
+    console.log('📧 Email vé điện tử đã được gửi');
+    
+    // You can add additional logic here like:
+    // - Redirect to success page
+    // - Show success notification
+    // - Update order status in database
+    // - Send confirmation SMS
+    
+    // For demo purposes, we'll just close the modal after a delay
+    setTimeout(() => {
+      setIsPaymentModalOpen(false);
+      // Optionally redirect to a success page or show success message
+      alert('🎫 Thanh toán thành công! Vui lòng kiểm tra email để nhận vé điện tử.');
+    }, 3000);
+  };
+
   const totalAmount = selectedTickets.reduce(
     (sum, ticket) => sum + ticket.price * ticket.quantity,
     0
@@ -122,7 +141,50 @@ function CheckoutContent() {
           <h1 className="text-3xl font-bold text-white text-center mb-8">
             Thanh Toán
           </h1>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Mobile Layout - Single Column */}
+          <div className="lg:hidden space-y-6">
+            {/* CountdownTimer at top for mobile */}
+            <CountdownTimer
+              seconds={checkoutCountdown}
+              onExpire={useCallback(() => setIsSessionExpiryModalOpen(true), [])}
+            />
+            
+            {/* Event Info */}
+            <div className="max-h-[300px] overflow-hidden">
+              <EventInfoCard event={EVENT_INFO} />
+            </div>
+            
+            {/* Ticket Summary */}
+            <TicketSummaryTable
+              selectedTickets={selectedTickets}
+              totalAmount={totalAmount}
+            />
+            
+            {/* User Info Form */}
+            <UserInfoForm
+              userInfo={userInfo}
+              onUserInfoChange={handleUserInfoChange}
+            />
+            
+            {/* Policy and Payment Button at bottom for mobile */}
+            <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+              <PolicyCheckbox
+                agreedToPolicies={agreedToPolicies}
+                onAgreementChange={setAgreedToPolicies}
+              />
+              <button
+                onClick={handlePayment}
+                disabled={!agreedToPolicies}
+                className="w-full py-3 px-4 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Thanh toán
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Layout - Two Columns */}
+          <div className="hidden lg:grid lg:grid-cols-2 gap-6">
             {/* Left Column */}
             <div className="space-y-6">
               <div className="max-h-[300px] overflow-hidden">
@@ -175,6 +237,7 @@ function CheckoutContent() {
           orderNumber={orderNumber}
           orderDate={orderDate}
           orderTime={orderTime}
+          onPaymentSuccess={handlePaymentSuccess}
         />
       )}
 
@@ -182,13 +245,5 @@ function CheckoutContent() {
         isOpen={isSessionExpiryModalOpen}
       />
     </div>
-  );
-}
-
-export default function CheckoutPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <CheckoutContent />
-    </Suspense>
   );
 }

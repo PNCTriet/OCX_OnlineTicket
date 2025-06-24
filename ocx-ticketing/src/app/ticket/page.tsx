@@ -22,11 +22,19 @@ export default function TicketPage() {
 
   const router = useRouter();
 
-  const handleQuantityChange = (ticketId: string, newQuantity: number) => {
+  const handleQuantityChange = (ticketId: string, change: number) => {
     setSelectedTickets(prev =>
-      prev.map(ticket =>
-        ticket.id === ticketId ? { ...ticket, quantity: newQuantity } : ticket
-      )
+      prev.map(ticket => {
+        if (ticket.id === ticketId) {
+          const newQuantity = ticket.quantity + change;
+          // Prevent negative quantities
+          if (newQuantity < 0) return ticket;
+          // Prevent exceeding max limit of 5 tickets per type
+          if (newQuantity > 5) return ticket;
+          return { ...ticket, quantity: newQuantity };
+        }
+        return ticket;
+      })
     );
   };
 
@@ -124,6 +132,7 @@ export default function TicketPage() {
                   <TicketSelectionCard 
                     tickets={selectedTickets} 
                     onQuantityChange={handleQuantityChange}
+                    selectedZoneId={selectedZone}
                   />
                   <OrderSummaryCard 
                     totalAmount={totalAmount} 
