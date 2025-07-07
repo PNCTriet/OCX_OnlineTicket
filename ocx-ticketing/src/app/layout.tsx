@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ớt cay xè indie show | Sự kiện âm nhạc đỉnh vãi l*n",
+  title: "Ớt cay xè 4",
   description:
-    "Mua vé sự kiện âm nhạc OCX nhanh chóng, an toàn, tiện lợi. Thông tin nghệ sĩ, lineup, FAQ, và nhiều hơn nữa.",
+    "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
   keywords: [
     "OCX",
     "Online Ticket",
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://ocx-online-ticket.vercel.app/",
-    title: "OCX Online Ticket | Mua vé sự kiện âm nhạc HOT nhất",
+    title: "Ớt cay xè 4",
     description:
-      "Mua vé sự kiện âm nhạc OCX nhanh chóng, an toàn, tiện lợi. Thông tin nghệ sĩ, lineup, FAQ, và nhiều hơn nữa.",
+      "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
     images: [
       {
         url: "/images/client_logo_ss4_thumb.png",
@@ -46,9 +46,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "OCX Online Ticket | Mua vé sự kiện âm nhạc HOT nhất",
+    title: "Ớt cay xè 4",
     description:
-      "Mua vé sự kiện âm nhạc OCX nhanh chóng, an toàn, tiện lợi. Thông tin nghệ sĩ, lineup, FAQ, và nhiều hơn nữa.",
+      "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
     images: [
       {
         url: "/images/client_logo_ss4_thumb.png",

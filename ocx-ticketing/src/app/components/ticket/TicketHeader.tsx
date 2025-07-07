@@ -40,13 +40,15 @@ export default function TicketHeader({ lang, setLang }: TicketHeaderProps) {
     >
       <div className="flex items-center justify-between h-16">
         <div className="flex items-center gap-2 font-bold text-xl text-white">
-          <Image
-            src="/images/client_logo_ss4.svg"
-            alt="Logo"
-            width={100}
-            height={100}
-            className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full object-cover transition-transform duration-300 hover:scale-110"
-          />
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/images/client_logo_ss4.svg"
+              alt="Logo"
+              width={100}
+              height={100}
+              className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full object-cover transition-transform duration-300 hover:scale-110"
+            />
+          </Link>
         </div>
         <div className="flex items-center gap-4">
           <button
@@ -55,12 +57,6 @@ export default function TicketHeader({ lang, setLang }: TicketHeaderProps) {
           >
             {lang === "vi" ? "EN" : "VN"}
           </button>
-          <Link
-            href="/"
-            className="inline-flex items-center px-4 py-2 rounded-md bg-white/10 text-white hover:bg-white/20 transition-colors"
-          >
-            {lang === "vi" ? "Trang chủ" : "Home"}
-          </Link>
         </div>
       </div>
     </header>
