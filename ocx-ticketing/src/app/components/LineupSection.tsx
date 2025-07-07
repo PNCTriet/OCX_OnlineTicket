@@ -5,35 +5,51 @@ import { useState } from "react";
 // List of 6 artist groups, each with its own main and sub image
 const ARTISTS = [
   {
-    main: "/images/lineup_main_ss3_betband_alt1.png",
-    sub: "/images/lineup_sub_ss3_betband_alt1.png",
+    main: "/images/lineup_main_ss4_dehours_alt1.png",
+    sub: "/images/lineup_sub_ss4_dehours_alt1.png",
     name: "Artist 1"
   },
   {
-    main: "/images/lineup_main_ss3_dauvantay_alt1.png",
-    sub: "/images/lineup_sub_ss3_dauvantay_alt1.png",
+    main: "/images/lineup_main_ss4_lybuc_alt1.png",
+    sub: "/images/lineup_sub_ss4_lybuc_alt1.png",
     name: "Artist 2"
   },
   {
-    main: "/images/lineup_main_ss3_emellata_alt1.png",
-    sub: "/images/lineup_sub_ss3_emellata_alt1.png",
+    main: "/images/lineup_main_ss4_minhdinh_alt1.png",
+    sub: "/images/lineup_sub_ss4_minhdinh_alt1.png",
     name: "Artist 3"
   },
   {
-    main: "/images/lineup_main_ss3_minhtoclam_alt1.png",
-    sub: "/images/lineup_sub_ss3_minhtoclam_alt1.png",
-    name: "Artist 4"
+    main: "/images/lineup_main_ss4_dehours_alt1.png",
+    sub: "/images/lineup_sub_ss4_dehours_alt1.png",
+    name: "Artist 1"
   },
   {
-    main: "/images/lineup_main_ss3_thecassette_alt1.png",
-    sub: "/images/lineup_sub_ss3_thecassette_alt1.png",
-    name: "Artist 5"
+    main: "/images/lineup_main_ss4_lybuc_alt1.png",
+    sub: "/images/lineup_sub_ss4_lybuc_alt1.png",
+    name: "Artist 2"
   },
   {
-    main: "/images/lineup_main_ss3_theflop_alt1.png",
-    sub: "/images/lineup_sub_ss3_theflop_alt1.png",
-    name: "Artist 6"
+    main: "/images/lineup_main_ss4_minhdinh_alt1.png",
+    sub: "/images/lineup_sub_ss4_minhdinh_alt1.png",
+    name: "Artist 3"
   },
+  {
+    main: "/images/lineup_main_ss4_dehours_alt1.png",
+    sub: "/images/lineup_sub_ss4_dehours_alt1.png",
+    name: "Artist 1"
+  },
+  {
+    main: "/images/lineup_main_ss4_lybuc_alt1.png",
+    sub: "/images/lineup_sub_ss4_lybuc_alt1.png",
+    name: "Artist 2"
+  },
+  {
+    main: "/images/lineup_main_ss4_minhdinh_alt1.png",
+    sub: "/images/lineup_sub_ss4_minhdinh_alt1.png",
+    name: "Artist 3"
+  }
+  
 ];
 
 export default function LineupSection({ lang }: { lang: "vi" | "en" }) {
