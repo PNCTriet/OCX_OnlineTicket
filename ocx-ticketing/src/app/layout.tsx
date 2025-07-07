@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OCX Online Ticket | Mua vé sự kiện âm nhạc HOT nhất",
+  title: "Ớt cay xè indie show | Sự kiện âm nhạc đỉnh vãi l*n",
   description:
     "Mua vé sự kiện âm nhạc OCX nhanh chóng, an toàn, tiện lợi. Thông tin nghệ sĩ, lineup, FAQ, và nhiều hơn nữa.",
   keywords: [
