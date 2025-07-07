@@ -53,7 +53,7 @@ export default function Header({ lang, setLang }: { lang: "vi" | "en"; setLang: 
         </div>
         {/* Logo - centered on mobile, left on desktop */}
         <div className="flex-1 flex justify-center md:justify-start">
-          <div className="flex items-center gap-2 font-bold text-xl text-red-600">
+          <a href="/" className="flex items-center gap-2 font-bold text-xl text-red-600">
             <Image
               src="/images/client_logo_ss4.svg"
               alt="Logo"
@@ -61,7 +61,7 @@ export default function Header({ lang, setLang }: { lang: "vi" | "en"; setLang: 
               height={100}
               className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full object-cover transition-transform duration-300 hover:scale-110"
             />
-          </div>
+          </a>
         </div>
         {/* Language toggle - right on mobile, right on desktop */}
         <div className="flex-1 flex justify-end items-center gap-2">
