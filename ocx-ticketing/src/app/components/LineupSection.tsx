@@ -2,54 +2,53 @@
 import Image from "next/image";
 import { useState } from "react";
 
-// List of 6 artist groups, each with its own main and sub image
+// List of 9 artist groups, each with its own main and sub image
 const ARTISTS = [
   {
-    main: "/images/lineup_main_ss4_dehours_alt1.png",
-    sub: "/images/lineup_sub_ss4_dehours_alt1.png",
+    main: "/images/lineup_main_ss4_artist1_dehours_alt1.png",
+    sub: "/images/lineup_sub_ss4_artist1_dehours_alt1.png",
     name: "Artist 1"
   },
   {
-    main: "/images/lineup_main_ss4_lybuc_alt1.png",
-    sub: "/images/lineup_sub_ss4_lybuc_alt1.png",
+    main: "/images/lineup_main_ss4_artist2_lybuc_alt1.png",
+    sub: "/images/lineup_sub_ss4_artist2_lybuc_alt1.png",
     name: "Artist 2"
   },
   {
-    main: "/images/lineup_main_ss4_minhdinh_alt1.png",
-    sub: "/images/lineup_sub_ss4_minhdinh_alt1.png",
+    main: "/images/lineup_main_ss4_artist3_minhdinh_alt1.png",
+    sub: "/images/lineup_sub_ss4_artist3_minhdinh_alt1.png",
     name: "Artist 3"
   },
-  {
-    main: "/images/lineup_main_ss4_dehours_alt1.png",
-    sub: "/images/lineup_sub_ss4_dehours_alt1.png",
-    name: "Artist 1"
-  },
-  {
-    main: "/images/lineup_main_ss4_lybuc_alt1.png",
-    sub: "/images/lineup_sub_ss4_lybuc_alt1.png",
-    name: "Artist 2"
-  },
-  {
-    main: "/images/lineup_main_ss4_minhdinh_alt1.png",
-    sub: "/images/lineup_sub_ss4_minhdinh_alt1.png",
-    name: "Artist 3"
-  },
-  {
-    main: "/images/lineup_main_ss4_dehours_alt1.png",
-    sub: "/images/lineup_sub_ss4_dehours_alt1.png",
-    name: "Artist 1"
-  },
-  {
-    main: "/images/lineup_main_ss4_lybuc_alt1.png",
-    sub: "/images/lineup_sub_ss4_lybuc_alt1.png",
-    name: "Artist 2"
-  },
-  {
-    main: "/images/lineup_main_ss4_minhdinh_alt1.png",
-    sub: "/images/lineup_sub_ss4_minhdinh_alt1.png",
-    name: "Artist 3"
-  }
-  
+  // {
+  //   main: "/images/lineup_main_ss4_artist4_alt1.png",
+  //   sub: "/images/lineup_sub_ss4_artist4_alt1.png",
+  //   name: "Artist 4"
+  // },
+  // {
+  //   main: "/images/lineup_main_ss4_artist5_alt1.png",
+  //   sub: "/images/lineup_sub_ss4_artist5_alt1.png",
+  //   name: "Artist 5"
+  // },
+  // {
+  //   main: "/images/lineup_main_ss4_artist6_alt1.png",
+  //   sub: "/images/lineup_sub_ss4_artist6_alt1.png",
+  //   name: "Artist 6"
+  // },
+  // {
+  //   main: "/images/lineup_main_ss4_artist7_alt1.png",
+  //   sub: "/images/lineup_sub_ss4_artist7_alt1.png",
+  //   name: "Artist 7"
+  // },
+  // {
+  //   main: "/images/lineup_main_ss4_artist8_alt1.png",
+  //   sub: "/images/lineup_sub_ss4_artist8_alt1.png",
+  //   name: "Artist 8"
+  // },
+  // {
+  //   main: "/images/lineup_main_ss4_artist9_alt1.png",
+  //   sub: "/images/lineup_sub_ss4_artist9_alt1.png",
+  //   name: "Artist 9"
+  // }
 ];
 
 export default function LineupSection({ lang }: { lang: "vi" | "en" }) {
