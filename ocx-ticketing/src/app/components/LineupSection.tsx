@@ -19,11 +19,11 @@ const ARTISTS = [
     sub: "/images/lineup_sub_ss4_artist3_minhdinh_alt1.png",
     name: "Artist 3"
   },
-  // {
-  //   main: "/images/lineup_main_ss4_artist4_alt1.png",
-  //   sub: "/images/lineup_sub_ss4_artist4_alt1.png",
-  //   name: "Artist 4"
-  // },
+  {
+    main: "/images/lineup_main_ss4_artist4_alt1.png",
+    sub: "/images/lineup_sub_ss4_artist4_alt1.png",
+    name: "Artist 4"
+  },
   // {
   //   main: "/images/lineup_main_ss4_artist5_alt1.png",
   //   sub: "/images/lineup_sub_ss4_artist5_alt1.png",
