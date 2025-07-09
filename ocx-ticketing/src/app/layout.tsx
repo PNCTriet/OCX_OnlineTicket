@@ -14,8 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Ớt cay xè 4",
-  description:
-    "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
+  description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
   keywords: [
     "OCX",
     "Online Ticket",
@@ -28,35 +27,38 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "OCX Team" }],
   robots: "index, follow",
-  metadataBase: new URL("https://ocx-online-ticket.vercel.app/"),
+
+  // ✅ Cập nhật domain chính thức đã custom (www.otcayxe.com)
+  metadataBase: new URL("https://www.otcayxe.com"),
+
   openGraph: {
     type: "website",
-    url: "https://ocx-online-ticket.vercel.app/",
+    url: "https://www.otcayxe.com",
     title: "Ớt cay xè 4",
-    description:
-      "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
+    description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
     images: [
       {
-        url: "/images/client_logo_ss4_thumb.png",
+        url: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png", // ✅ phải dùng full URL tuyệt đối
         width: 800,
         height: 600,
         alt: "OCX Online Ticket Logo",
       },
     ],
   },
+
   twitter: {
     card: "summary_large_image",
     title: "Ớt cay xè 4",
-    description:
-      "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
+    description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
     images: [
       {
-        url: "/images/client_logo_ss4_thumb.png",
+        url: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png", // ✅ full URL
         alt: "OCX Online Ticket Logo",
       },
     ],
-    site: "@ocx_ticket", // Thay bằng Twitter handle nếu có
+    site: "@ocx_ticket",
   },
+
   icons: {
     icon: "/favicon.ico",
     apple: "/images/client_logo_ss4_thumb.png",
