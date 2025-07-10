@@ -24,31 +24,31 @@ const ARTISTS = [
     sub: "/images/lineup_sub_ss4_artist4_alt1.png",
     name: "Artist 4"
   },
-  // {
-  //   main: "/images/lineup_main_ss4_artist5_alt1.png",
-  //   sub: "/images/lineup_sub_ss4_artist5_alt1.png",
-  //   name: "Artist 5"
-  // },
-  // {
-  //   main: "/images/lineup_main_ss4_artist6_alt1.png",
-  //   sub: "/images/lineup_sub_ss4_artist6_alt1.png",
-  //   name: "Artist 6"
-  // },
-  // {
-  //   main: "/images/lineup_main_ss4_artist7_alt1.png",
-  //   sub: "/images/lineup_sub_ss4_artist7_alt1.png",
-  //   name: "Artist 7"
-  // },
-  // {
-  //   main: "/images/lineup_main_ss4_artist8_alt1.png",
-  //   sub: "/images/lineup_sub_ss4_artist8_alt1.png",
-  //   name: "Artist 8"
-  // },
-  // {
-  //   main: "/images/lineup_main_ss4_artist9_alt1.png",
-  //   sub: "/images/lineup_sub_ss4_artist9_alt1.png",
-  //   name: "Artist 9"
-  // }
+  {
+    main: "/images/lineup_main_ss4_artist5_alt1.png",
+    sub: "/images/lineup_sub_ss4_artist5_alt1.png",
+    name: "Artist 5"
+  },
+  {
+    main: "/images/lineup_main_ss4_artist6_alt1.png",
+    sub: "/images/lineup_sub_ss4_artist6_alt1.png",
+    name: "Artist 6"
+  },
+  {
+    main: "/images/lineup_main_ss4_artist7_alt1.png",
+    sub: "/images/lineup_sub_ss4_artist7_alt1.png",
+    name: "Artist 7"
+  },
+  {
+    main: "/images/lineup_main_ss4_artist8_alt1.png",
+    sub: "/images/lineup_sub_ss4_artist8_alt1.png",
+    name: "Artist 8"
+  },
+  {
+    main: "/images/lineup_main_ss4_artist9_alt1.png",
+    sub: "/images/lineup_sub_ss4_artist9_alt1.png",
+    name: "Artist 9"
+  }
 ];
 
 export default function LineupSection({ lang }: { lang: "vi" | "en" }) {
