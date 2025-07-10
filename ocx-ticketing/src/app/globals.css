@@ -21,6 +21,7 @@ body {
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 .animate-fade-in {
@@ -36,6 +37,14 @@ html {
   font-family: 'BDStreetSignSans';
   src: url('/fonts/BDStreetSignSans-AlmostRaised.otf') format('opentype');
   font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter_24pt-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
   font-style: normal;
   font-display: swap;
 }
@@ -60,4 +69,17 @@ html {
   .rotate-y-180 {
     transform: rotateY(180deg);
   }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+}
+
+.no-scroll {
+  overflow: hidden !important;
 }

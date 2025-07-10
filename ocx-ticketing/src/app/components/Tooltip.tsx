@@ -1,22 +1,22 @@
 import { useMemo } from "react";
 
+const messagesVi = [
+  "Mua đi em, do dự, idol nghỉ hưu mất 😗",
+  "Đại đại đi, nghèo mà có kỷ niệm",
+  "Không bây giờ thì bao giờ?",
+  "Vô tới đây rồi sao còn chưa mua vé 😗",
+  "Nhanh tay thì còn chậm tay thì tiếc",
+];
+
+const messagesEn = [
+  "Buy it, hesitant one, or your idol will retire 😗",
+  "Go big, even if you're poor, at least you'll have memories",
+  "If not now, then when?",
+  "You're already here, why haven't you paid yet? 😗",
+  "Act fast, or you'll regret it",
+];  
+
 const Tooltip = ({ showTooltip, lang }: { showTooltip: boolean; lang: "vi" | "en" }) => {
-  const messagesVi = [
-    "Đi đi em do dự hồi hết vé, cay lắm đó 🔥",
-    "Nhanh lên không là hết sạch vé luôn đó 😱",
-    "Ai nhanh thì còn, ai chậm thì tiếc 🤧",
-    "Chốt lẹ kẻo sold-out đó nha 👀",
-    "Giữ chỗ đi, không là khỏi coi show đó 😤",
-  ];
-
-  const messagesEn = [
-    "Hurry up, the tickets are running out! 🔥",
-    "Move fast or miss out 😱",
-    "You snooze, you lose! ⏰",
-    "Secure your seat before it's gone 👀",
-    "Don't wait—tickets won't last long 😤",
-  ];
-
   const randomMessage = useMemo(() => {
     const msgs = lang === "vi" ? messagesVi : messagesEn;
     return msgs[Math.floor(Math.random() * msgs.length)];
