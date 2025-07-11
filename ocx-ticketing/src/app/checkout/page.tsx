@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useCallback, useEffect, Suspense } from "react";
-import TicketHeader from "../components/ticket/TicketHeader";
+import React, { useState, useCallback, useEffect, Suspense, useMemo } from "react";
+import SimpleHeader from "../components/SimpleHeader";
 import Footer from "../components/Footer";
 import EventInfoCard from "../components/ticket/EventInfoCard";
 import { EVENT_INFO } from "../constants/ticket";
@@ -10,11 +10,14 @@ import CountdownTimer from "../components/checkout/CountdownTimer";
 import PolicyCheckbox from "../components/checkout/PolicyCheckbox";
 import PaymentModal from "../components/checkout/PaymentModal";
 import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Ticket } from "../types/ticket";
+import { useAuth } from "@/components/AuthProvider";
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { user, loading, signOut } = useAuth();
   const [userInfo, setUserInfo] = useState({
     fullName: "",
     email: "",
@@ -31,30 +34,91 @@ function CheckoutContent() {
   const [paymentStatus, setPaymentStatus] = useState<"pending" | "success" | "error">("pending");
 
   // States for dynamic QR content, generated on client mount
-  const [orderNumber, setOrderNumber] = useState<number | null>(null);
+  const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const [orderDate, setOrderDate] = useState<string | null>(null);
   const [orderTime, setOrderTime] = useState<string | null>(null);
 
   // State to track if component has mounted on client
   const [mounted, setMounted] = useState(false);
 
+  // Callbacks for countdown timer
+  const handleCountdownExpire = useCallback(() => setIsSessionExpiryModalOpen(true), []);
+
+  // Parse tickets from URL
+  const ticketsParam = searchParams.get("tickets");
+  
+  const selectedTickets: Ticket[] = useMemo(() => {
+    if (!ticketsParam) {
+      return [];
+    }
+    
+    try {
+      const decoded = decodeURIComponent(ticketsParam);
+      const parsed = JSON.parse(decoded);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.error('Error parsing tickets from URL:', error);
+      return [];
+    }
+  }, [ticketsParam]);
+
+  // Check if there are valid tickets
+  const hasValidTickets = useMemo(() => 
+    selectedTickets.length > 0 && selectedTickets.some(ticket => ticket.quantity > 0)
+  , [selectedTickets]);
+
   useEffect(() => {
     setMounted(true);
     // Generate order details only on client side
     const now = new Date();
-    setOrderNumber(now.getTime());
+    
+    // Calculate total tickets
+    const totalTickets = selectedTickets.reduce((sum, ticket) => sum + ticket.quantity, 0);
+    
+    // Generate a unique 8-digit number using timestamp and random number
+    const uniqueId = Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
+    
+    // Format date and time parts
+    const datePart = `${now.getDate().toString().padStart(2, '0')}${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+    const timePart = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
+    
+    // Create order number in format: OCX4-DDMM-HHMMSS-TT-XXXXXXXX
+    // where TT is total tickets (2 digits) and XXXXXXXX is unique ID
+    const orderNumberStr = `OCX4-${datePart}-${timePart}-${totalTickets.toString().padStart(2, '0')}-${uniqueId}`;
+    
+    console.log('Debug - Order Generation:', {
+      now: now.toISOString(),
+      totalTickets,
+      uniqueId,
+      datePart,
+      timePart,
+      orderNumberStr
+    });
+    
+    setOrderNumber(orderNumberStr);
     setOrderDate(now.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "2-digit" }).replace(/\//g, '/'));
     setOrderTime(now.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }));
-  }, []);
+  }, [selectedTickets]); // Add selectedTickets to dependencies since we use it
 
-  // Timer logic for checkoutCountdown
+  // Auto-fill user info when user is logged in
+  useEffect(() => {
+    if (user && !loading) {
+      setUserInfo({
+        fullName: user.user_metadata?.full_name || user.user_metadata?.name || "",
+        email: user.email || "",
+        phone: user.user_metadata?.phone || "",
+      });
+    }
+  }, [user, loading]);
+
+  // Timer logic for checkoutCountdown - only start if there are valid tickets
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (checkoutCountdown > 0 && !isSessionExpiryModalOpen) {
+    if (checkoutCountdown > 0 && !isSessionExpiryModalOpen && hasValidTickets) {
       timer = setInterval(() => {
         setCheckoutCountdown(prev => prev - 1);
       }, 1000);
-    } else if (checkoutCountdown <= 0 && !isSessionExpiryModalOpen) {
+    } else if (checkoutCountdown <= 0 && !isSessionExpiryModalOpen && hasValidTickets) {
       // Countdown expired, show session expiry modal and set payment status to error
       setIsSessionExpiryModalOpen(true);
       setIsPaymentModalOpen(false); // Close payment modal if open
@@ -62,22 +126,22 @@ function CheckoutContent() {
     }
 
     return () => clearInterval(timer);
-  }, [checkoutCountdown, isSessionExpiryModalOpen]);
+  }, [checkoutCountdown, isSessionExpiryModalOpen, hasValidTickets]);
 
   // Update payment status when checkoutCountdown changes
   useEffect(() => {
-    if (checkoutCountdown <= 0 && paymentStatus !== "error") {
+    if (checkoutCountdown <= 0 && paymentStatus !== "error" && hasValidTickets) {
       setPaymentStatus("error");
-    } else if (checkoutCountdown > 0 && paymentStatus === "error") {
+    } else if (checkoutCountdown > 0 && paymentStatus === "error" && hasValidTickets) {
         setPaymentStatus("pending"); // Reset to pending if time somehow reset
     }
-  }, [checkoutCountdown, paymentStatus]);
+  }, [checkoutCountdown, paymentStatus, hasValidTickets]);
 
-  // Parse tickets from URL
-  const ticketsParam = searchParams.get("tickets");
-  const selectedTickets: Ticket[] = ticketsParam
-    ? JSON.parse(decodeURIComponent(ticketsParam))
-    : [];
+  useEffect(() => {
+    if (!hasValidTickets && mounted) {
+      router.replace('/ticket?noTickets=true');
+    }
+  }, [hasValidTickets, mounted, router]);
 
   const handleUserInfoChange = (field: string, value: string) => {
     setUserInfo((prev) => ({
@@ -87,12 +151,11 @@ function CheckoutContent() {
   };
 
   const handlePayment = () => {
-    // Validate user info
-    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userInfo.email);
+    // Validate user info - only validate phone since name and email come from Google
     const isPhoneValid = /^\d{10,}$/.test(userInfo.phone);
-    const isNameValid = userInfo.fullName.trim() !== "";
+    const isNameValid = userInfo.fullName.trim() !== ""; // Should always be valid from Google
 
-    if (!isEmailValid || !isPhoneValid || !isNameValid || !agreedToPolicies) {
+    if (!isPhoneValid || !isNameValid || !agreedToPolicies) {
       return;
     }
 
@@ -104,17 +167,9 @@ function CheckoutContent() {
     console.log('🎉 Thanh toán thành công!');
     console.log('📧 Email vé điện tử đã được gửi');
     
-    // You can add additional logic here like:
-    // - Redirect to success page
-    // - Show success notification
-    // - Update order status in database
-    // - Send confirmation SMS
-    
     // For demo purposes, we'll just close the modal after a delay
     setTimeout(() => {
       setIsPaymentModalOpen(false);
-      // Optionally redirect to a success page or show success message
-      alert('🎫 Thanh toán thành công! Vui lòng kiểm tra email để nhận vé điện tử.');
     }, 3000);
   };
 
@@ -122,6 +177,54 @@ function CheckoutContent() {
     (sum, ticket) => sum + ticket.price * ticket.quantity,
     0
   );
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="text-white text-xl">Đang tải...</div>
+      </div>
+    );
+  }
+
+  // Show login required if no user
+  if (!user) {
+    const loginUrl = (() => {
+      if (!hasValidTickets) {
+        return '/auth/login?redirectTo=/checkout';
+      }
+      
+      try {
+        const ticketsJson = JSON.stringify(selectedTickets);
+        const encodedTickets = encodeURIComponent(ticketsJson);
+        return `/auth/login?redirectTo=/checkout&tickets=${encodedTickets}`;
+      } catch (error) {
+        console.error('Error encoding tickets for login URL:', error);
+        return '/auth/login?redirectTo=/checkout';
+      }
+    })();
+    
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="text-center">
+          <div className="text-white text-xl mb-4">Vui lòng đăng nhập để tiếp tục</div>
+          <a 
+            href={loginUrl}
+            className="bg-[#c53e00] text-white px-6 py-3 rounded-lg hover:bg-[#b33800] transition-colors"
+          >
+            Đăng nhập
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if no valid tickets
+  if (!hasValidTickets) {
+    // Use replace instead of push to avoid adding to history stack
+    router.replace('/ticket?noTickets=true');
+    return null; // Return null instead of loading state
+  }
 
   return (
     <div className="min-h-screen relative">
@@ -136,7 +239,35 @@ function CheckoutContent() {
         }}
       />
       <div className="relative z-10">
-        {mounted && <TicketHeader lang={"vi"} setLang={() => {}} />}
+        {mounted && <SimpleHeader lang={"vi"} setLang={() => {}} />}
+        
+        {/* User Info Bar */}
+        <div className="bg-zinc-900/50 backdrop-blur-sm border-b border-white/10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-[#c53e00] rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">
+                    {user.email?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-white text-sm font-medium">
+                    {user.user_metadata?.full_name || user.user_metadata?.name || user.email}
+                  </p>
+                  <p className="text-zinc-400 text-xs">{user.email}</p>
+                </div>
+              </div>
+              <button
+                onClick={signOut}
+                className="text-zinc-400 hover:text-white text-sm transition-colors"
+              >
+                Đăng xuất
+              </button>
+            </div>
+          </div>
+        </div>
+
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 sm:pt-28 md:pt-32">
           <h1 className="text-3xl font-bold text-white text-center mb-8">
             Thanh Toán
@@ -147,7 +278,7 @@ function CheckoutContent() {
             {/* CountdownTimer at top for mobile */}
             <CountdownTimer
               seconds={checkoutCountdown}
-              onExpire={useCallback(() => setIsSessionExpiryModalOpen(true), [])}
+              onExpire={handleCountdownExpire}
             />
             
             {/* Event Info */}
@@ -213,7 +344,7 @@ function CheckoutContent() {
             <div className="space-y-6">
               <CountdownTimer
                 seconds={checkoutCountdown}
-                onExpire={useCallback(() => setIsSessionExpiryModalOpen(true), [])}
+                onExpire={handleCountdownExpire}
               />
               <UserInfoForm
                 userInfo={userInfo}

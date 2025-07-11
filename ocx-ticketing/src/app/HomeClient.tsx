@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import Header from "./components/Header";
+import MainHeader from "./components/MainHeader";
 import HeroSection from "./components/HeroSection";
 import LineupSection from "./components/LineupSection";
 import TicketsSection from "./components/TicketsSection";
@@ -16,7 +16,7 @@ export default function HomeClient() {
 
   return (
     <div className="bg-black min-h-screen font-sans text-white">
-      <Header lang={lang} setLang={setLang} />
+      <MainHeader lang={lang} setLang={setLang} />
       <main className="flex flex-col ">
         <HeroSection />
         <LineupSection lang={lang} />

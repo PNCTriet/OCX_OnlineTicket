@@ -15,10 +15,25 @@ type PaymentModalProps = {
   };
   paymentRemainingSeconds: number;
   paymentStatus: "pending" | "success" | "error";
-  orderNumber: number | null;
+  orderNumber: string | null;
   orderDate: string | null;
   orderTime: string | null;
   onPaymentSuccess?: () => void; // Add callback for payment success
+};
+
+type PurchaseData = {
+  orderId: string;
+  orderNumber: string;
+  userId: string;
+  userEmail: string;
+  tickets: (Ticket & { quantity: number })[];
+  totalAmount: number;
+  userInfo: {
+    fullName: string;
+    email: string;
+    phone: string;
+  };
+  purchaseDate: string;
 };
 
 export default function PaymentModal({ 
@@ -36,6 +51,22 @@ export default function PaymentModal({
 }: PaymentModalProps) {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [purchaseData, setPurchaseData] = useState<PurchaseData | null>(null);
+
+  // Add debug log for props
+  useEffect(() => {
+    console.log('PaymentModal - Props Update:', {
+      isOpen,
+      selectedTickets,
+      totalAmount,
+      userInfo,
+      paymentRemainingSeconds,
+      paymentStatus,
+      orderNumber,
+      orderDate,
+      orderTime
+    });
+  }, [isOpen, selectedTickets, totalAmount, userInfo, paymentRemainingSeconds, paymentStatus, orderNumber, orderDate, orderTime]);
 
   // Effect để ngăn cuộn trang chính khi modal mở (di chuyển lên trên)
   useEffect(() => {
@@ -52,24 +83,64 @@ export default function PaymentModal({
     };
   }, [isOpen]);
 
-  // Send real email with electronic tickets using Resend API
-  const sendEmailWithTickets = async () => {
+  // Process payment with authentication
+  const processPayment = async () => {
     setIsProcessingPayment(true);
     
     try {
+      console.log('💳 Processing payment with authentication...');
+      
+      // Call our authenticated API route
+      const response = await fetch('/api/purchase-tickets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tickets: selectedTickets.filter(t => t.quantity > 0),
+          totalAmount,
+          userInfo
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ Payment processed successfully:', result.data);
+        setPurchaseData(result.data);
+        
+        // Send email with tickets
+        await sendEmailWithTickets(result.data);
+      } else {
+        console.error('❌ Payment failed:', result.error);
+        alert(`❌ Thanh toán thất bại: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('❌ Error processing payment:', error);
+      alert('❌ Có lỗi khi xử lý thanh toán. Vui lòng thử lại sau.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // Send real email with electronic tickets using Resend API
+  const sendEmailWithTickets = async (purchaseData?: PurchaseData) => {
+    try {
+      const orderData = purchaseData || { orderNumber: orderNumber || '' };
+      
       // Log the data being sent for verification
       console.log('📧 Preparing to send email with data:');
       console.log('👤 User Info:', userInfo);
       console.log('🎫 Selected Tickets:', selectedTickets.filter(t => t.quantity > 0));
-      console.log('🔢 Order Details:', { orderNumber, orderDate, orderTime, totalAmount });
+      console.log('🔢 Order Details:', { orderNumber: orderData.orderNumber, orderDate, orderTime, totalAmount });
       
       // Prepare email data
       const emailData = {
         to: userInfo.email,
-        subject: `🎫 Vé điện tử OCX4 - Đơn hàng #${orderNumber}`,
+        subject: `🎫 Vé điện tử OCX4 - Đơn hàng #${orderData.orderNumber}`,
         tickets: selectedTickets.filter(t => t.quantity > 0),
         customerInfo: userInfo,
-        orderNumber: orderNumber,
+        orderNumber: orderData.orderNumber,
         orderDate: orderDate,
         orderTime: orderTime,
         totalAmount: totalAmount
@@ -104,18 +175,25 @@ export default function PaymentModal({
     } catch (error) {
       console.error('❌ Error sending email:', error);
       alert('❌ Có lỗi khi gửi email. Vui lòng thử lại sau.');
-    } finally {
-      setIsProcessingPayment(false);
     }
   };
 
   if (!isOpen) return null;
 
+  // Debug values
+  console.log('Debug QR values:', {
+    orderNumber,
+    orderDate,
+    orderTime,
+    totalAmount
+  });
+
   // Chỉ tạo qrUrl khi các giá trị orderNumber, orderDate, orderTime đã có
-  // Nếu chưa có, sử dụng một ảnh placeholder tĩnh
   const qrUrl = (orderNumber && orderDate && orderTime)
-    ? `https://img.vietqr.io/image/VPB-214244527-compact.png?amount=${totalAmount}&addInfo=${encodeURIComponent("#OCX4 - Order " + orderNumber + " - " + orderDate + " " + orderTime)}&accountName=${encodeURIComponent("PHAM NG CAO TRIET")}`
-    : "/images/qr_code_placeholder.png"; // Đảm bảo bạn có ảnh này trong thư mục public/images
+    ? `https://img.vietqr.io/image/VPB-214244527-compact.png?amount=${totalAmount}&addInfo=${encodeURIComponent(orderNumber)}&accountName=${encodeURIComponent("PHAM NG CAO TRIET")}`
+    : "/images/qr_code_placeholder.png";
+
+  console.log('Generated QR URL:', qrUrl);
 
   const currentPaymentStatus = paymentStatus;
 
@@ -149,10 +227,16 @@ export default function PaymentModal({
           <div className="bg-white p-4 rounded-lg flex flex-col items-center">
             <div className="w-64 h-64 relative mb-4 flex items-center justify-center">
               <Image
-                src={qrUrl} // Luôn có một URL hợp lệ
+                src={qrUrl}
                 alt="QR Code chuyển khoản ngân hàng"
                 fill
                 className="object-contain"
+                priority
+                onError={(e) => {
+                  console.error('QR Image load error:', e);
+                  const target = e.target as HTMLImageElement;
+                  target.src = "/images/qr_code_placeholder.png";
+                }}
               />
             </div>
             <p className="text-black text-center font-bold">Quét mã QR để thanh toán</p>
@@ -204,15 +288,15 @@ export default function PaymentModal({
               </div>
             </div>
 
-            {/* New: Simulate Payment Success Button */}
+            {/* New: Process Payment Button */}
             {!emailSent && (
               <div className="bg-zinc-800 rounded-lg p-4">
-                <h3 className="text-lg font-bold text-white mb-2">Gửi email vé điện tử</h3>
+                <h3 className="text-lg font-bold text-white mb-2">Xác nhận thanh toán</h3>
                 <p className="text-zinc-400 text-sm mb-4">
-                  Nhấn nút bên dưới để gửi email vé điện tử tới {userInfo.email}
+                  Nhấn nút bên dưới để xác nhận thanh toán và gửi email vé điện tử
                 </p>
                 <button
-                  onClick={sendEmailWithTickets}
+                  onClick={processPayment}
                   disabled={isProcessingPayment}
                   className="w-full py-3 px-4 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                 >
@@ -222,14 +306,14 @@ export default function PaymentModal({
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <span>Đang gửi email...</span>
+                      <span>Đang xử lý thanh toán...</span>
                     </>
                   ) : (
                     <>
                       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <span>Gửi email vé điện tử</span>
+                      <span>Xác nhận thanh toán</span>
                     </>
                   )}
                 </button>
@@ -248,11 +332,15 @@ export default function PaymentModal({
                     <p className="text-green-400 text-sm">
                       Email vé điện tử đã được gửi tới {userInfo.email}
                     </p>
+                    {purchaseData && (
+                      <p className="text-green-400 text-sm mt-1">
+                        Mã đơn hàng: {purchaseData.orderNumber}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
             )}
-
           </div>
         </div>
       </div>

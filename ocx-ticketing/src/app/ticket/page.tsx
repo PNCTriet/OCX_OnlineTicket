@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import TicketHeader from "../components/ticket/TicketHeader";
+import { useState, useEffect } from "react";
+import SimpleHeader from "../components/SimpleHeader";
 import EventInfoCard from "../components/ticket/EventInfoCard";
 import TicketSelectionCard from "../components/ticket/TicketSelectionCard";
 import OrderSummaryCard from "../components/ticket/OrderSummaryCard";
@@ -19,10 +19,21 @@ export default function TicketPage() {
   const [lang, setLang] = useState<"vi" | "en">("vi");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingZone, setPendingZone] = useState<Zone | null>(null);
+  const [showNoTicketsError, setShowNoTicketsError] = useState(false);
 
   const router = useRouter();
 
+  useEffect(() => {
+    // Check if we came from checkout without tickets
+    const urlParams = new URLSearchParams(window.location.search);
+    const noTickets = urlParams.get('noTickets');
+    if (noTickets === 'true') {
+      setShowNoTicketsError(true);
+    }
+  }, []);
+
   const handleQuantityChange = (ticketId: string, change: number) => {
+    setShowNoTicketsError(false); // Clear error when user selects tickets
     setSelectedTickets(prev =>
       prev.map(ticket => {
         if (ticket.id === ticketId) {
@@ -96,10 +107,20 @@ export default function TicketPage() {
 
   const handleContinue = () => {
     const ticketsToBuy = selectedTickets.filter(t => t.quantity > 0);
-    if (ticketsToBuy.length === 0) return;
+    if (ticketsToBuy.length === 0) {
+      setShowNoTicketsError(true);
+      return;
+    }
 
-    const encodedTickets = encodeURIComponent(JSON.stringify(ticketsToBuy));
-    router.push(`/checkout?tickets=${encodedTickets}`);
+    try {
+      const ticketsJson = JSON.stringify(ticketsToBuy);
+      const encodedTickets = encodeURIComponent(ticketsJson);
+      router.push(`/checkout?tickets=${encodedTickets}`);
+    } catch (error) {
+      console.error('Error encoding tickets for checkout:', error);
+      // Fallback: redirect without tickets
+      router.push('/checkout');
+    }
   };
 
   return (
@@ -115,8 +136,13 @@ export default function TicketPage() {
         }}
       />
       <div className="relative z-10">
-        <TicketHeader lang={lang} setLang={setLang} />
+        <SimpleHeader lang={lang} setLang={setLang} />
         <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-8 pt-24 sm:pt-28 md:pt-32">
+          {showNoTicketsError && (
+            <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-500">
+              
+            </div>
+          )}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6 flex flex-col h-full">
               <StageMapCard
