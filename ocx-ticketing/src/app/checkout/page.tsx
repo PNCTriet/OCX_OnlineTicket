@@ -19,6 +19,7 @@ function CheckoutContent() {
     fullName: "",
     email: "",
     phone: "",
+    message: "",
   });
   const [agreedToPolicies, setAgreedToPolicies] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);

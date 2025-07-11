@@ -5,6 +5,7 @@ type UserInfo = {
   fullName: string;
   email: string;
   phone: string;
+  message?: string;
 };
 
 type UserInfoFormProps = {
@@ -96,6 +97,22 @@ export default function UserInfoForm({ userInfo, onUserInfoChange }: UserInfoFor
           {errors.phone && (
             <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
           )}
+        </div>
+        {/* Message (Optional) */}
+        <div className="relative">
+          <textarea
+            placeholder="Lời nhắn (tùy chọn)"
+            className="w-full p-3 pl-10 rounded-lg bg-zinc-800 border border-zinc-700 focus:ring-2 focus:ring-[#c53e00] focus:border-transparent text-white resize-none"
+            value={userInfo.message || ""}
+            onChange={(e) => handleChange("message", e.target.value)}
+            rows={3}
+            maxLength={200}
+          />
+          <svg className="absolute left-3 top-3 h-5 w-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+          <button className="absolute right-3 top-3 text-zinc-400 hover:text-white">✏️</button>
+          <div className="text-xs text-zinc-500 mt-1 text-right">
+            {(userInfo.message || "").length}/200
+          </div>
         </div>
       </div>
     </div>

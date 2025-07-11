@@ -12,6 +12,7 @@ type PaymentModalProps = {
     fullName: string;
     email: string;
     phone: string;
+    message?: string;
   };
   paymentRemainingSeconds: number;
   paymentStatus: "pending" | "success" | "error";
@@ -170,6 +171,9 @@ export default function PaymentModal({
                 <p><span className="text-zinc-400">Người mua:</span> {userInfo.fullName}</p>
                 <p><span className="text-zinc-400">Email:</span> {userInfo.email}</p>
                 <p><span className="text-zinc-400">Số điện thoại:</span> {userInfo.phone}</p>
+                {userInfo.message && (
+                  <p><span className="text-zinc-400">Lời nhắn:</span> {userInfo.message}</p>
+                )}
               </div>
             </div>
 
