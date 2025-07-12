@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storePaymentFromWebhook } from '@/lib/payment-utils';
 
-// Define the webhook payload type based on SePay documentation
+// Define the webhook payload type based on actual SePay response
 type SePayWebhookPayload = {
-  id: string;
-  account_number: string;
-  amount: number;
+  gateway: string;
+  transactionDate: string;
+  accountNumber: string;
+  subAccount: string | null;
+  code: string;
   content: string;
-  transaction_id: string;
-  transaction_time: string;
-  virtual_account?: string;
-  bank_code?: string;
-  bank_name?: string;
+  transferType: string;
+  description: string;
+  transferAmount: number;
+  referenceCode: string;
+  accumulated: number;
+  id: number;
 };
 
 export async function POST(request: NextRequest) {
@@ -21,19 +24,20 @@ export async function POST(request: NextRequest) {
 
     // Validate webhook payload
     const {
-      id,
-      amount,
+      gateway,
+      transferAmount,
       content,
-      transaction_id
+      referenceCode,
+      id
     } = body as SePayWebhookPayload;
 
-    if (!id || !amount || !content) {
-      console.error('❌ Invalid webhook payload');
+    if (!id || !transferAmount || !content) {
+      console.error('❌ Invalid webhook payload - missing required fields');
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
     }
 
     // Check if this is a payment for our system
-    // Content should match our order number format: OCX4-DDMM-HHMMSS-TT-XXXXXXXX
+    // Content should contain our order number format: OCX4-DDMM-HHMMSS-TT-XXXXXXXX
     const orderMatch = content.match(/OCX4-\d{2}\d{2}-\d{6}-\d{2}-\d{8}/);
     
     if (!orderMatch) {
@@ -45,11 +49,13 @@ export async function POST(request: NextRequest) {
     console.log('✅ Valid payment detected for order:', orderNumber);
 
     // Store the payment for later verification
-    storePaymentFromWebhook(transaction_id, orderNumber, amount);
+    storePaymentFromWebhook(referenceCode, orderNumber, transferAmount);
 
     return NextResponse.json({ 
       success: true, 
-      message: 'Payment received and stored for verification' 
+      message: 'Payment received and stored for verification',
+      orderNumber,
+      amount: transferAmount
     });
 
   } catch (error) {
