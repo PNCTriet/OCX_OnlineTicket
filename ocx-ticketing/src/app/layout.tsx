@@ -13,10 +13,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Get the base URL from environment or default to localhost
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL 
-  ? `https://${process.env.VERCEL_URL}` 
-  : 'http://localhost:3000';
+// Get the base URL from environment variables
+const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return process.env.NEXT_PUBLIC_BASE_URL;
+  }
+  
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  
+  return 'http://localhost:3000';
+};
 
 export const metadata: Metadata = {
   title: "Ớt cay xè 4",
@@ -34,16 +42,18 @@ export const metadata: Metadata = {
   authors: [{ name: "OCX Team" }],
   robots: "index, follow",
 
-  metadataBase: new URL(baseUrl),
+  // Use a function to get the base URL to ensure it's always valid
+  ...(process.env.NODE_ENV === 'production' ? {
+    metadataBase: new URL(getBaseUrl())
+  } : {}),
 
   openGraph: {
     type: "website",
-    url: baseUrl,
     title: "Ớt cay xè 4",
     description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
     images: [
       {
-        url: "/images/client_logo_ss4_thumb.png", // Use relative path
+        url: "/images/client_logo_ss4_thumb.png",
         width: 800,
         height: 600,
         alt: "OCX Online Ticket Logo",
@@ -57,7 +67,7 @@ export const metadata: Metadata = {
     description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
     images: [
       {
-        url: "/images/client_logo_ss4_thumb.png", // Use relative path
+        url: "/images/client_logo_ss4_thumb.png",
         alt: "OCX Online Ticket Logo",
       },
     ],
@@ -76,8 +86,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>
+    <html lang="vi" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="antialiased">
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
