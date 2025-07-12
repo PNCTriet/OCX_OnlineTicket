@@ -23,6 +23,11 @@ const getBaseUrl = () => {
     return `https://${process.env.VERCEL_URL}`;
   }
   
+  // Use production URL by default, fallback to localhost for development
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://www.otcayxe.com';
+  }
+  
   return 'http://localhost:3000';
 };
 
