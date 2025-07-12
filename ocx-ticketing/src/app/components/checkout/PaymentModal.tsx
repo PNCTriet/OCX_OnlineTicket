@@ -137,7 +137,7 @@ export default function PaymentModal({
       // Prepare email data
       const emailData = {
         to: userInfo.email,
-        subject: `🎫 Vé điện tử OCX4 - Đơn hàng #${orderData.orderNumber}`,
+        subject: `🎫 Vé điện tử Ớt Cay Xè - Đơn hàng #${orderData.orderNumber}`,
         tickets: selectedTickets.filter(t => t.quantity > 0),
         customerInfo: userInfo,
         orderNumber: orderData.orderNumber,

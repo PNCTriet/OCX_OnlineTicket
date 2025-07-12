@@ -31,13 +31,14 @@ export async function POST(request: Request) {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Vé điện tử OCX4</title>
+        <title>Vé điện tử Ớt Cay Xè</title>
         <style>
           body { 
             font-family: 'Inter', Arial, sans-serif; 
             margin: 0; 
             padding: 0; 
             background-color: #f4f4f4; 
+            line-height: 1.6;
           }
           .container { 
             max-width: 600px; 
@@ -61,11 +62,19 @@ export async function POST(request: Request) {
           .content { 
             padding: 30px; 
           }
+          .intro-text {
+            background-color: #fff3cd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #c53e00;
+          }
           .ticket-info { 
             background-color: #f8f9fa; 
             border-radius: 8px; 
             padding: 20px; 
             margin: 20px 0; 
+            border: 2px solid #c53e00;
           }
           .ticket-item { 
             display: flex; 
@@ -98,6 +107,20 @@ export async function POST(request: Request) {
             padding: 20px; 
             margin: 20px 0; 
           }
+          .terms { 
+            background-color: #f8d7da; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-left: 4px solid #dc3545;
+          }
+          .contact-info {
+            background-color: #d1ecf1;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #17a2b8;
+          }
           .footer { 
             background-color: #343a40; 
             color: white; 
@@ -115,16 +138,32 @@ export async function POST(request: Request) {
             border: 2px solid #c53e00; 
             border-radius: 8px; 
           }
+          .event-details {
+            background-color: #d4edda;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+          }
+          .highlight {
+            color: #c53e00;
+            font-weight: bold;
+          }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
-            <h1>🎫 Vé điện tử OCX4</h1>
-            <p>Cảm ơn bạn đã mua vé!</p>
+            <h1>🎫 Vé điện tử Ớt Cay Xè</h1>
+            <p>Chào mừng bạn đến với đêm nhạc!</p>
           </div>
           
           <div class="content">
+            <div class="intro-text">
+              <p><strong>Ớt Cay Xè</strong> xin được gửi tặng bạn vé đêm nhạc nhé, mong bạn sẽ có những phút giây vui vẻ nhất khi tận hưởng âm nhạc cùng bạn bè và người thân.</p>
+              <p>Vui lòng kiểm tra thông tin và chuẩn bị sẵn vé tại nơi soát vé.</p>
+            </div>
+            
             <div class="order-details">
               <h3>📋 Thông tin đơn hàng</h3>
               <p><strong>Mã đơn hàng:</strong> #${orderNumber}</p>
@@ -139,15 +178,15 @@ export async function POST(request: Request) {
             </div>
             
             <div class="ticket-info">
-              <h3>🎭 Chi tiết vé</h3>
+              <h3>🎭 THÔNG TIN VÉ</h3>
               ${tickets.map((ticket: TicketWithQuantity) => `
                 <div class="ticket-item">
                   <div>
-                    <strong>${ticket.name}</strong><br>
-                    <small>${ticket.label || 'Khu vực tiêu chuẩn'}</small>
+                    <strong>Loại vé:</strong> ${ticket.name}<br>
+                    <small>Mã vé: ${ticket.id}</small>
                   </div>
                   <div>
-                    <strong>x${ticket.quantity}</strong><br>
+                    <strong>Số lượng: ${ticket.quantity}</strong><br>
                     <small>${ticket.price.toLocaleString()}đ/vé</small>
                   </div>
                 </div>
@@ -157,24 +196,67 @@ export async function POST(request: Request) {
               </div>
             </div>
             
+            <div class="event-details">
+              <h3>📅 Thông tin sự kiện</h3>
+              <p><strong>Thời gian:</strong> 27/09/2025</p>
+              <p><strong>Địa điểm:</strong> Quận Sài Gòn</p>
+              <p><strong>Loại vé:</strong> Single - 489.000đ/vé</p>
+            </div>
+            
+            <div class="terms">
+              <h3>📋 Điều khoản và điều kiện</h3>
+              <ul>
+                <li>Mỗi vé chỉ dành cho 1 (một) người vào cửa.</li>
+                <li>Người tham gia phải trình vé ở cửa để vào sự kiện.</li>
+                <li>Người nhận vé tự chịu trách nhiệm bảo mật thông tin mã vé.</li>
+                <li>Không hỗ trợ giữ chỗ dưới mọi hình thức.</li>
+              </ul>
+            </div>
+            
             <div class="qr-code">
               <h3>📱 Mã QR vé</h3>
               <p>Quét mã QR này tại cửa vào để được kiểm tra vé</p>
-              <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OCX4-${orderNumber}-${customerInfo.fullName}" alt="QR Code" />
+              ${(() => {
+                let qrCodes = '';
+                let ticketCounter = 1;
+                
+                tickets.forEach((ticket: TicketWithQuantity) => {
+                  for (let i = 0; i < ticket.quantity; i++) {
+                    const ticketNumber = ticketCounter.toString().padStart(2, '0');
+                    const qrData = `${orderNumber}-${ticketNumber}`;
+                    qrCodes += `
+                      <div style="margin-bottom: 20px; text-align: center;">
+                        <p><strong>Vé ${ticketCounter}:</strong> ${ticket.name}</p>
+                        <p><strong>Mã vé:</strong> ${qrData}</p>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}" alt="QR Code ${ticketCounter}" />
+                      </div>
+                    `;
+                    ticketCounter++;
+                  }
+                });
+                
+                return qrCodes;
+              })()}
             </div>
             
-            <div style="background-color: #d4edda; border-radius: 8px; padding: 20px; margin: 20px 0;">
-              <h3>📅 Thông tin sự kiện</h3>
-              <p><strong>Ngày:</strong> 15/12/2024</p>
-              <p><strong>Giờ:</strong> 19:00 - 23:00</p>
-              <p><strong>Địa điểm:</strong> Sân vận động Quân khu 7, TP.HCM</p>
-              <p><strong>Lưu ý:</strong> Vui lòng đến sớm 30 phút trước giờ mở cửa</p>
+            <div class="qr-code">
+              <h3>💳 Mã QR thanh toán</h3>
+              <p>Quét mã QR này để thanh toán vé</p>
+              <p><strong>Mã thanh toán:</strong> ${orderNumber}</p>
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${orderNumber}" alt="Payment QR Code" />
+            </div>
+            
+            <div class="contact-info">
+              <h3>📞 Mọi thắc mắc xin liên hệ</h3>
+              <p><strong>💌 Email:</strong> otconcert@gmail.com</p>
+              <p><strong>☎️ Phone:</strong> 0934782703 - Bora</p>
+              <p><strong>✨ Fanpage:</strong> Fanpage chương trình</p>
             </div>
           </div>
           
           <div class="footer">
-            <p>© 2024 OCX4 - Sự kiện âm nhạc lớn nhất năm</p>
-            <p>Liên hệ: info@ocx4.com | Hotline: 1900-xxxx</p>
+            <p>© 2024 Ớt Cay Xè - The destination of Indie music</p>
+            <p>Follow Ớt Cay Xè để cập nhật thêm thông tin về đêm nhạc nhé!</p>
           </div>
         </div>
       </body>
@@ -182,7 +264,7 @@ export async function POST(request: Request) {
     `;
 
     const result = await resend.emails.send({
-      from: 'OCX4 <noreply@resend.dev>', // Sử dụng domain mặc định của Resend
+      from: 'Ớt Cay Xè <noreply@otcayxe.com>',
       to: [to],
       subject: subject,
       html: htmlContent,
