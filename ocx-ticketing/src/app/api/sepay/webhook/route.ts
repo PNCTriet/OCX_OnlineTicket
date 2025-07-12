@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storePaymentFromWebhook } from '@/lib/payment-utils';
-import { Resend } from 'resend';
 
 // Define the webhook payload type based on actual SePay response
 type SePayWebhookPayload = {
