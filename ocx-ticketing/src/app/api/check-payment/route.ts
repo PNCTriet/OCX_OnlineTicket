@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
-import { checkPaymentReceived } from '../sepay/webhook/route';
+import { checkPaymentReceived } from '@/lib/payment-utils';
 
 export async function POST(request: NextRequest) {
   try {

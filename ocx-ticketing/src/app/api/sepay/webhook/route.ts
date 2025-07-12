@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { storePaymentFromWebhook } from '@/lib/payment-utils';
 
 // Define the webhook payload type based on SePay documentation
 type SePayWebhookPayload = {
@@ -12,14 +13,6 @@ type SePayWebhookPayload = {
   bank_code?: string;
   bank_name?: string;
 };
-
-// Store pending payments in memory (in production, use Redis or database)
-const pendingPayments = new Map<string, {
-  orderNumber: string;
-  amount: number;
-  timestamp: number;
-  userEmail: string;
-}>();
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,27 +45,7 @@ export async function POST(request: NextRequest) {
     console.log('✅ Valid payment detected for order:', orderNumber);
 
     // Store the payment for later verification
-    pendingPayments.set(transaction_id, {
-      orderNumber,
-      amount,
-      timestamp: Date.now(),
-      userEmail: '', // Will be set when user initiates payment
-    });
-
-    // Clean up old pending payments (older than 5 minutes)
-    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-    for (const [key, payment] of pendingPayments.entries()) {
-      if (payment.timestamp < fiveMinutesAgo) {
-        pendingPayments.delete(key);
-      }
-    }
-
-    console.log('💾 Stored payment for verification:', {
-      transaction_id,
-      orderNumber,
-      amount,
-      timestamp: new Date().toISOString()
-    });
+    storePaymentFromWebhook(transaction_id, orderNumber, amount);
 
     return NextResponse.json({ 
       success: true, 
@@ -86,29 +59,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-// Export function to check if payment was received
-export function checkPaymentReceived(orderNumber: string, expectedAmount: number): boolean {
-  for (const [transactionId, payment] of pendingPayments.entries()) {
-    if (payment.orderNumber === orderNumber && payment.amount === expectedAmount) {
-      // Remove from pending payments after successful verification
-      pendingPayments.delete(transactionId);
-      console.log('✅ Payment verified and removed from pending:', orderNumber);
-      return true;
-    }
-  }
-  return false;
-}
-
-// Export function to add pending payment (called when user initiates payment)
-export function addPendingPayment(orderNumber: string, amount: number, userEmail: string): void {
-  const paymentKey = `pending_${orderNumber}`;
-  pendingPayments.set(paymentKey, {
-    orderNumber,
-    amount,
-    timestamp: Date.now(),
-    userEmail
-  });
-  console.log('⏳ Added pending payment:', { orderNumber, amount, userEmail });
 } 
