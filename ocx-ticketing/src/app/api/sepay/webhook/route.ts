@@ -24,7 +24,6 @@ export async function POST(request: NextRequest) {
 
     // Validate webhook payload
     const {
-      gateway,
       transferAmount,
       content,
       referenceCode,
