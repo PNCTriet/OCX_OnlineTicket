@@ -118,8 +118,34 @@ export default function PaymentModal({
         console.log('✅ Payment processed successfully:', result.data);
         setPurchaseData(result.data);
         
-        // Start payment checking
-        startPaymentChecking(result.data.orderNumber, totalAmount);
+        // Check if payment already exists before starting countdown
+        const paymentCheckResponse = await fetch('/api/check-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderNumber: result.data.orderNumber,
+            expectedAmount: totalAmount
+          }),
+        });
+
+        const paymentCheckResult = await paymentCheckResponse.json();
+
+        if (paymentCheckResult.success && paymentCheckResult.paymentReceived) {
+          console.log('✅ Payment already confirmed! Sending email immediately.');
+          setPaymentCheckResult('success');
+          setIsCheckingPayment(false);
+          
+          // Send email with tickets immediately
+          if (result.data) {
+            await sendEmailWithTickets(result.data);
+          }
+        } else {
+          console.log('⏳ Payment not found, starting countdown...');
+          // Start payment checking with countdown
+          startPaymentChecking(result.data.orderNumber, totalAmount);
+        }
       } else {
         console.error('❌ Payment failed:', result.error);
         alert(`❌ Thanh toán thất bại: ${result.error}`);
