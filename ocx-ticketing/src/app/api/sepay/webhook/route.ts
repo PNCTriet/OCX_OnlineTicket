@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase-server';
 
 // Define the webhook payload type based on SePay documentation
 type SePayWebhookPayload = {
@@ -30,12 +29,9 @@ export async function POST(request: NextRequest) {
     // Validate webhook payload
     const {
       id,
-      account_number,
       amount,
       content,
-      transaction_id,
-      transaction_time,
-      virtual_account
+      transaction_id
     } = body as SePayWebhookPayload;
 
     if (!id || !amount || !content) {
