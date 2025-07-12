@@ -239,13 +239,6 @@ export async function POST(request: Request) {
               })()}
             </div>
             
-            <div class="qr-code">
-              <h3>💳 Mã QR thanh toán</h3>
-              <p>Quét mã QR này để thanh toán vé</p>
-              <p><strong>Mã thanh toán:</strong> ${orderNumber}</p>
-              <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${orderNumber}" alt="Payment QR Code" />
-            </div>
-            
             <div class="contact-info">
               <h3>📞 Mọi thắc mắc xin liên hệ</h3>
               <p><strong>💌 Email:</strong> otconcert@gmail.com</p>
