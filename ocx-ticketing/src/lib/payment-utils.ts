@@ -8,8 +8,14 @@ const pendingPayments = new Map<string, {
 
 // Export function to check if payment was received
 export function checkPaymentReceived(orderNumber: string, expectedAmount: number): boolean {
+  // Normalize order number by removing dashes for comparison
+  const normalizedOrderNumber = orderNumber.replace(/-/g, '');
+  
   for (const [transactionId, payment] of pendingPayments.entries()) {
-    if (payment.orderNumber === orderNumber && payment.amount === expectedAmount) {
+    // Normalize stored order number by removing dashes
+    const normalizedStoredOrderNumber = payment.orderNumber.replace(/-/g, '');
+    
+    if (normalizedStoredOrderNumber === normalizedOrderNumber && payment.amount === expectedAmount) {
       // Remove from pending payments after successful verification
       pendingPayments.delete(transactionId);
       console.log('✅ Payment verified and removed from pending:', orderNumber);
