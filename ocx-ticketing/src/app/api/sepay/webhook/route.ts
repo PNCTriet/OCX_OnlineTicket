@@ -54,8 +54,6 @@ export async function POST(request: NextRequest) {
 
     // Auto send email with tickets
     try {
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      
       // Create basic email data (you can enhance this with more details)
       const emailData = {
         to: 'triet.pnc@gmail.com', // Default email for testing
