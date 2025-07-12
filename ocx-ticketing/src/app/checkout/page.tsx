@@ -49,15 +49,51 @@ function CheckoutContent() {
   
   const selectedTickets: Ticket[] = useMemo(() => {
     if (!ticketsParam) {
+      console.log('No tickets parameter found in URL');
       return [];
     }
     
     try {
+      // Log raw parameter for debugging
+      console.log('Raw tickets parameter:', ticketsParam);
+      
       const decoded = decodeURIComponent(ticketsParam);
+      console.log('Decoded tickets parameter:', decoded);
+      
+      // Basic validation before parsing
+      if (!decoded.startsWith('[') || !decoded.endsWith(']')) {
+        console.error('Invalid JSON format: Expected array');
+        return [];
+      }
+      
       const parsed = JSON.parse(decoded);
-      return Array.isArray(parsed) ? parsed : [];
+      
+      // Validate parsed data structure
+      if (!Array.isArray(parsed)) {
+        console.error('Invalid data structure: Expected array, got', typeof parsed);
+        return [];
+      }
+      
+      // Validate each ticket object
+      const validTickets = parsed.filter(ticket => {
+        const isValid = ticket 
+          && typeof ticket === 'object'
+          && typeof ticket.quantity === 'number'
+          && ticket.quantity > 0;
+        
+        if (!isValid) {
+          console.error('Invalid ticket object:', ticket);
+        }
+        return isValid;
+      });
+      
+      return validTickets;
     } catch (error) {
-      console.error('Error parsing tickets from URL:', error);
+      console.error('Error parsing tickets from URL:', {
+        error,
+        ticketsParam,
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
       return [];
     }
   }, [ticketsParam]);
