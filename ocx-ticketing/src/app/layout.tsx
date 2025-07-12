@@ -13,6 +13,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Get the base URL from environment or default to localhost
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL 
+  ? `https://${process.env.VERCEL_URL}` 
+  : 'http://localhost:3000';
+
 export const metadata: Metadata = {
   title: "Ớt cay xè 4",
   description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
@@ -29,17 +34,16 @@ export const metadata: Metadata = {
   authors: [{ name: "OCX Team" }],
   robots: "index, follow",
 
-  // ✅ Cập nhật domain chính thức đã custom (www.otcayxe.com)
-  metadataBase: new URL("https://www.otcayxe.com"),
+  metadataBase: new URL(baseUrl),
 
   openGraph: {
     type: "website",
-    url: "https://www.otcayxe.com",
+    url: baseUrl,
     title: "Ớt cay xè 4",
     description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
     images: [
       {
-        url: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png", // ✅ phải dùng full URL tuyệt đối
+        url: "/images/client_logo_ss4_thumb.png", // Use relative path
         width: 800,
         height: 600,
         alt: "OCX Online Ticket Logo",
@@ -53,7 +57,7 @@ export const metadata: Metadata = {
     description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
     images: [
       {
-        url: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png", // ✅ full URL
+        url: "/images/client_logo_ss4_thumb.png", // Use relative path
         alt: "OCX Online Ticket Logo",
       },
     ],
@@ -68,17 +72,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="vi">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
