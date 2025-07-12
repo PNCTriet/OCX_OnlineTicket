@@ -37,7 +37,8 @@ export async function POST(request: NextRequest) {
 
     // Check if this is a payment for our system
     // Content should contain our order number format: OCX4-DDMM-HHMMSS-TT-XXXXXXXX
-    const orderMatch = content.match(/OCX4-\d{2}\d{2}-\d{6}-\d{2}-\d{8}/);
+    // But bank might send without dashes: OCX4DDMMHHMMSSTTXXXXXXXX
+    const orderMatch = content.match(/OCX4\d{2}\d{2}\d{6}\d{2}\d{8}/);
     
     if (!orderMatch) {
       console.log('⚠️ Payment not for our system:', content);
