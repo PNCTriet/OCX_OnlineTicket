@@ -375,27 +375,8 @@ export default function PaymentModal({
               </div>
             </div>
 
-            {/* New: Payment Status and Remaining Time */}
-            <div className="bg-zinc-800 rounded-lg p-4">
-              <h3 className="text-lg font-bold text-white mb-2">Trạng thái thanh toán</h3>
-              <div className="space-y-2 text-white">
-                <p>
-                  <span className="text-zinc-400">Trạng thái:</span>{" "}
-                  <span className={currentPaymentStatus === "pending" ? "text-yellow-400" : currentPaymentStatus === "success" ? "text-green-500" : "text-red-500"}>
-                    {currentPaymentStatus === "pending" && "Đang chờ"}
-                    {currentPaymentStatus === "success" && "Thành công"}
-                    {currentPaymentStatus === "error" && "Thất bại / Hết thời gian"}
-                  </span>
-                </p>
-                <p>
-                  <span className="text-zinc-400">Thời gian còn lại:</span>{" "}
-                  {formatTime(paymentRemainingSeconds)}
-                </p>
-              </div>
-            </div>
-
-            {/* New: Process Payment Button */}
-            {!emailSent && !isCheckingPayment && (
+            {/* New: Process Payment Button - TEMPORARILY HIDDEN */}
+            {false && !emailSent && !isCheckingPayment && (
               <div className="bg-zinc-800 rounded-lg p-4">
                 <h3 className="text-lg font-bold text-white mb-2">Xác nhận thanh toán</h3>
                 <p className="text-zinc-400 text-sm mb-4">
@@ -423,6 +404,37 @@ export default function PaymentModal({
                     </>
                   )}
                 </button>
+              </div>
+            )}
+
+            {/* Auto Payment Status */}
+            {!emailSent && !isCheckingPayment && (
+              <div className="bg-zinc-800 rounded-lg p-4">
+                <h3 className="text-lg font-bold text-white mb-2">Trạng thái thanh toán</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <svg className="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-white">Chờ thanh toán tự động</span>
+                  </div>
+                  
+                  <div className="text-center">
+                    <p className="text-zinc-400 text-sm">Mã đơn hàng:</p>
+                    <p className="text-white font-mono">{orderNumber}</p>
+                  </div>
+                  
+                  <div className="text-center">
+                    <p className="text-zinc-400 text-sm">Số tiền:</p>
+                    <p className="text-white font-bold">{totalAmount.toLocaleString()}đ</p>
+                  </div>
+                  
+                  <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-3">
+                    <p className="text-blue-400 text-sm">
+                      💡 <strong>Hướng dẫn:</strong> Quét mã QR và chuyển khoản. Email vé sẽ được gửi tự động khi thanh toán thành công.
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
 
