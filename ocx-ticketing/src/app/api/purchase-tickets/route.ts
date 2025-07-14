@@ -1,5 +1,7 @@
 import { createServerClient } from '@/lib/supabase-server';
 import { NextRequest, NextResponse } from 'next/server';
+import { addPendingPayment } from '@/lib/payment-utils';
+import { addOrder } from '@/lib/pending-orders';
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,16 +34,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Here you would typically:
-    // 1. Validate ticket availability
-    // 2. Create order in database
-    // 3. Process payment
-    // 4. Update ticket inventory
-    // 5. Send confirmation email
-
     // For demo purposes, we'll simulate a successful purchase
     const orderId = Date.now();
     const orderNumber = `OCX-${orderId}`;
+
+    // Store user info and tickets in payment system for webhook access
+    if (userInfo && userInfo.email) {
+      addPendingPayment(orderNumber, totalAmount, userInfo.email, userInfo, tickets);
+      addOrder(orderNumber, {
+        orderNumber,
+        userInfo,
+        tickets,
+        totalAmount,
+        createdAt: new Date().toISOString()
+      });
+      console.log('💾 Stored user info and tickets for webhook access:', {
+        orderNumber,
+        userEmail: userInfo.email,
+        userInfo,
+        tickets
+      });
+    }
 
     // Log the purchase for debugging
     console.log('🎫 Purchase processed:', {

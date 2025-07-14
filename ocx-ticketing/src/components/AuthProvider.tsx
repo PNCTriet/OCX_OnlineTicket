@@ -17,6 +17,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
+  // Get base URL from environment or fallback to window.location.origin
+  const getBaseUrl = () => {
+    if (typeof window !== 'undefined') {
+      return process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
+    }
+    return process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  };
+
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
@@ -45,9 +53,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGoogle = async (redirectTo?: string, tickets?: string) => {
+    const baseUrl = getBaseUrl();
     const redirectUrl = redirectTo 
-      ? `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}${tickets ? `&tickets=${encodeURIComponent(tickets)}` : ''}`
-      : `${window.location.origin}/auth/callback`;
+      ? `${baseUrl}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}${tickets ? `&tickets=${encodeURIComponent(tickets)}` : ''}`
+      : `${baseUrl}/auth/callback`;
+
+    console.log('🔗 Auth redirect URL:', redirectUrl);
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',

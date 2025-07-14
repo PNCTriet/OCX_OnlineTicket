@@ -52,6 +52,16 @@ export default function PaymentModal({
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [purchaseData, setPurchaseData] = useState<PurchaseData | null>(null);
+<<<<<<< Updated upstream
+=======
+  
+  // New states for payment checking
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+  const [paymentCheckCountdown, setPaymentCheckCountdown] = useState(60); // 60 seconds
+  const [paymentCheckResult, setPaymentCheckResult] = useState<'pending' | 'success' | 'failed'>('pending');
+  const [checkInterval, setCheckInterval] = useState<NodeJS.Timeout | null>(null);
+  const [webhookEmailSent, setWebhookEmailSent] = useState(false);
+>>>>>>> Stashed changes
 
   // Add debug log for props
   useEffect(() => {
@@ -67,6 +77,14 @@ export default function PaymentModal({
       orderTime
     });
   }, [isOpen, selectedTickets, totalAmount, userInfo, paymentRemainingSeconds, paymentStatus, orderNumber, orderDate, orderTime]);
+
+  // Tự động gửi order lên backend khi modal mở
+  useEffect(() => {
+    if (isOpen && !purchaseData && !isProcessingPayment) {
+      processPayment();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   // Effect để ngăn cuộn trang chính khi modal mở (di chuyển lên trên)
   useEffect(() => {
@@ -86,6 +104,13 @@ export default function PaymentModal({
   // Process payment with authentication
   const processPayment = async () => {
     setIsProcessingPayment(true);
+<<<<<<< Updated upstream
+=======
+    setIsCheckingPayment(true);
+    setPaymentCheckCountdown(60);
+    setPaymentCheckResult('pending');
+    setWebhookEmailSent(false);
+>>>>>>> Stashed changes
     
     try {
       console.log('💳 Processing payment with authentication...');
@@ -109,8 +134,45 @@ export default function PaymentModal({
         console.log('✅ Payment processed successfully:', result.data);
         setPurchaseData(result.data);
         
+<<<<<<< Updated upstream
         // Send email with tickets
         await sendEmailWithTickets(result.data);
+=======
+        // Check if payment already exists before starting countdown
+        const paymentCheckResponse = await fetch('/api/check-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderNumber: result.data.orderNumber,
+            expectedAmount: totalAmount
+          }),
+        });
+
+        const paymentCheckResult = await paymentCheckResponse.json();
+
+        if (paymentCheckResult.success && paymentCheckResult.paymentReceived) {
+          console.log('✅ Payment already confirmed! Sending email immediately.');
+          setPaymentCheckResult('success');
+          setIsCheckingPayment(false);
+          
+          // Check if webhook already sent email
+          if (paymentCheckResult.webhookEmailSent) {
+            setWebhookEmailSent(true);
+            console.log('📧 Webhook already sent email to customer');
+          } else {
+            // Send email with tickets immediately
+            if (result.data) {
+              await sendEmailWithTickets(result.data);
+            }
+          }
+        } else {
+          console.log('⏳ Payment not found, starting countdown...');
+          // Start payment checking with countdown
+          startPaymentChecking(result.data.orderNumber, totalAmount);
+        }
+>>>>>>> Stashed changes
       } else {
         console.error('❌ Payment failed:', result.error);
         alert(`❌ Thanh toán thất bại: ${result.error}`);
@@ -123,6 +185,84 @@ export default function PaymentModal({
     }
   };
 
+<<<<<<< Updated upstream
+=======
+  // Start payment checking with countdown
+  const startPaymentChecking = (orderNumber: string, expectedAmount: number) => {
+    console.log('🔍 Starting payment check for:', orderNumber, 'Amount:', expectedAmount);
+    
+    // Start countdown
+    const interval = setInterval(() => {
+      setPaymentCheckCountdown(prev => {
+        if (prev <= 1) {
+          // Time's up, payment failed
+          clearInterval(interval);
+          setPaymentCheckResult('failed');
+          setIsCheckingPayment(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    setCheckInterval(interval);
+
+    // Check payment every 3 seconds
+    const checkInterval = setInterval(async () => {
+      try {
+        const response = await fetch('/api/check-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderNumber,
+            expectedAmount
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.success && result.paymentReceived) {
+          console.log('✅ Payment confirmed via webhook!');
+          clearInterval(interval);
+          clearInterval(checkInterval);
+          setPaymentCheckResult('success');
+          setIsCheckingPayment(false);
+          
+          // Check if webhook already sent email
+          if (result.webhookEmailSent) {
+            setWebhookEmailSent(true);
+            console.log('📧 Webhook already sent email to customer');
+          } else {
+            // Send email with tickets
+            if (purchaseData) {
+              await sendEmailWithTickets(purchaseData);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error checking payment:', error);
+      }
+    }, 3000);
+
+    // Clean up intervals on component unmount
+    return () => {
+      if (interval) clearInterval(interval);
+      if (checkInterval) clearInterval(checkInterval);
+    };
+  };
+
+  // Clean up intervals when component unmounts
+  useEffect(() => {
+    return () => {
+      if (checkInterval) {
+        clearInterval(checkInterval);
+      }
+    };
+  }, [checkInterval]);
+
+>>>>>>> Stashed changes
   // Send real email with electronic tickets using Resend API
   const sendEmailWithTickets = async (purchaseData?: PurchaseData) => {
     try {
@@ -337,6 +477,28 @@ export default function PaymentModal({
                         Mã đơn hàng: {purchaseData.orderNumber}
                       </p>
                     )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Webhook Email Confirmation */}
+            {webhookEmailSent && (
+              <div className="bg-green-900/30 border border-green-500/30 rounded-lg p-4">
+                <div className="flex items-center space-x-3">
+                  <svg className="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <h3 className="text-lg font-bold text-green-500">
+                      ✅ Thanh toán xác nhận qua webhook!
+                    </h3>
+                    <p className="text-sm text-green-400">
+                      Email vé điện tử đã được gửi tự động tới {userInfo.email}
+                    </p>
+                    <p className="text-xs text-green-300 mt-1">
+                      Vui lòng kiểm tra email và spam folder
+                    </p>
                   </div>
                 </div>
               </div>

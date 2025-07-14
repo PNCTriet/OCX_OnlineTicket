@@ -4,7 +4,7 @@ export const TICKETS: TicketType[] = [
   {
     id: "farmers-nhun-nhay",
     name: "Farmers Nhún Nhảy",
-    price: 599000,
+    price: 10000,
     color: "#56F482",
     quantity: 0,
     sold: 50,

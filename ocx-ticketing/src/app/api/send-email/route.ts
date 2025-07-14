@@ -24,6 +24,17 @@ export async function POST(request: Request) {
     
     const { to, subject, tickets, customerInfo, orderNumber, orderDate, orderTime, totalAmount } = await request.json();
     
+    // Debug: Log received data
+    console.log('📧 Email API received data:', {
+      to,
+      subject,
+      ticketsCount: tickets?.length,
+      tickets: tickets?.map((t: TicketWithQuantity) => ({ name: t.name, quantity: t.quantity, price: t.price })),
+      customerInfo,
+      orderNumber,
+      totalAmount
+    });
+    
     // Tạo HTML template cho email vé điện tử
     const htmlContent = `
       <!DOCTYPE html>
@@ -220,10 +231,16 @@ export async function POST(request: Request) {
                 let qrCodes = '';
                 let ticketCounter = 1;
                 
+                console.log('🔍 Generating QR codes for tickets:', tickets);
+                
                 tickets.forEach((ticket: TicketWithQuantity) => {
+                  console.log(`🎫 Processing ticket: ${ticket.name}, quantity: ${ticket.quantity}`);
+                  
                   for (let i = 0; i < ticket.quantity; i++) {
                     const ticketNumber = ticketCounter.toString().padStart(2, '0');
                     const qrData = `${orderNumber}-${ticketNumber}`;
+                    console.log(`📱 Generated QR for ticket ${ticketCounter}: ${qrData}`);
+                    
                     qrCodes += `
                       <div style="margin-bottom: 20px; text-align: center;">
                         <p><strong>Vé ${ticketCounter}:</strong> ${ticket.name}</p>
@@ -235,6 +252,7 @@ export async function POST(request: Request) {
                   }
                 });
                 
+                console.log(`✅ Generated ${ticketCounter - 1} QR codes total`);
                 return qrCodes;
               })()}
             </div>
