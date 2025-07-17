@@ -140,7 +140,7 @@ export default function TicketPage() {
         <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-8 pt-24 sm:pt-28 md:pt-32">
           {showNoTicketsError && (
             <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-500">
-              
+              {/* <p className="text-center">Vui lòng chọn ít nhất một vé để tiếp tục.</p> */}
             </div>
           )}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
