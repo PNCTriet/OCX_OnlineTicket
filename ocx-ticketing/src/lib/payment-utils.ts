@@ -4,20 +4,6 @@ const pendingPayments = new Map<string, {
   amount: number;
   timestamp: number;
   userEmail: string;
-  userInfo?: {
-    fullName: string;
-    email: string;
-    phone: string;
-  };
-  tickets?: Array<{
-    id: string;
-    name: string;
-    price: number;
-    color: string;
-    quantity: number;
-    sold: number;
-    status: string;
-  }>;
 }>();
 
 // Export function to check if payment was received
@@ -40,52 +26,24 @@ export function checkPaymentReceived(orderNumber: string, expectedAmount: number
 }
 
 // Export function to add pending payment (called when user initiates payment)
-export function addPendingPayment(orderNumber: string, amount: number, userEmail: string, userInfo?: {
-  fullName: string;
-  email: string;
-  phone: string;
-}, tickets?: Array<{
-  id: string;
-  name: string;
-  price: number;
-  color: string;
-  quantity: number;
-  sold: number;
-  status: string;
-}>): void {
+export function addPendingPayment(orderNumber: string, amount: number, userEmail: string): void {
   const paymentKey = `pending_${orderNumber}`;
   pendingPayments.set(paymentKey, {
     orderNumber,
     amount,
     timestamp: Date.now(),
-    userEmail,
-    userInfo,
-    tickets
+    userEmail
   });
-  console.log('⏳ Added pending payment:', { orderNumber, amount, userEmail, userInfo, tickets });
+  console.log('⏳ Added pending payment:', { orderNumber, amount, userEmail });
 }
 
 // Export function to store payment from webhook
-export function storePaymentFromWebhook(transactionId: string, orderNumber: string, amount: number, userInfo?: {
-  fullName: string;
-  email: string;
-  phone: string;
-}, tickets?: Array<{
-  id: string;
-  name: string;
-  price: number;
-  color: string;
-  quantity: number;
-  sold: number;
-  status: string;
-}>): void {
+export function storePaymentFromWebhook(transactionId: string, orderNumber: string, amount: number): void {
   pendingPayments.set(transactionId, {
     orderNumber,
     amount,
     timestamp: Date.now(),
-    userEmail: userInfo?.email || '', // Use provided email or empty string
-    userInfo,
-    tickets
+    userEmail: '', // Will be set when user initiates payment
   });
 
   // Clean up old pending payments (older than 5 minutes)
@@ -100,57 +58,6 @@ export function storePaymentFromWebhook(transactionId: string, orderNumber: stri
     transactionId,
     orderNumber,
     amount,
-    userEmail: userInfo?.email || 'unknown',
     timestamp: new Date().toISOString()
   });
-}
-
-// Export function to get user info by order number
-export function getUserInfoByOrderNumber(orderNumber: string): {
-  fullName: string;
-  email: string;
-  phone: string;
-} | null {
-  // Normalize order number by removing dashes for comparison
-  const normalizedOrderNumber = orderNumber.replace(/-/g, '');
-  
-  for (const [transactionId, payment] of pendingPayments.entries()) {
-    // Normalize stored order number by removing dashes
-    const normalizedStoredOrderNumber = payment.orderNumber.replace(/-/g, '');
-    
-    if (normalizedStoredOrderNumber === normalizedOrderNumber && payment.userInfo) {
-      return payment.userInfo;
-    }
-  }
-  return null;
-}
-
-// Export function to get payment data by order number
-export function getPaymentDataByOrderNumber(orderNumber: string): {
-  tickets?: Array<{
-    id: string;
-    name: string;
-    price: number;
-    color: string;
-    quantity: number;
-    sold: number;
-    status: string;
-  }>;
-  amount: number;
-} | null {
-  // Normalize order number by removing dashes for comparison
-  const normalizedOrderNumber = orderNumber.replace(/-/g, '');
-  
-  for (const [transactionId, payment] of pendingPayments.entries()) {
-    // Normalize stored order number by removing dashes
-    const normalizedStoredOrderNumber = payment.orderNumber.replace(/-/g, '');
-    
-    if (normalizedStoredOrderNumber === normalizedOrderNumber) {
-      return {
-        tickets: payment.tickets,
-        amount: payment.amount
-      };
-    }
-  }
-  return null;
 } 

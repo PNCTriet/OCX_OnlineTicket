@@ -52,16 +52,12 @@ export default function PaymentModal({
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [purchaseData, setPurchaseData] = useState<PurchaseData | null>(null);
-<<<<<<< Updated upstream
-=======
   
   // New states for payment checking
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [paymentCheckCountdown, setPaymentCheckCountdown] = useState(60); // 60 seconds
   const [paymentCheckResult, setPaymentCheckResult] = useState<'pending' | 'success' | 'failed'>('pending');
   const [checkInterval, setCheckInterval] = useState<NodeJS.Timeout | null>(null);
-  const [webhookEmailSent, setWebhookEmailSent] = useState(false);
->>>>>>> Stashed changes
 
   // Add debug log for props
   useEffect(() => {
@@ -77,14 +73,6 @@ export default function PaymentModal({
       orderTime
     });
   }, [isOpen, selectedTickets, totalAmount, userInfo, paymentRemainingSeconds, paymentStatus, orderNumber, orderDate, orderTime]);
-
-  // Tự động gửi order lên backend khi modal mở
-  useEffect(() => {
-    if (isOpen && !purchaseData && !isProcessingPayment) {
-      processPayment();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
 
   // Effect để ngăn cuộn trang chính khi modal mở (di chuyển lên trên)
   useEffect(() => {
@@ -104,13 +92,9 @@ export default function PaymentModal({
   // Process payment with authentication
   const processPayment = async () => {
     setIsProcessingPayment(true);
-<<<<<<< Updated upstream
-=======
     setIsCheckingPayment(true);
     setPaymentCheckCountdown(60);
     setPaymentCheckResult('pending');
-    setWebhookEmailSent(false);
->>>>>>> Stashed changes
     
     try {
       console.log('💳 Processing payment with authentication...');
@@ -134,10 +118,6 @@ export default function PaymentModal({
         console.log('✅ Payment processed successfully:', result.data);
         setPurchaseData(result.data);
         
-<<<<<<< Updated upstream
-        // Send email with tickets
-        await sendEmailWithTickets(result.data);
-=======
         // Check if payment already exists before starting countdown
         const paymentCheckResponse = await fetch('/api/check-payment', {
           method: 'POST',
@@ -157,36 +137,29 @@ export default function PaymentModal({
           setPaymentCheckResult('success');
           setIsCheckingPayment(false);
           
-          // Check if webhook already sent email
-          if (paymentCheckResult.webhookEmailSent) {
-            setWebhookEmailSent(true);
-            console.log('📧 Webhook already sent email to customer');
-          } else {
-            // Send email with tickets immediately
-            if (result.data) {
-              await sendEmailWithTickets(result.data);
-            }
+          // Send email with tickets immediately
+          if (result.data) {
+            await sendEmailWithTickets(result.data);
           }
         } else {
           console.log('⏳ Payment not found, starting countdown...');
           // Start payment checking with countdown
           startPaymentChecking(result.data.orderNumber, totalAmount);
         }
->>>>>>> Stashed changes
       } else {
         console.error('❌ Payment failed:', result.error);
         alert(`❌ Thanh toán thất bại: ${result.error}`);
+        setIsCheckingPayment(false);
       }
     } catch (error) {
       console.error('❌ Error processing payment:', error);
       alert('❌ Có lỗi khi xử lý thanh toán. Vui lòng thử lại sau.');
+      setIsCheckingPayment(false);
     } finally {
       setIsProcessingPayment(false);
     }
   };
 
-<<<<<<< Updated upstream
-=======
   // Start payment checking with countdown
   const startPaymentChecking = (orderNumber: string, expectedAmount: number) => {
     console.log('🔍 Starting payment check for:', orderNumber, 'Amount:', expectedAmount);
@@ -230,15 +203,9 @@ export default function PaymentModal({
           setPaymentCheckResult('success');
           setIsCheckingPayment(false);
           
-          // Check if webhook already sent email
-          if (result.webhookEmailSent) {
-            setWebhookEmailSent(true);
-            console.log('📧 Webhook already sent email to customer');
-          } else {
-            // Send email with tickets
-            if (purchaseData) {
-              await sendEmailWithTickets(purchaseData);
-            }
+          // Send email with tickets
+          if (purchaseData) {
+            await sendEmailWithTickets(purchaseData);
           }
         }
       } catch (error) {
@@ -262,7 +229,6 @@ export default function PaymentModal({
     };
   }, [checkInterval]);
 
->>>>>>> Stashed changes
   // Send real email with electronic tickets using Resend API
   const sendEmailWithTickets = async (purchaseData?: PurchaseData) => {
     try {
@@ -334,8 +300,6 @@ export default function PaymentModal({
     : "/images/qr_code_placeholder.png";
 
   console.log('Generated QR URL:', qrUrl);
-
-  const currentPaymentStatus = paymentStatus;
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -409,27 +373,8 @@ export default function PaymentModal({
               </div>
             </div>
 
-            {/* New: Payment Status and Remaining Time */}
-            <div className="bg-zinc-800 rounded-lg p-4">
-              <h3 className="text-lg font-bold text-white mb-2">Trạng thái thanh toán</h3>
-              <div className="space-y-2 text-white">
-                <p>
-                  <span className="text-zinc-400">Trạng thái:</span>{" "}
-                  <span className={currentPaymentStatus === "pending" ? "text-yellow-400" : currentPaymentStatus === "success" ? "text-green-500" : "text-red-500"}>
-                    {currentPaymentStatus === "pending" && "Đang chờ"}
-                    {currentPaymentStatus === "success" && "Thành công"}
-                    {currentPaymentStatus === "error" && "Thất bại / Hết thời gian"}
-                  </span>
-                </p>
-                <p>
-                  <span className="text-zinc-400">Thời gian còn lại:</span>{" "}
-                  {formatTime(paymentRemainingSeconds)}
-                </p>
-              </div>
-            </div>
-
-            {/* New: Process Payment Button */}
-            {!emailSent && (
+            {/* New: Process Payment Button - TEMPORARILY HIDDEN */}
+            {false && !emailSent && !isCheckingPayment && (
               <div className="bg-zinc-800 rounded-lg p-4">
                 <h3 className="text-lg font-bold text-white mb-2">Xác nhận thanh toán</h3>
                 <p className="text-zinc-400 text-sm mb-4">
@@ -460,44 +405,93 @@ export default function PaymentModal({
               </div>
             )}
 
-            {/* Success Message */}
-            {emailSent && (
-              <div className="bg-green-900/30 border border-green-500/30 rounded-lg p-4">
-                <div className="flex items-center space-x-3">
-                  <svg className="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <div>
-                    <h3 className="text-lg font-bold text-green-500">Thanh toán thành công!</h3>
-                    <p className="text-green-400 text-sm">
-                      Email vé điện tử đã được gửi tới {userInfo.email}
+            {/* Auto Payment Status */}
+            {!emailSent && !isCheckingPayment && (
+              <div className="bg-zinc-800 rounded-lg p-4">
+                <h3 className="text-lg font-bold text-white mb-2">Trạng thái thanh toán</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <svg className="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-white">Chờ thanh toán tự động</span>
+                  </div>
+                  
+                  <div className="text-center">
+                    <p className="text-zinc-400 text-sm">Mã đơn hàng:</p>
+                    <p className="text-white font-mono">{orderNumber}</p>
+                  </div>
+                  
+                  <div className="text-center">
+                    <p className="text-zinc-400 text-sm">Số tiền:</p>
+                    <p className="text-white font-bold">{totalAmount.toLocaleString()}đ</p>
+                  </div>
+                  
+                  <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-3">
+                    <p className="text-blue-400 text-sm">
+                      💡 <strong>Hướng dẫn:</strong> Quét mã QR và chuyển khoản. Email vé sẽ được gửi tự động khi thanh toán thành công.
                     </p>
-                    {purchaseData && (
-                      <p className="text-green-400 text-sm mt-1">
-                        Mã đơn hàng: {purchaseData.orderNumber}
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Webhook Email Confirmation */}
-            {webhookEmailSent && (
-              <div className="bg-green-900/30 border border-green-500/30 rounded-lg p-4">
+            {/* Payment Checking Status */}
+            {isCheckingPayment && (
+              <div className="bg-zinc-800 rounded-lg p-4">
+                <h3 className="text-lg font-bold text-white mb-2">Đang kiểm tra thanh toán</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <svg className="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span className="text-white">Đang chờ xác nhận thanh toán...</span>
+                  </div>
+                  
+                  <div className="text-center">
+                    <p className="text-zinc-400 text-sm">Thời gian còn lại:</p>
+                    <p className="text-2xl font-bold text-white">{formatTime(paymentCheckCountdown)}</p>
+                  </div>
+                  
+                  <div className="text-center">
+                    <p className="text-zinc-400 text-sm">Mã đơn hàng:</p>
+                    <p className="text-white font-mono">{purchaseData?.orderNumber}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Payment Check Result */}
+            {!isCheckingPayment && paymentCheckResult !== 'pending' && (
+              <div className={`rounded-lg p-4 ${
+                paymentCheckResult === 'success' 
+                  ? 'bg-green-900/30 border border-green-500/30' 
+                  : 'bg-red-900/30 border border-red-500/30'
+              }`}>
                 <div className="flex items-center space-x-3">
-                  <svg className="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                  {paymentCheckResult === 'success' ? (
+                    <svg className="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  ) : (
+                    <svg className="h-6 w-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  )}
                   <div>
-                    <h3 className="text-lg font-bold text-green-500">
-                      ✅ Thanh toán xác nhận qua webhook!
+                    <h3 className={`text-lg font-bold ${
+                      paymentCheckResult === 'success' ? 'text-green-500' : 'text-red-500'
+                    }`}>
+                      {paymentCheckResult === 'success' ? 'Thanh toán thành công!' : 'Thanh toán thất bại'}
                     </h3>
-                    <p className="text-sm text-green-400">
-                      Email vé điện tử đã được gửi tự động tới {userInfo.email}
-                    </p>
-                    <p className="text-xs text-green-300 mt-1">
-                      Vui lòng kiểm tra email và spam folder
+                    <p className={`text-sm ${
+                      paymentCheckResult === 'success' ? 'text-green-400' : 'text-red-400'
+                    }`}>
+                      {paymentCheckResult === 'success' 
+                        ? 'Email vé điện tử đã được gửi tới ' + userInfo.email
+                        : 'Không nhận được xác nhận thanh toán. Vui lòng thử lại.'
+                      }
                     </p>
                   </div>
                 </div>

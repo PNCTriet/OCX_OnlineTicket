@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
-import { checkPaymentReceived, getUserInfoByOrderNumber } from '@/lib/payment-utils';
+import { checkPaymentReceived } from '@/lib/payment-utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,24 +26,19 @@ export async function POST(request: NextRequest) {
 
     // Check if payment was received
     const paymentReceived = checkPaymentReceived(orderNumber, expectedAmount);
-    
-    // Get user info to check if webhook email was sent
-    const userInfo = getUserInfoByOrderNumber(orderNumber);
 
     console.log('🔍 Payment check result:', {
       orderNumber,
       expectedAmount,
       paymentReceived,
-      userEmail: user.email,
-      webhookUserEmail: userInfo?.email
+      userEmail: user.email
     });
 
     return NextResponse.json({
       success: true,
       paymentReceived,
       orderNumber,
-      expectedAmount,
-      webhookEmailSent: paymentReceived && userInfo?.email === user.email
+      expectedAmount
     });
 
   } catch (error) {

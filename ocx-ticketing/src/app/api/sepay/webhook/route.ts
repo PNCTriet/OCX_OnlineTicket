@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { storePaymentFromWebhook, getUserInfoByOrderNumber, getPaymentDataByOrderNumber } from '@/lib/payment-utils';
-import { getOrder, removeOrder } from '@/lib/pending-orders';
+import { storePaymentFromWebhook } from '@/lib/payment-utils';
 
 // Define the webhook payload type based on actual SePay response
 type SePayWebhookPayload = {
@@ -36,10 +35,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
     }
 
-    // Làm sạch content: loại bỏ ký tự không phải chữ/số
-    const cleanedContent = content.replace(/[^A-Za-z0-9]/g, '');
-    // Tìm OCX4 + 20 số liên tiếp
-    const orderMatch = cleanedContent.match(/OCX4\d{20}/);
+    // Check if this is a payment for our system
+    // Content should contain our order number format: OCX4-DDMM-HHMMSS-TT-XXXXXXXX
+    // But bank might send without dashes: OCX4DDMMHHMMSSTTXXXXXXXX
+    const orderMatch = content.match(/OCX4\d{2}\d{2}\d{6}\d{2}\d{8}/);
     
     if (!orderMatch) {
       console.log('⚠️ Payment not for our system:', content);
@@ -49,45 +48,36 @@ export async function POST(request: NextRequest) {
     const orderNumber = orderMatch[0];
     console.log('✅ Valid payment detected for order:', orderNumber);
 
-    // Lấy đơn hàng từ file JSON
-    const orderData = getOrder(orderNumber);
-    if (!orderData) {
-      console.log('⚠️ No user info found for order:', orderNumber);
-      // Store payment without user info for now
-      storePaymentFromWebhook(referenceCode, orderNumber, transferAmount);
-      return NextResponse.json({ 
-        success: true, 
-        message: 'Payment received but no user info found',
-        orderNumber,
-        amount: transferAmount
-      });
-    }
-
-    // Store the payment for later verification (vẫn lưu vào RAM nếu cần)
-    storePaymentFromWebhook(referenceCode, orderNumber, transferAmount, orderData.userInfo, orderData.tickets);
+    // Store the payment for later verification
+    storePaymentFromWebhook(referenceCode, orderNumber, transferAmount);
 
     // Auto send email with tickets
     try {
-      const userInfo = orderData.userInfo;
-      const tickets = orderData.tickets;
-      const totalAmount = orderData.totalAmount;
-      // Create email data with actual user info and ticket data
+      // Create basic email data (you can enhance this with more details)
       const emailData = {
-        to: userInfo.email, // Use actual customer email
+        to: 'triet.pnc@gmail.com', // Default email for testing
         subject: `🎫 Vé điện tử Ớt Cay Xè - Đơn hàng #${orderNumber}`,
-        tickets: tickets,
-        customerInfo: userInfo, // Use actual customer info
+        tickets: [
+          {
+            id: 'auto-generated',
+            name: 'Single Ticket',
+            price: transferAmount,
+            color: '#c53e00',
+            quantity: 1,
+            sold: 0,
+            status: 'available'
+          }
+        ],
+        customerInfo: {
+          fullName: 'Khách hàng',
+          email: 'triet.pnc@gmail.com',
+          phone: 'Auto-generated'
+        },
         orderNumber: orderNumber,
         orderDate: new Date().toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "2-digit" }).replace(/\//g, '/'),
         orderTime: new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }),
-        totalAmount: totalAmount
+        totalAmount: transferAmount
       };
-
-      console.log('📧 Sending email with data:', {
-        to: userInfo.email,
-        tickets: tickets,
-        totalAmount: totalAmount
-      });
 
       // Call send-email API
       const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.otcayxe.com'}/api/send-email`, {
@@ -101,9 +91,7 @@ export async function POST(request: NextRequest) {
       const emailResult = await emailResponse.json();
 
       if (emailResult.success) {
-        console.log('📧 Email sent automatically via webhook to:', userInfo.email);
-        // Xóa đơn hàng khỏi file sau khi gửi mail thành công
-        removeOrder(orderNumber);
+        console.log('📧 Email sent automatically via webhook:', emailResult);
       } else {
         console.error('❌ Failed to send email via webhook:', emailResult);
       }
@@ -116,8 +104,7 @@ export async function POST(request: NextRequest) {
       message: 'Payment received and stored for verification',
       orderNumber,
       amount: transferAmount,
-      emailSent: true,
-      customerEmail: orderData.userInfo.email
+      emailSent: true
     });
 
   } catch (error) {
