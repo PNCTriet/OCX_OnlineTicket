@@ -3,6 +3,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import SimpleHeader from "../../components/SimpleHeader";
+import { createClient } from "@/lib/supabase";
 
 function LoginContent() {
   const searchParams = useSearchParams();
@@ -10,6 +11,10 @@ function LoginContent() {
   const { signInWithGoogle, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [lang, setLang] = useState<"vi" | "en">("vi");
+  const [backendUser, setBackendUser] = useState<any>(null); // State để lưu user backend
+
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const supabase = createClient();
 
   const redirectTo = searchParams.get("redirectTo") || "/";
   const ticketsParam = searchParams.get("tickets");
@@ -25,6 +30,35 @@ function LoginContent() {
       }
     }
   }, [user, redirectTo, ticketsParam, router]);
+
+  useEffect(() => {
+    // Nếu user đã login, đồng bộ với backend
+    const syncWithBackend = async () => {
+      if (user) {
+        // Lấy access token từ supabase
+        const { data: { session } } = await supabase.auth.getSession();
+        const accessToken = session?.access_token;
+        if (accessToken && API_BASE_URL) {
+          try {
+            const res = await fetch(`${API_BASE_URL}/auth/me`, {
+              method: "GET",
+              headers: {
+                "Authorization": `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+              },
+            });
+            if (!res.ok) throw new Error("Backend sync failed");
+            const backendUserData = await res.json();
+            setBackendUser(backendUserData); // Lưu user backend vào state (hoặc context nếu muốn)
+            // TODO: Cập nhật user local/global context nếu cần
+          } catch (err) {
+            console.error("Backend sync error:", err);
+          }
+        }
+      }
+    };
+    syncWithBackend();
+  }, [user, supabase, API_BASE_URL]);
 
   const handleGoogleSignIn = async () => {
     try {
