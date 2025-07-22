@@ -13,11 +13,13 @@ import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Ticket } from "../types/ticket";
 import { useAuth } from "@/components/AuthProvider";
+import { useSyncBackend } from "@/hooks/useSyncBackend";
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user, loading, signOut } = useAuth();
+  useSyncBackend(user);
   const [userInfo, setUserInfo] = useState({
     fullName: "",
     email: "",

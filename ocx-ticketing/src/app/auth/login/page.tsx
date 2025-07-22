@@ -15,7 +15,7 @@ function LoginContent() {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const supabase = createClient();
 
-  const redirectTo = searchParams.get("redirectTo") || "/";
+  const redirectTo = searchParams.get("redirectTo") || "/checkout";
   const ticketsParam = searchParams.get("tickets");
 
   useEffect(() => {
