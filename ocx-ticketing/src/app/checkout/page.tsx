@@ -19,7 +19,7 @@ function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user, loading, signOut } = useAuth();
-  useSyncBackend(user);
+  const isBackendAuthenticated = useSyncBackend(user, signOut);
   const [userInfo, setUserInfo] = useState({
     fullName: "",
     email: "",
@@ -253,6 +253,14 @@ function CheckoutContent() {
             Đăng nhập
           </a>
         </div>
+      </div>
+    );
+  }
+
+  if (isBackendAuthenticated === false) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="text-white text-xl">Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.</div>
       </div>
     );
   }
