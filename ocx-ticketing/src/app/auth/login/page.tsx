@@ -11,7 +11,6 @@ function LoginContent() {
   const { signInWithGoogle, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [lang, setLang] = useState<"vi" | "en">("vi");
-  const [backendUser, setBackendUser] = useState<any>(null); // State để lưu user backend
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const supabase = createClient();
@@ -48,9 +47,8 @@ function LoginContent() {
               },
             });
             if (!res.ok) throw new Error("Backend sync failed");
-            const backendUserData = await res.json();
-            setBackendUser(backendUserData); // Lưu user backend vào state (hoặc context nếu muốn)
-            // TODO: Cập nhật user local/global context nếu cần
+            // const backendUserData = await res.json();
+            // Nếu cần xử lý backendUserData, thêm logic tại đây
           } catch (err) {
             console.error("Backend sync error:", err);
           }
