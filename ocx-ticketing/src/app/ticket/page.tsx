@@ -7,6 +7,7 @@ import Footer from "../components/Footer";
 import { EVENT_INFO } from "../constants/ticket";
 import { TicketType } from "../types/ticket";
 import { useRouter } from 'next/navigation';
+import { useAuth } from "@/components/AuthProvider";
 
 // Function to generate random colors for tickets
 const getRandomColor = () => {
@@ -31,10 +32,11 @@ interface ApiTicketType {
 }
 
 export default function TicketOption2Page() {
+  const { user, loading } = useAuth();
   const [selectedTickets, setSelectedTickets] = useState<(TicketType & { quantity: number; availableQty: number })[]>([]);
   const [lang, setLang] = useState<"vi" | "en">("vi");
   const [showNoTicketsError, setShowNoTicketsError] = useState(false);
-  const [loading, setLoading] = useState(true);
+  // Đã có biến loading từ useAuth, không cần khai báo lại
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
@@ -51,11 +53,15 @@ export default function TicketOption2Page() {
     fetchTickets();
   }, []);
 
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/auth/login?redirectTo=/ticket");
+    }
+  }, [user, loading, router]);
+
   const fetchTickets = async () => {
     try {
-      setLoading(true);
       setError(null);
-      
       const response = await fetch('https://api.otcayxe.com/tickets/event/cmd5gmqgp0005v78s79bina9z', {
         method: 'GET',
         headers: {
@@ -68,7 +74,6 @@ export default function TicketOption2Page() {
       }
 
       const data: ApiTicketType[] = await response.json();
-      
       // Transform API data to match our TicketType interface
       const transformedTickets = data.map(ticket => ({
         id: ticket.id,
@@ -86,8 +91,6 @@ export default function TicketOption2Page() {
     } catch (err) {
       console.error('Error fetching tickets:', err);
       setError('Không thể tải thông tin vé. Vui lòng thử lại sau.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -132,31 +135,10 @@ export default function TicketOption2Page() {
     }
   };
 
-  if (loading) {
+  if (loading || !user) {
     return (
-      <div className="min-h-screen relative">
-        <div 
-          className="fixed inset-0 z-0"
-          style={{
-            backgroundImage: 'url(/images/hero_backround_ss3_alt1.svg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            opacity: 0.8
-          }}
-        />
-        <div className="relative z-10">
-          <SimpleHeader lang={lang} setLang={setLang} />
-          <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-8 pt-24 sm:pt-28 md:pt-32">
-            <div className="flex items-center justify-center min-h-[400px]">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                <p className="text-white">Đang tải thông tin vé...</p>
-              </div>
-            </div>
-          </main>
-          <Footer />
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="text-white text-xl">Đang tải...</div>
       </div>
     );
   }
