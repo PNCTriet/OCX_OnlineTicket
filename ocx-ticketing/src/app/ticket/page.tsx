@@ -77,7 +77,9 @@ export default function TicketOption2Page() {
                 "Content-Type": "application/json",
               },
             });
-            if (!res.ok) {
+            if (res.ok) {
+              alert("Xác thực tài khoản thành công!");
+            } else {
               alert("Tài khoản không hợp lệ hoặc phiên đăng nhập đã hết hạn!");
             }
           } catch {
