@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import SimpleHeader from "../components/SimpleHeader";
 import EventInfoCard from "../components/ticket/EventInfoCard";
-import TicketSelectionCard from "../components/ticket/TicketSelectionCard";
 import OrderSummaryCard from "../components/ticket/OrderSummaryCard";
 import Footer from "../components/Footer";
 import { EVENT_INFO } from "../constants/ticket";
