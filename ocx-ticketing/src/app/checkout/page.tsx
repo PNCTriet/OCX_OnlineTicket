@@ -13,6 +13,7 @@ import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Ticket } from "../types/ticket";
 import { useAuth } from "@/components/AuthProvider";
+import { createClient } from "@/lib/supabase";
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
@@ -27,16 +28,12 @@ function CheckoutContent() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isSessionExpiryModalOpen, setIsSessionExpiryModalOpen] =
     useState(false);
+  const [orderInfo, setOrderInfo] = useState(null);
 
   // New: Shared countdown state for the entire checkout process
   const initialCheckoutSeconds = 180; // 3 minutes for checkout
   const [checkoutCountdown, setCheckoutCountdown] = useState(initialCheckoutSeconds);
   const [paymentStatus, setPaymentStatus] = useState<"pending" | "success" | "error">("pending");
-
-  // States for dynamic QR content, generated on client mount
-  const [orderNumber, setOrderNumber] = useState<string | null>(null);
-  const [orderDate, setOrderDate] = useState<string | null>(null);
-  const [orderTime, setOrderTime] = useState<string | null>(null);
 
   // State to track if component has mounted on client
   const [mounted, setMounted] = useState(false);
@@ -131,9 +128,9 @@ function CheckoutContent() {
       orderNumberStr
     });
     
-    setOrderNumber(orderNumberStr);
-    setOrderDate(now.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "2-digit" }).replace(/\//g, '/'));
-    setOrderTime(now.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }));
+    // setOrderNumber(orderNumberStr); // Removed as per edit hint
+    // setOrderDate(now.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "2-digit" }).replace(/\//g, '/')); // Removed as per edit hint
+    // setOrderTime(now.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })); // Removed as per edit hint
   }, [selectedTickets]); // Add selectedTickets to dependencies since we use it
 
   // Auto-fill user info when user is logged in
@@ -186,28 +183,66 @@ function CheckoutContent() {
     }));
   };
 
-  const handlePayment = () => {
-    // Validate user info - only validate phone since name and email come from Google
+  const handlePayment = async () => {
+    // Validate user info - chỉ validate phone và name
     const isPhoneValid = /^\d{10,}$/.test(userInfo.phone);
-    const isNameValid = userInfo.fullName.trim() !== ""; // Should always be valid from Google
-
+    const isNameValid = userInfo.fullName.trim() !== "";
     if (!isPhoneValid || !isNameValid || !agreedToPolicies) {
       return;
     }
-
-    setIsPaymentModalOpen(true);
+    if (!user) {
+      alert("Vui lòng đăng nhập!");
+      return;
+    }
+    if (!hasValidTickets) {
+      alert("Vui lòng chọn vé!");
+      return;
+    }
+    // Chuẩn bị dữ liệu order
+    const event_id = "cmd5gmqgp0005v78s79bina9z";
+    const organization_id = "YOUR_ORG_ID"; // TODO: cập nhật đúng org id nếu có
+    const items = selectedTickets
+      .filter(t => t.quantity > 0)
+      .map(t => ({
+        ticket_id: t.id,
+        quantity: t.quantity,
+      }));
+    // Lấy access token
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    const accessToken = session?.access_token;
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    if (!accessToken || !API_BASE_URL) {
+      alert("Không xác thực được tài khoản!");
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE_URL}/orders`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          organization_id,
+          event_id,
+          items,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        alert("Tạo đơn hàng thất bại: " + (err.message || "Lỗi không xác định"));
+        return;
+      }
+      const order = await res.json();
+      setOrderInfo(order);
+      setIsPaymentModalOpen(true);
+    } catch {
+      alert("Lỗi khi tạo đơn hàng!");
+    }
   };
 
-  const handlePaymentSuccess = () => {
-    // Handle successful payment
-    console.log('🎉 Thanh toán thành công!');
-    console.log('📧 Email vé điện tử đã được gửi');
-    
-    // For demo purposes, we'll just close the modal after a delay
-    setTimeout(() => {
-      setIsPaymentModalOpen(false);
-    }, 3000);
-  };
+  // Removed handlePaymentSuccess as per edit hint
 
   const totalAmount = selectedTickets.reduce(
     (sum, ticket) => sum + ticket.price * ticket.quantity,
@@ -374,19 +409,12 @@ function CheckoutContent() {
         <Footer />
       </div>
 
-      {mounted && isPaymentModalOpen && (
+      {mounted && isPaymentModalOpen && orderInfo && (
         <PaymentModal
           isOpen={isPaymentModalOpen}
           onClose={() => setIsPaymentModalOpen(false)}
-          selectedTickets={selectedTickets}
-          totalAmount={totalAmount}
-          userInfo={userInfo}
-          paymentRemainingSeconds={checkoutCountdown}
-          paymentStatus={paymentStatus}
-          orderNumber={orderNumber}
-          orderDate={orderDate}
-          orderTime={orderTime}
-          onPaymentSuccess={handlePaymentSuccess}
+          orderInfo={orderInfo}
+          // truyền thêm props nếu cần
         />
       )}
 

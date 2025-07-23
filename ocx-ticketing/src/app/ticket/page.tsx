@@ -33,7 +33,7 @@ interface ApiTicketType {
 }
 
 export default function TicketOption2Page() {
-  const { user, loading } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const [selectedTickets, setSelectedTickets] = useState<(TicketType & { quantity: number; availableQty: number })[]>([]);
   const [lang, setLang] = useState<"vi" | "en">("vi");
   const [showNoTicketsError, setShowNoTicketsError] = useState(false);
@@ -77,19 +77,21 @@ export default function TicketOption2Page() {
                 "Content-Type": "application/json",
               },
             });
-            if (res.ok) {
-              alert("Xác thực tài khoản thành công!");
-            } else {
-              alert("Tài khoản không hợp lệ hoặc phiên đăng nhập đã hết hạn!");
+            if (!res.ok) {
+              window.alert("Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại!");
+              await signOut();
+              router.replace("/auth/login?redirectTo=/ticket");
             }
           } catch {
-            alert("Không thể xác thực tài khoản với hệ thống backend!");
+            window.alert("Không thể xác thực tài khoản với hệ thống backend! Vui lòng đăng nhập lại.");
+            await signOut();
+            router.replace("/auth/login?redirectTo=/ticket");
           }
         }
       }
     };
     checkBackendAuth();
-  }, [user]);
+  }, [user, signOut, router]);
 
   const fetchTickets = async () => {
     try {
