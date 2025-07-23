@@ -13,13 +13,11 @@ import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Ticket } from "../types/ticket";
 import { useAuth } from "@/components/AuthProvider";
-import { useSyncBackend } from "@/hooks/useSyncBackend";
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user, loading, signOut } = useAuth();
-  const isBackendAuthenticated = useSyncBackend(user, signOut);
   const [userInfo, setUserInfo] = useState({
     fullName: "",
     email: "",
@@ -227,43 +225,17 @@ function CheckoutContent() {
 
   // Show login required if no user
   if (!user) {
-    const loginUrl = (() => {
-      if (!hasValidTickets) {
-        return '/auth/login?redirectTo=/checkout';
-      }
-      
-      try {
-        const ticketsJson = JSON.stringify(selectedTickets);
-        const encodedTickets = encodeURIComponent(ticketsJson);
-        return `/auth/login?redirectTo=/checkout&tickets=${encodedTickets}`;
-      } catch (error) {
-        console.error('Error encoding tickets for login URL:', error);
-        return '/auth/login?redirectTo=/checkout';
-      }
-    })();
-    
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
           <div className="text-white text-xl mb-4">Vui lòng đăng nhập để tiếp tục</div>
-          <a 
-            href={loginUrl}
-            className="bg-[#c53e00] text-white px-6 py-3 rounded-lg hover:bg-[#b33800] transition-colors"
-          >
-            Đăng nhập
-          </a>
+          {/* Nút đăng nhập hoặc redirect sẽ được xử lý ở nơi khác */}
         </div>
       </div>
     );
   }
 
-  if (isBackendAuthenticated === false) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="text-white text-xl">Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.</div>
-      </div>
-    );
-  }
+  
 
   // Show error if no valid tickets
   if (!hasValidTickets) {
@@ -294,14 +266,14 @@ function CheckoutContent() {
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-[#c53e00] rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-bold">
-                    {user.email?.charAt(0).toUpperCase()}
+                    {user?.email?.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div>
                   <p className="text-white text-sm font-medium">
-                    {user.user_metadata?.full_name || user.user_metadata?.name || user.email}
+                    {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email}
                   </p>
-                  <p className="text-zinc-400 text-xs">{user.email}</p>
+                  <p className="text-zinc-400 text-xs">{user?.email}</p>
                 </div>
               </div>
               <button
