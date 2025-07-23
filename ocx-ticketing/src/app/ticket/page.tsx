@@ -8,6 +8,7 @@ import { EVENT_INFO } from "../constants/ticket";
 import { TicketType } from "../types/ticket";
 import { useRouter } from 'next/navigation';
 import { useAuth } from "@/components/AuthProvider";
+import { createClient } from "@/lib/supabase";
 
 // Function to generate random colors for tickets
 const getRandomColor = () => {
@@ -58,6 +59,35 @@ export default function TicketOption2Page() {
       router.replace("/auth/login?redirectTo=/ticket");
     }
   }, [user, loading, router]);
+
+  // Xác thực user với backend khi đã đăng nhập
+  useEffect(() => {
+    const checkBackendAuth = async () => {
+      if (user) {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        const accessToken = session?.access_token;
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+        if (accessToken && API_BASE_URL) {
+          try {
+            const res = await fetch(`${API_BASE_URL}/auth/me`, {
+              method: "GET",
+              headers: {
+                "Authorization": `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+              },
+            });
+            if (!res.ok) {
+              alert("Tài khoản không hợp lệ hoặc phiên đăng nhập đã hết hạn!");
+            }
+          } catch {
+            alert("Không thể xác thực tài khoản với hệ thống backend!");
+          }
+        }
+      }
+    };
+    checkBackendAuth();
+  }, [user]);
 
   const fetchTickets = async () => {
     try {
