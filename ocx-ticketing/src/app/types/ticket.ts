@@ -5,7 +5,7 @@ export type Ticket = {
   color: string;
   sold: number;
   label?: string;
-  status: "not-yet-on-sale" | "available" | "sold-out";
+  status: "INACTIVE" | "ACTIVE" | "SOLD_OUT";
   quantity: number;
 };
 
@@ -17,7 +17,7 @@ export type TicketType = {
   quantity: number;
   sold: number;
   label?: string;
-  status: 'not-yet-on-sale' | 'available' | 'sold-out';
+  status: 'INACTIVE' | 'ACTIVE' | 'SOLD_OUT';
 };
 
 export type Zone = {
@@ -35,7 +35,7 @@ export type Seat = {
   x: number;
   y: number;
   type: string; // e.g., 'A', 'B', 'VIP', corresponds to a zone
-  status: 'available' | 'selected' | 'sold';
+  status: 'ACTIVE' | 'selected' | 'sold';
 };
 
 export type EventInfo = {

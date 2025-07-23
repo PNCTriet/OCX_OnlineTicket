@@ -52,12 +52,17 @@ const ARTISTS = [
   {
     main: "/images/lineup_main_ss4_artist10_alt1.png",
     sub: "/images/lineup_sub_ss4_artist10_alt1.png",
-    name: "Artist 9"
+    name: "Artist 10"
   },
   {
     main: "/images/lineup_main_ss4_artist11_alt1.png",
     sub: "/images/lineup_sub_ss4_artist11_alt1.png",
-    name: "Artist 9"
+    name: "Artist 11"
+  },
+  {
+    main: "/images/lineup_main_ss4_artist12_alt1.png",
+    sub: "/images/lineup_sub_ss4_artist12_alt1.png",
+    name: "Artist 12"
   }
 ];
 

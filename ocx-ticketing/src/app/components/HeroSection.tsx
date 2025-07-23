@@ -16,6 +16,36 @@ export default function HeroSection() {
         fontFamily: 'BDStreetSignSans'
       }}
     >
+      <div className="absolute inset-0 z-0">
+        {/* Desktop background */}
+        <div
+          className="hidden sm:block w-full h-full"
+          style={{
+            backgroundImage: "url(/images/hero_backround_ss4_alt1.svg)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            inset: 0,
+          }}
+        />
+        {/* Mobile background */}
+        <div
+          className="block sm:hidden w-full h-full"
+          style={{
+            backgroundImage: "url(/images/hero_background_ss4_mobile.jpg)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            inset: 0,
+          }}
+        />
+      </div>
       <div className="relative flex flex-col items-center justify-center text-center px-4 w-full">
         {/* Logo + Flame animation */}
         <div className="flex flex-col items-center w-full" style={{paddingTop: '4vh'}}>

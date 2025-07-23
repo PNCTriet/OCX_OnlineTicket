@@ -4,22 +4,39 @@ import SimpleHeader from "../components/SimpleHeader";
 import EventInfoCard from "../components/ticket/EventInfoCard";
 import TicketSelectionCard from "../components/ticket/TicketSelectionCard";
 import OrderSummaryCard from "../components/ticket/OrderSummaryCard";
-import StageMapCard from "../components/ticket/StageMapCard";
-import ZoneConfirmationModal from "../components/ticket/ZoneConfirmationModal";
 import Footer from "../components/Footer";
-import { TICKETS, ZONES, EVENT_INFO, SEAT_LAYOUT_CONFIG } from "../constants/ticket";
-import { TicketType, Zone } from "../types/ticket";
+import { EVENT_INFO } from "../constants/ticket";
+import { TicketType } from "../types/ticket";
 import { useRouter } from 'next/navigation';
 
-export default function TicketPage() {
-  const [selectedTickets, setSelectedTickets] = useState<(TicketType & { quantity: number })[]>(
-    TICKETS.map(ticket => ({ ...ticket, quantity: 0 }))
-  );
-  const [selectedZone, setSelectedZone] = useState<string | null>(null);
+// Function to generate random colors for tickets
+const getRandomColor = () => {
+  const colors = ['#56F482', '#31E4EC', '#F06185', '#F2D31F', '#A780F4', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'];
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+
+// Interface for API response
+interface ApiTicketType {
+  id: string;
+  event_id: string;
+  name: string;
+  description: string;
+  price: string;
+  total_qty: number;
+  sold_qty: number;
+  sale_start: string;
+  sale_end: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export default function TicketOption2Page() {
+  const [selectedTickets, setSelectedTickets] = useState<(TicketType & { quantity: number; availableQty: number })[]>([]);
   const [lang, setLang] = useState<"vi" | "en">("vi");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [pendingZone, setPendingZone] = useState<Zone | null>(null);
   const [showNoTicketsError, setShowNoTicketsError] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -30,7 +47,50 @@ export default function TicketPage() {
     if (noTickets === 'true') {
       setShowNoTicketsError(true);
     }
+
+    // Fetch tickets from API
+    fetchTickets();
   }, []);
+
+  const fetchTickets = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch('https://api.otcayxe.com/tickets/event/cmd5gmqgp0005v78s79bina9z', {
+        method: 'GET',
+        headers: {
+          'accept': '*/*',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: ApiTicketType[] = await response.json();
+      
+      // Transform API data to match our TicketType interface
+      const transformedTickets = data.map(ticket => ({
+        id: ticket.id,
+        name: ticket.name,
+        price: parseInt(ticket.price),
+        color: getRandomColor(), // Generate random color for each ticket
+        quantity: 0, // Initialize quantity to 0
+        sold: ticket.sold_qty,
+        label: ticket.description,
+        status: ticket.status as 'INACTIVE' | 'ACTIVE' | 'SOLD_OUT',
+        availableQty: ticket.total_qty - ticket.sold_qty, // Calculate available quantity
+      }));
+
+      setSelectedTickets(transformedTickets);
+    } catch (err) {
+      console.error('Error fetching tickets:', err);
+      setError('Không thể tải thông tin vé. Vui lòng thử lại sau.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleQuantityChange = (ticketId: string, change: number) => {
     setShowNoTicketsError(false); // Clear error when user selects tickets
@@ -40,8 +100,9 @@ export default function TicketPage() {
           const newQuantity = ticket.quantity + change;
           // Prevent negative quantities
           if (newQuantity < 0) return ticket;
-          // Prevent exceeding max limit of 5 tickets per type
-          if (newQuantity > 5) return ticket;
+          // Calculate max limit: min of 10 or available quantity
+          const maxLimit = Math.min(10, ticket.availableQty);
+          if (newQuantity > maxLimit) return ticket;
           return { ...ticket, quantity: newQuantity };
         }
         return ticket;
@@ -53,57 +114,6 @@ export default function TicketPage() {
     (sum, ticket) => sum + ticket.price * ticket.quantity,
     0
   );
-
-  const handleZoneSelect = (sectionId: string) => {
-    const sectionConfig = SEAT_LAYOUT_CONFIG.SECTIONS.find(s => s.id === sectionId);
-    if (!sectionConfig) {
-      return;
-    }
-
-    const correspondingZone = ZONES.find(z => z.ticketTypeId === sectionConfig.ticketTypeId);
-    if (!correspondingZone) {
-      console.error(`No corresponding Zone found for ticketTypeId: ${sectionConfig.ticketTypeId}`);
-      return;
-    }
-
-    if (selectedZone === sectionId) {
-      setSelectedZone(null);
-      setSelectedTickets(prevTickets =>
-        prevTickets.map(ticket => {
-          if (ticket.id === correspondingZone.ticketTypeId && ticket.quantity > 0) {
-            return { ...ticket, quantity: ticket.quantity - 1 };
-          }
-          return ticket;
-        })
-      );
-    } else {
-      setPendingZone(correspondingZone);
-      setIsModalOpen(true);
-    }
-  };
-
-  const handleConfirmZone = () => {
-    if (pendingZone) {
-      const sectionIdForPendingZone = SEAT_LAYOUT_CONFIG.SECTIONS.find(s => s.ticketTypeId === pendingZone.ticketTypeId)?.id || null;
-      setSelectedZone(sectionIdForPendingZone);
-
-      setSelectedTickets(prevTickets =>
-        prevTickets.map(ticket => {
-          if (ticket.id === pendingZone.ticketTypeId) {
-            return { ...ticket, quantity: ticket.quantity + 1 };
-          }
-          return ticket;
-        })
-      );
-    }
-    setIsModalOpen(false);
-    setPendingZone(null);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setPendingZone(null);
-  };
 
   const handleContinue = () => {
     const ticketsToBuy = selectedTickets.filter(t => t.quantity > 0);
@@ -123,6 +133,71 @@ export default function TicketPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen relative">
+        <div 
+          className="fixed inset-0 z-0"
+          style={{
+            backgroundImage: 'url(/images/hero_backround_ss3_alt1.svg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            opacity: 0.8
+          }}
+        />
+        <div className="relative z-10">
+          <SimpleHeader lang={lang} setLang={setLang} />
+          <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-8 pt-24 sm:pt-28 md:pt-32">
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                <p className="text-white">Đang tải thông tin vé...</p>
+              </div>
+            </div>
+          </main>
+          <Footer />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen relative">
+        <div 
+          className="fixed inset-0 z-0"
+          style={{
+            backgroundImage: 'url(/images/hero_backround_ss3_alt1.svg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            opacity: 0.8
+          }}
+        />
+        <div className="relative z-10">
+          <SimpleHeader lang={lang} setLang={setLang} />
+          <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-8 pt-24 sm:pt-28 md:pt-32">
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="text-center">
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 max-w-md mx-auto">
+                  <p className="text-red-500 mb-4">{error}</p>
+                  <button 
+                    onClick={fetchTickets}
+                    className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Thử lại
+                  </button>
+                </div>
+              </div>
+            </div>
+          </main>
+          <Footer />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen relative">
       <div 
@@ -140,26 +215,108 @@ export default function TicketPage() {
         <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-8 pt-24 sm:pt-28 md:pt-32">
           {showNoTicketsError && (
             <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-500">
-              {/* <p className="text-center">Vui lòng chọn ít nhất một vé để tiếp tục.</p> */}
+              <p className="text-center">Vui lòng chọn ít nhất một vé để tiếp tục.</p>
             </div>
           )}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6 flex flex-col h-full">
-              <StageMapCard
-                selectedZoneId={selectedZone}
-                onZoneSelect={handleZoneSelect}
-              />
+              <div className="block sm:hidden">
+                <EventInfoCard event={EVENT_INFO} />
+              </div>
+              <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+                <h2 className="text-2xl font-bold text-white mb-4">Chọn Vé</h2>
+                <p className="text-gray-300 mb-6">
+                  Chọn loại vé phù hợp với nhu cầu của bạn. Mỗi loại vé có những đặc quyền khác nhau. Khác mỗi cái giá
+                </p>
+                <div className="space-y-4">
+                  {selectedTickets
+                    .slice()
+                    .sort((a, b) => {
+                      const statusOrder = (status: string) => {
+                        if (status === 'ACTIVE') return 0;
+                        if (status === 'INACTIVE') return 1;
+                        return 2; // SOLD_OUT
+                      };
+                      return statusOrder(a.status) - statusOrder(b.status);
+                    })
+                    .map((ticket) => (
+                    <div 
+                      key={ticket.id}
+                      className="bg-white/5 rounded-lg p-6 border border-white/10 hover:border-white/20 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-4 mb-3">
+                            <h3 className="text-xl font-semibold text-white">{ticket.name}</h3>
+                            {/* <span 
+                              className="px-3 py-1 rounded-full text-sm font-medium"
+                              style={{ backgroundColor: ticket.color + '20', color: ticket.color }}
+                            >
+                              {ticket.label}
+                            </span> */}
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-3xl font-bold text-white mb-1">
+                                {ticket.price.toLocaleString('vi-VN')} VNĐ
+                              </p>
+                              <div className="flex items-center gap-2">
+                                {ticket.status === 'ACTIVE' && (
+                                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+                                    Còn vé
+                                  </span>
+                                )}
+                                {ticket.status === 'INACTIVE' && (
+                                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                                    Chưa mở bán
+                                  </span>
+                                )}
+                                {ticket.status === 'SOLD_OUT' && (
+                                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30">
+                                    Hết vé
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                              <button
+                                onClick={() => handleQuantityChange(ticket.id, -1)}
+                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={ticket.quantity === 0}
+                              >
+                                -
+                              </button>
+                              <span className="text-white font-semibold text-xl min-w-[3rem] text-center">
+                                {ticket.quantity}
+                              </span>
+                              <button
+                                onClick={() => handleQuantityChange(ticket.id, 1)}
+                                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={ticket.quantity >= Math.min(10, ticket.availableQty) || ticket.status !== 'ACTIVE'}
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="lg:col-span-1">
               <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
                 <div className="space-y-6">
-                  <EventInfoCard event={EVENT_INFO} />
-                  <TicketSelectionCard 
+                  <div className="hidden sm:block">
+                    <EventInfoCard event={EVENT_INFO} />
+                  </div>
+                  {/* <TicketSelectionCard 
                     tickets={selectedTickets} 
                     onQuantityChange={handleQuantityChange}
-                    selectedZoneId={selectedZone}
-                  />
+                    selectedZoneId={null} // No zone selection for this option
+                  /> */}
                   <OrderSummaryCard 
                     totalAmount={totalAmount} 
                     onContinue={handleContinue}
@@ -173,13 +330,6 @@ export default function TicketPage() {
         </main>
         <Footer />
       </div>
-
-      <ZoneConfirmationModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmZone}
-        zone={pendingZone}
-      />
     </div>
   );
 } 
