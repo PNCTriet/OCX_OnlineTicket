@@ -14,15 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 // Get the base URL from environment variables
-const getBaseUrl = () => {
-  if (process.env.NEXT_PUBLIC_BASE_URL) {
-    return process.env.NEXT_PUBLIC_BASE_URL;
-  }
-  
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  
+const getBaseUrl = () => { 
   // Use production URL by default, fallback to localhost for development
   if (process.env.NODE_ENV === 'production') {
     return 'https://www.otcayxe.com';
