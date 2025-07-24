@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 type OrderItem = {
   ticket_id: string;
@@ -20,6 +21,29 @@ type PaymentModalProps = {
 };
 
 export default function PaymentModal({ isOpen, onClose, orderInfo }: PaymentModalProps) {
+  const [isPaid, setIsPaid] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen || !orderInfo?.id) return;
+    let interval: NodeJS.Timeout | null = null;
+    const checkStatus = async () => {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+      const res = await fetch(`${API_BASE_URL}/orders/${orderInfo.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status === "PAID" || data.status === "SUCCESS") {
+          setIsPaid(true);
+          if (interval) clearInterval(interval);
+        }
+      }
+    };
+    interval = setInterval(checkStatus, 3000);
+    checkStatus();
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isOpen, orderInfo?.id]);
+
   if (!isOpen || !orderInfo) return null;
 
   // Tạo link QR VietQR
@@ -87,6 +111,11 @@ export default function PaymentModal({ isOpen, onClose, orderInfo }: PaymentModa
             </div>
           </div>
         </div>
+        {isPaid && (
+          <div className="bg-green-600 text-white p-4 rounded-lg text-center mt-4">
+            🎉 Thanh toán thành công! Vé sẽ được gửi về email của bạn.
+          </div>
+        )}
       </div>
     </div>
   );

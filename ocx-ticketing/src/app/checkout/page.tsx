@@ -42,7 +42,7 @@ function CheckoutContent() {
   const handleCountdownExpire = useCallback(() => setIsSessionExpiryModalOpen(true), []);
 
   // Parse tickets from URL
-  const ticketsParam = searchParams.get("tickets");
+  const ticketsParam = searchParams?.get("tickets");
   
   const selectedTickets: Ticket[] = useMemo(() => {
     if (!ticketsParam) {

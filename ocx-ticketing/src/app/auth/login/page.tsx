@@ -15,8 +15,8 @@ function LoginContent() {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const supabase = createClient();
 
-  const redirectTo = searchParams.get("redirectTo") || "/";
-  const ticketsParam = searchParams.get("tickets");
+  const redirectTo = searchParams?.get("redirectTo") || "/";
+  const ticketsParam = searchParams?.get("tickets");
 
   useEffect(() => {
     // If user is already logged in, redirect immediately
