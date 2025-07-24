@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
     images: [
       {
-        url: "${baseUrl}/images/client_logo_ss4_thumb.png",
+        url: "https://otcayxe.com/images/client_logo_ss4_thumb.png",
         width: 800,
         height: 600,
         alt: "OCX Online Ticket Logo",
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
     images: [
       {
-        url: "${baseUrl}/images/client_logo_ss4_thumb.png",
+        url: "https://otcayxe.com/images/client_logo_ss4_thumb.png",
         alt: "OCX Online Ticket Logo",
       },
     ],
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
 
   icons: {
     icon: "/favicon.ico",
-    apple: "${baseUrl}/images/client_logo_ss4_thumb.png",
+    apple: "https://otcayxe.com/images/client_logo_ss4_thumb.png",
   },
 };
 
