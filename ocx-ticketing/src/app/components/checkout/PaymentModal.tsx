@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase";
 
 type OrderItem = {
   ticket_id: string;
@@ -27,10 +28,20 @@ export default function PaymentModal({ isOpen, onClose, orderInfo }: PaymentModa
     if (!isOpen || !orderInfo?.id) return;
     let interval: NodeJS.Timeout | null = null;
     const checkStatus = async () => {
-      const res = await fetch(`/api/payment-webhook?orderId=${orderInfo.id}`);
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const accessToken = session?.access_token;
+      if (!accessToken) return;
+      const res = await fetch(`${API_BASE_URL}/orders/${orderInfo.id}`, {
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        }
+      });
       if (res.ok) {
         const data = await res.json();
-        if (data.status === "PAID") {
+        if (data.status === "PAID" || data.status === "SUCCESS") {
           setIsPaid(true);
           if (interval) clearInterval(interval);
         }
