@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
+import { createClient } from "@/lib/supabase";
 
 type OrderStatusInfo = {
   status: string;
@@ -21,7 +22,7 @@ export default function TestWebhookPage() {
     setStatus(null);
     setInfo(null);
     pollStatus(orderId);
-    intervalRef.current = setInterval(() => pollStatus(orderId), 3000);
+    intervalRef.current = setInterval(() => pollStatus(orderId), 3000); // 10s
   };
 
   const stopTracking = () => {
@@ -33,9 +34,22 @@ export default function TestWebhookPage() {
 
   const pollStatus = async (oid: string) => {
     try {
-      const res = await fetch(`/api/payment-webhook?orderId=${oid}`);
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const accessToken = session?.access_token;
+      console.log("[pollStatus] Gọi GET:", `${API_BASE_URL}/orders/${oid}`);
+      console.log("[pollStatus] AccessToken:", accessToken);
+      const res = await fetch(`${API_BASE_URL}/orders/${oid}`, {
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        }
+      });
+      console.log("[pollStatus] Response status:", res.status);
       if (res.ok) {
         const data = await res.json();
+        console.log("[pollStatus] Data:", data);
         setStatus(data.status);
         setInfo(data);
         if (data.status === "PAID" || data.status === "SUCCESS") {
@@ -44,10 +58,12 @@ export default function TestWebhookPage() {
       } else {
         setStatus(null);
         setInfo(null);
+        console.log("[pollStatus] Không lấy được trạng thái order hoặc lỗi.");
       }
-    } catch {
+    } catch (err) {
       setStatus(null);
       setInfo(null);
+      console.error("[pollStatus] Lỗi khi gọi GET:", err);
     }
   };
 

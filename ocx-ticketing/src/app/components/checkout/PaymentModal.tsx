@@ -27,11 +27,10 @@ export default function PaymentModal({ isOpen, onClose, orderInfo }: PaymentModa
     if (!isOpen || !orderInfo?.id) return;
     let interval: NodeJS.Timeout | null = null;
     const checkStatus = async () => {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-      const res = await fetch(`${API_BASE_URL}/orders/${orderInfo.id}`);
+      const res = await fetch(`/api/payment-webhook?orderId=${orderInfo.id}`);
       if (res.ok) {
         const data = await res.json();
-        if (data.status === "PAID" || data.status === "SUCCESS") {
+        if (data.status === "PAID") {
           setIsPaid(true);
           if (interval) clearInterval(interval);
         }
