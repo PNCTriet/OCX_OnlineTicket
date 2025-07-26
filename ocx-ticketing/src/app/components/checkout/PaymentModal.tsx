@@ -194,7 +194,7 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
             <div className="bg-zinc-800 rounded-lg p-4">
               <h3 className="text-lg font-bold text-white mb-3">Chi tiết vé</h3>
               <div className="space-y-3">
-                {selectedTickets?.map((ticket: Ticket, index: number) => (
+                {selectedTickets?.map((ticket: Ticket) => (
                   <div key={ticket.id} className="border-b border-zinc-700 pb-2 last:border-b-0">
                     <div className="flex justify-between items-center">
                       <div className="flex-1">
