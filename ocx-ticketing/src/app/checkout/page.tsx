@@ -31,9 +31,16 @@ function CheckoutContent() {
   const [orderInfo, setOrderInfo] = useState(null);
 
   // New: Shared countdown state for the entire checkout process
-  const initialCheckoutSeconds = 180; // 3 minutes for checkout
+  const initialCheckoutSeconds = 600; // 10 minutes for checkout
   const [checkoutCountdown, setCheckoutCountdown] = useState(initialCheckoutSeconds);
   const [paymentStatus, setPaymentStatus] = useState<"pending" | "success" | "error">("pending");
+  
+  // Validation state
+  const [validationErrors, setValidationErrors] = useState({
+    phone: "",
+    name: "",
+    policies: ""
+  });
 
   // State to track if component has mounted on client
   const [mounted, setMounted] = useState(false);
@@ -187,6 +194,15 @@ function CheckoutContent() {
     // Validate user info - chỉ validate phone và name
     const isPhoneValid = /^\d{10,}$/.test(userInfo.phone);
     const isNameValid = userInfo.fullName.trim() !== "";
+    
+    // Set validation errors
+    const newErrors = {
+      phone: !isPhoneValid ? "Vui lòng nhập số điện thoại hợp lệ" : "",
+      name: !isNameValid ? "Vui lòng nhập họ và tên" : "",
+      policies: !agreedToPolicies ? "Vui lòng đồng ý với điều khoản" : ""
+    };
+    setValidationErrors(newErrors);
+    
     if (!isPhoneValid || !isNameValid || !agreedToPolicies) {
       return;
     }
@@ -336,7 +352,7 @@ function CheckoutContent() {
             
             {/* Event Info */}
             <div className="max-h-[300px] overflow-hidden">
-              <EventInfoCard event={EVENT_INFO} />
+              <EventInfoCard event={EVENT_INFO} showBackButton={true} />
             </div>
             
             {/* Ticket Summary */}
@@ -349,6 +365,7 @@ function CheckoutContent() {
             <UserInfoForm
               userInfo={userInfo}
               onUserInfoChange={handleUserInfoChange}
+              validationErrors={validationErrors}
             />
             
             {/* Policy and Payment Button at bottom for mobile */}
@@ -372,7 +389,7 @@ function CheckoutContent() {
             {/* Left Column */}
             <div className="space-y-6">
               <div className="max-h-[300px] overflow-hidden">
-                <EventInfoCard event={EVENT_INFO} />
+                <EventInfoCard event={EVENT_INFO} showBackButton={true} />
               </div>
               <TicketSummaryTable
                 selectedTickets={selectedTickets}
@@ -402,6 +419,7 @@ function CheckoutContent() {
               <UserInfoForm
                 userInfo={userInfo}
                 onUserInfoChange={handleUserInfoChange}
+                validationErrors={validationErrors}
               />
             </div>
           </div>
@@ -414,7 +432,8 @@ function CheckoutContent() {
           isOpen={isPaymentModalOpen}
           onClose={() => setIsPaymentModalOpen(false)}
           orderInfo={orderInfo}
-          // truyền thêm props nếu cần
+          countdownSeconds={checkoutCountdown}
+          selectedTickets={selectedTickets}
         />
       )}
 
