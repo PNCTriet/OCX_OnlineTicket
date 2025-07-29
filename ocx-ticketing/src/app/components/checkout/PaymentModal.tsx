@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
-import PaymentSuccessModal from "./PaymentSuccessModal";
+import { useRouter } from "next/navigation";
 
 type OrderItem = {
   ticket_id: string;
@@ -32,8 +32,11 @@ type PaymentModalProps = {
 
 export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeconds, selectedTickets }: PaymentModalProps) {
   const [isPaid, setIsPaid] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [showCheckmark, setShowCheckmark] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const [localCountdown, setLocalCountdown] = useState(countdownSeconds || 600);
+  const router = useRouter();
 
   // Sync countdown with parent
   useEffect(() => {
@@ -86,13 +89,20 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
         
         if (res.ok) {
           const data = await res.json();
+          
           if (data.status === "PAID" || data.status === "SUCCESS") {
             setIsPaid(true);
             if (interval) clearInterval(interval);
             // Đóng modal thanh toán và hiện popup thành công
             setTimeout(() => {
-              onClose();
-              setShowSuccessModal(true);
+              setShowSuccessAnimation(true);
+              // Trigger animation sequence
+              setTimeout(() => setShowCheckmark(true), 300);
+              setTimeout(() => setShowMessage(true), 800);
+              setTimeout(() => {
+                onClose();
+                router.push("/");
+              }, 5000);
             }, 1000); // Delay 1 giây để hiển thị trạng thái "Đang xử lý"
           }
         }
@@ -262,11 +272,70 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
         </div>
       </div>
 
-      {/* Payment Success Modal */}
-      <PaymentSuccessModal 
-        isOpen={showSuccessModal} 
-        onClose={() => setShowSuccessModal(false)} 
-      />
+      {/* Success Animation Overlay */}
+      {showSuccessAnimation && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+          
+          {/* Success Animation */}
+          <div className="relative bg-zinc-900 rounded-2xl p-8 max-w-md w-full shadow-2xl border border-green-500/20">
+            <div className="flex flex-col items-center space-y-6">
+              {/* Checkmark Circle */}
+              <div className={`w-20 h-20 rounded-full border-4 border-green-500 flex items-center justify-center transition-all duration-500 ${
+                showCheckmark ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
+              }`}>
+                <svg 
+                  className={`w-10 h-10 text-green-500 transition-all duration-300 ${
+                    showCheckmark ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
+                  }`}
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth="3" 
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+
+              {/* Success Message */}
+              <div className={`text-center transition-all duration-500 ${
+                showMessage ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Thanh toán thành công!
+                </h2>
+                <p className="text-zinc-300 text-sm leading-relaxed">
+                  Email xác nhận sẽ được gửi đến bạn trong thời gian sớm nhất. 
+                  Vé điện tử sẽ được gửi về email của bạn.
+                </p>
+              </div>
+
+              {/* Loading dots */}
+              <div className={`flex space-x-1 transition-all duration-1000 ${
+                showMessage ? 'opacity-100' : 'opacity-0'
+              }`}>
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
+
+              {/* Redirect message */}
+              <div className={`text-center transition-all duration-500 ${
+                showMessage ? 'opacity-100' : 'opacity-0'
+              }`}>
+                <p className="text-zinc-400 text-xs">
+                  Tự động chuyển về trang chủ trong vài giây...
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 } 
