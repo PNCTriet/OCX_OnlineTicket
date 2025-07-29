@@ -97,8 +97,8 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
   if (!isOpen || !orderInfo) return null;
 
   // Tạo link QR VietQR
-  //const qrUrl = `https://img.vietqr.io/image/VPB-214244527-compact.png?amount=${orderInfo.total_amount}&addInfo=OCX${orderInfo.id}&accountName=PHAM NG CAO TRIET`;
-  const qrUrl = `https://img.vietqr.io/image/VPB-0934782703-compact.png?amount=${orderInfo.total_amount}&addInfo=OCX${orderInfo.id}&accountName=LE THI NGOC HAN`;
+  const qrUrl = `https://img.vietqr.io/image/VPB-214244527-compact.png?amount=${orderInfo.total_amount}&addInfo=OCX${orderInfo.id}&accountName=PHAM NG CAO TRIET`;
+  // const qrUrl = `https://img.vietqr.io/image/VPB-0934782703-compact.png?amount=${orderInfo.total_amount}&addInfo=OCX${orderInfo.id}&accountName=LE THI NGOC HAN`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -159,12 +159,12 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Receiver Account:</span>
-                  {/* <span className="font-medium">214244527</span> */}
-                  <span className="font-medium">0934782703</span>
+                  <span className="font-medium">214244527</span>
+                  {/* <span className="font-medium">0934782703</span> */}
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Receiver :</span>
-                  <span className="font-medium">LE THI NGOC HAN</span>
+                  <span className="font-medium">PHAM NG CAO TRIET</span>
                 </div>
                 {/* <div className="flex justify-between">
                   <span className="text-zinc-400">Amount:</span>
