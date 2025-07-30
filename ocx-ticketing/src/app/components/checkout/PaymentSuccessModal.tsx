@@ -32,7 +32,7 @@ export default function PaymentSuccessModal({ isOpen, onClose }: PaymentSuccessM
         console.log("Redirecting to home page");
         onClose();
         router.push("/");
-      }, 5000); // Tăng thời gian hiển thị lên 5 giây
+      }, 20000); // Tăng thời gian hiển thị lên 20 giây
 
       return () => {
         clearTimeout(timer1);

@@ -329,7 +329,7 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
                 showMessage ? 'opacity-100' : 'opacity-0'
               }`}>
                 <p className="text-zinc-400 text-xs">
-                  Tự động chuyển về trang chủ trong vài giây...
+                  Locket, story gì lẹ đi mom...
                 </p>
               </div>
             </div>
