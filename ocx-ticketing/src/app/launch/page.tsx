@@ -5,24 +5,14 @@ import { LAUNCH_CONFIG } from "../../config/launch";
 import MainHeader from "../components/MainHeader";
 
 export default function LaunchPage() {
-  const [mounted, setMounted] = useState(false);
   const [lang, setLang] = useState<"vi" | "en">("vi");
 
   useEffect(() => {
-    setMounted(true);
     document.documentElement.classList.add("dark");
   }, []);
 
   // Use launch date from config
   const launchDate = LAUNCH_CONFIG.LAUNCH_DATE;
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="text-white text-xl">Đang tải...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-black min-h-screen font-sans text-white">

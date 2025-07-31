@@ -1,7 +1,7 @@
 // Launch configuration
 export const LAUNCH_CONFIG = {
   // Set your launch date here
-  LAUNCH_DATE: new Date('2025-08-01T02:40:00'),
+  LAUNCH_DATE: new Date('2025-08-01T03:30:00'),
   
   // Event information
   EVENT_INFO: {

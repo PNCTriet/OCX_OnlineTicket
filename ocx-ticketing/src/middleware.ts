@@ -2,65 +2,6 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // Import launch config
-  const { LAUNCH_CONFIG } = await import('./config/launch');
-  
-  const currentDate = new Date();
-  
-  // Check if current time is before launch date
-  const isBeforeLaunch = currentDate < LAUNCH_CONFIG.LAUNCH_DATE;
-  
-  // Get the pathname
-  const pathname = request.nextUrl.pathname;
-  
-  // Check if we've already redirected to prevent loops
-  const hasRedirected = request.cookies.get('launch-redirect')?.value;
-  
-  // Debug logging
-  console.log('Middleware check:', {
-    currentDate: currentDate.toISOString(),
-    launchDate: LAUNCH_CONFIG.LAUNCH_DATE.toISOString(),
-    isBeforeLaunch,
-    pathname,
-    hasRedirected,
-    shouldRedirectToLaunch: isBeforeLaunch && pathname !== '/launch',
-    shouldRedirectToHome: !isBeforeLaunch && pathname === '/launch'
-  });
-  
-  // Allow access to launch page and static assets
-  if (pathname === '/launch' || 
-      pathname.startsWith('/_next') || 
-      pathname.startsWith('/api') ||
-      pathname.startsWith('/images') ||
-      pathname.startsWith('/fonts') ||
-      pathname.startsWith('/public') ||
-      pathname.startsWith('/lottie') ||
-      pathname.startsWith('/auth/callback')) {
-    return NextResponse.next();
-  }
-  
-  // If before launch and trying to access main site pages, redirect to launch
-  if (isBeforeLaunch && (pathname === '/ticket' || pathname === '/checkout' || pathname === '/auth/login') && hasRedirected !== 'to-launch') {
-    console.log('Redirecting to launch page');
-    const response = NextResponse.redirect(new URL('/launch', request.url));
-    response.cookies.set('launch-redirect', 'to-launch', { maxAge: 60 }); // 1 minute
-    return response;
-  }
-  
-  // If after launch, allow all pages to work normally
-  if (!isBeforeLaunch) {
-    // Allow all pages to work normally after launch
-    return NextResponse.next();
-  }
-  
-  // If after launch and on launch page, redirect to home
-  if (!isBeforeLaunch && pathname === '/launch' && hasRedirected !== 'to-home') {
-    console.log('Redirecting to home page');
-    const response = NextResponse.redirect(new URL('/', request.url));
-    response.cookies.set('launch-redirect', 'to-home', { maxAge: 60 }); // 1 minute
-    return response;
-  }
-
   let supabaseResponse = NextResponse.next({
     request,
   })
