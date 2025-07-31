@@ -34,16 +34,23 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith('/images') ||
       pathname.startsWith('/fonts') ||
       pathname.startsWith('/public') ||
-      pathname.startsWith('/lottie')) {
+      pathname.startsWith('/lottie') ||
+      pathname.startsWith('/auth/callback')) {
     return NextResponse.next();
   }
   
-  // If before launch and not on launch page, redirect to launch
-  if (isBeforeLaunch && pathname !== '/launch' && hasRedirected !== 'to-launch') {
+  // If before launch and trying to access main site pages, redirect to launch
+  if (isBeforeLaunch && (pathname === '/' || pathname === '/ticket' || pathname === '/checkout' || pathname === '/auth/login') && hasRedirected !== 'to-launch') {
     console.log('Redirecting to launch page');
     const response = NextResponse.redirect(new URL('/launch', request.url));
     response.cookies.set('launch-redirect', 'to-launch', { maxAge: 60 }); // 1 minute
     return response;
+  }
+  
+  // If after launch, allow all pages to work normally
+  if (!isBeforeLaunch) {
+    // Allow all pages to work normally after launch
+    return NextResponse.next();
   }
   
   // If after launch and on launch page, redirect to home
