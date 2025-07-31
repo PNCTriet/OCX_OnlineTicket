@@ -117,7 +117,7 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isOpen, orderInfo?.id, onClose]);
+  }, [isOpen, orderInfo?.id, onClose, router]);
 
   if (!isOpen || !orderInfo) return null;
 

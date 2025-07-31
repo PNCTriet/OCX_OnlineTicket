@@ -9,6 +9,18 @@ import UserInfoForm from "../components/checkout/UserInfoForm";
 import CountdownTimer from "../components/checkout/CountdownTimer";
 import PolicyCheckbox from "../components/checkout/PolicyCheckbox";
 import PaymentModal from "../components/checkout/PaymentModal";
+
+type OrderInfo = {
+  id: string;
+  total_amount: number;
+  status: string;
+  order_items?: Array<{
+    id: string;
+    ticket_id: string;
+    quantity: number;
+    price: number;
+  }>;
+};
 import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Ticket } from "../types/ticket";
@@ -28,7 +40,8 @@ function CheckoutContent() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isSessionExpiryModalOpen, setIsSessionExpiryModalOpen] =
     useState(false);
-  const [orderInfo, setOrderInfo] = useState(null);
+  const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // New: Shared countdown state for the entire checkout process
   const initialCheckoutSeconds = 600; // 10 minutes for checkout
@@ -183,6 +196,41 @@ function CheckoutContent() {
     }
   }, [hasValidTickets, mounted, router]);
 
+  // Cleanup order when component unmounts or user leaves
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (orderInfo?.id) {
+        // Cancel order when user leaves page
+        const cancelOrder = async () => {
+          try {
+            const supabase = createClient();
+            const { data: { session } } = await supabase.auth.getSession();
+            const accessToken = session?.access_token;
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+            
+            if (accessToken && API_BASE_URL) {
+              await fetch(`${API_BASE_URL}/orders/${orderInfo.id}/cancel`, {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${accessToken}`,
+                  "Content-Type": "application/json",
+                },
+              });
+            }
+          } catch (error) {
+            console.error("Error canceling order on page unload:", error);
+          }
+        };
+        cancelOrder();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [orderInfo?.id]);
+
   const handleUserInfoChange = (field: string, value: string) => {
     setUserInfo((prev) => ({
       ...prev,
@@ -191,6 +239,11 @@ function CheckoutContent() {
   };
 
   const handlePayment = async () => {
+    // Prevent spam clicking
+    if (isProcessingPayment) {
+      return;
+    }
+
     // Validate user info - chỉ validate phone và name
     const isPhoneValid = /^\d{10,}$/.test(userInfo.phone);
     const isNameValid = userInfo.fullName.trim() !== "";
@@ -214,25 +267,90 @@ function CheckoutContent() {
       alert("Vui lòng chọn vé!");
       return;
     }
-    // Chuẩn bị dữ liệu order
-    const event_id = "cmd5gmqgp0005v78s79bina9z";
-    const organization_id = "cmd5g7d2w0003v78sdjha8onv"; 
-    const items = selectedTickets
-      .filter(t => t.quantity > 0)
-      .map(t => ({
-        ticket_id: t.id,
-        quantity: t.quantity,
-      }));
-    // Lấy access token
-    const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    const accessToken = session?.access_token;
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-    if (!accessToken || !API_BASE_URL) {
-      alert("Không xác thực được tài khoản!");
-      return;
-    }
+
+    // Set loading state
+    setIsProcessingPayment(true);
+
     try {
+      // Kiểm tra lại tồn kho trước khi tạo order
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const accessToken = session?.access_token;
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+      
+      if (!accessToken || !API_BASE_URL) {
+        alert("Không xác thực được tài khoản!");
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      // Kiểm tra tồn kho cho từng loại vé
+      const stockCheckPromises = selectedTickets
+        .filter(t => t.quantity > 0)
+        .map(async (ticket) => {
+          const res = await fetch(`${API_BASE_URL}/tickets/${ticket.id}`, {
+            headers: {
+              "Authorization": `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          });
+          
+          if (res.ok) {
+            const ticketData = await res.json();
+            const availableQty = ticketData.total_qty - ticketData.sold_qty;
+            return {
+              ticketId: ticket.id,
+              ticketName: ticket.name,
+              requestedQty: ticket.quantity,
+              availableQty: availableQty,
+              isAvailable: availableQty >= ticket.quantity
+            };
+          }
+          return null;
+        });
+
+      const stockResults = await Promise.all(stockCheckPromises);
+      const unavailableTickets = stockResults.filter(result => result && !result.isAvailable);
+      const partiallyAvailableTickets = stockResults.filter(result => 
+        result && result.isAvailable && result.availableQty < result.requestedQty
+      );
+
+      // Xử lý trường hợp hết vé hoặc thiếu vé
+      if (unavailableTickets.length > 0 || partiallyAvailableTickets.length > 0) {
+        let message = "Rất tiếc, tình trạng vé đã thay đổi:\n\n";
+        
+        unavailableTickets.forEach(ticket => {
+          if (ticket) {
+            message += `• ${ticket.ticketName}: Hết vé\n`;
+          }
+        });
+        
+        partiallyAvailableTickets.forEach(ticket => {
+          if (ticket) {
+            message += `• ${ticket.ticketName}: Chỉ còn ${ticket.availableQty} vé (bạn yêu cầu ${ticket.requestedQty})\n`;
+          }
+        });
+        
+        message += "\nVui lòng quay lại trang chọn vé để cập nhật.";
+        
+        if (confirm(message + "\n\nBạn có muốn quay lại trang chọn vé không?")) {
+          router.push('/ticket');
+        }
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      // Chuẩn bị dữ liệu order
+      const event_id = "cmd5gmqgp0005v78s79bina9z";
+      const organization_id = "cmd5g7d2w0003v78sdjha8onv"; 
+      const items = selectedTickets
+        .filter(t => t.quantity > 0)
+        .map(t => ({
+          ticket_id: t.id,
+          quantity: t.quantity,
+        }));
+
+      // Tạo order
       const res = await fetch(`${API_BASE_URL}/orders`, {
         method: "POST",
         headers: {
@@ -245,16 +363,22 @@ function CheckoutContent() {
           items,
         }),
       });
+
       if (!res.ok) {
         const err = await res.json();
         alert("Tạo đơn hàng thất bại: " + (err.message || "Lỗi không xác định"));
+        setIsProcessingPayment(false);
         return;
       }
+
       const order = await res.json();
       setOrderInfo(order);
       setIsPaymentModalOpen(true);
-    } catch {
+      setIsProcessingPayment(false);
+    } catch (error) {
+      console.error("Error during payment process:", error);
       alert("Lỗi khi tạo đơn hàng!");
+      setIsProcessingPayment(false);
     }
   };
 
@@ -376,10 +500,20 @@ function CheckoutContent() {
               />
               <button
                 onClick={handlePayment}
-                disabled={!agreedToPolicies}
-                className="w-full py-3 px-4 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!agreedToPolicies || isProcessingPayment}
+                className="w-full py-3 px-4 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
-                Thanh toán
+                {isProcessingPayment ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Đang xử lý...
+                  </>
+                ) : (
+                  "Thanh toán"
+                )}
               </button>
             </div>
           </div>
@@ -430,7 +564,30 @@ function CheckoutContent() {
       {mounted && isPaymentModalOpen && orderInfo && (
         <PaymentModal
           isOpen={isPaymentModalOpen}
-          onClose={() => setIsPaymentModalOpen(false)}
+          onClose={async () => {
+            // Cancel order when modal is closed
+            try {
+              const supabase = createClient();
+              const { data: { session } } = await supabase.auth.getSession();
+              const accessToken = session?.access_token;
+              const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+              
+              if (accessToken && API_BASE_URL && orderInfo.id) {
+                await fetch(`${API_BASE_URL}/orders/${orderInfo.id}/cancel`, {
+                  method: "POST",
+                  headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                  },
+                });
+              }
+            } catch (error) {
+              console.error("Error canceling order when modal closed:", error);
+            }
+            
+            setIsPaymentModalOpen(false);
+            setOrderInfo(null);
+          }}
           orderInfo={orderInfo}
           countdownSeconds={checkoutCountdown}
           selectedTickets={selectedTickets}
