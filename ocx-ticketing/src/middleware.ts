@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
   }
   
   // If before launch and trying to access main site pages, redirect to launch
-  if (isBeforeLaunch && (pathname === '/' || pathname === '/ticket' || pathname === '/checkout' || pathname === '/auth/login') && hasRedirected !== 'to-launch') {
+  if (isBeforeLaunch && (pathname === '/ticket' || pathname === '/checkout' || pathname === '/auth/login') && hasRedirected !== 'to-launch') {
     console.log('Redirecting to launch page');
     const response = NextResponse.redirect(new URL('/launch', request.url));
     response.cookies.set('launch-redirect', 'to-launch', { maxAge: 60 }); // 1 minute
