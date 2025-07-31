@@ -21,6 +21,11 @@ type OrderInfo = {
     price: number;
   }>;
 };
+
+type UserUpdateData = {
+  phone: string;
+  name?: string;
+};
 import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Ticket } from "../types/ticket";
@@ -377,7 +382,7 @@ function CheckoutContent() {
       // Update user phone number if order creation was successful
       if (order && order.user_id && userInfo.phone) {
         try {
-          const updateData: any = {
+          const updateData: UserUpdateData = {
             phone: userInfo.phone
           };
           
