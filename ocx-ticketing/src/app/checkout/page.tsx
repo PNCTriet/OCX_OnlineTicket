@@ -22,10 +22,6 @@ type OrderInfo = {
   }>;
 };
 
-type UserUpdateData = {
-  phone: string;
-  name?: string;
-};
 import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Ticket } from "../types/ticket";
@@ -382,31 +378,24 @@ function CheckoutContent() {
       // Update user phone number if order creation was successful
       if (order && order.user_id && userInfo.phone) {
         try {
-          const updateData: UserUpdateData = {
-            phone: userInfo.phone
-          };
-          
-          // Also update name if provided
-          if (userInfo.fullName.trim()) {
-            updateData.name = userInfo.fullName.trim();
-          }
-          
           const updateUserRes = await fetch(`${API_BASE_URL}/users/${order.user_id}`, {
             method: "PATCH",
             headers: {
-              "Authorization": `Bearer ${accessToken}`,
+              // "Authorization": `Bearer ${accessToken}`,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(updateData),
+            body: JSON.stringify({
+              phone: userInfo.phone
+            }),
           });
           
           if (updateUserRes.ok) {
-            console.log('User information updated successfully');
+            console.log('User phone updated successfully');
           } else {
-            console.error('Failed to update user information:', await updateUserRes.text());
+            console.error('Failed to update user phone:', await updateUserRes.text());
           }
         } catch (error) {
-          console.error('Error updating user information:', error);
+          console.error('Error updating user phone:', error);
         }
       }
       
