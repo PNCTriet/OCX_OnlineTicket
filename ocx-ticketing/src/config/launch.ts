@@ -1,7 +1,7 @@
 // Launch configuration
 export const LAUNCH_CONFIG = {
   // Set your launch date here (ISO string with timezone)
-  LAUNCH_TIME: '2025-08-01T04:15:00+07:00',
+  LAUNCH_TIME: '2025-08-01T04:22:00+07:00',
   
   // Event information
   EVENT_INFO: {
