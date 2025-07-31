@@ -15,15 +15,7 @@ export async function middleware(request: NextRequest) {
   // Check if user has already been through launch (cookie)
   const hasLaunchedCookie = request.cookies.get('launch')?.value === '1';
   
-  // Debug logging
-  console.log('Launch Gate Check:', {
-    currentTime: currentTime.toISOString(),
-    launchTime: launchTime.toISOString(),
-    isLaunched,
-    pathname,
-    hasLaunchedCookie,
-    shouldRedirect: !isLaunched && !hasLaunchedCookie && pathname !== '/launch'
-  });
+  
   
   // Allow access to static assets and API routes
   if (pathname.startsWith('/_next') || 

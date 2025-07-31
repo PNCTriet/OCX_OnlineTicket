@@ -207,54 +207,54 @@ export default function CountdownLaunch({ targetDate, onComplete }: CountdownLau
         />
       </div>
       
-      <div className="relative z-10 text-center px-4" style={{ fontFamily: 'BDStreetSignSans' }}>
+      <div className="relative z-10 text-center px-4 py-8 max-w-4xl w-full max-h-full overflow-y-auto" style={{ fontFamily: 'BDStreetSignSans' }}>
         {/* Logo */}
-        <div className="mb-6 sm:mb-12">
-          <div className="flex justify-center mb-4 sm:mb-6">
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <div className="flex justify-center mb-3 sm:mb-4 lg:mb-6">
             <Image
               src="/images/client_logo_ss4.svg"
               alt="Logo"
               width={300}
               height={300}
-              className="w-32 h-32 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full object-cover transition-transform duration-300 hover:scale-110 cursor-pointer"
+              className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full object-cover transition-transform duration-300 hover:scale-110 cursor-pointer"
               onClick={() => {
                 router.push('/');
               }}
             />
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-2 sm:mb-4">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3 lg:mb-4">
             SẮP RA MẮT
           </h1>
-          <p className="text-sm sm:text-lg md:text-xl text-zinc-300">
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-zinc-300">
             {LAUNCH_CONFIG.BRAND.description}
           </p>
         </div>
 
         {/* Countdown */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-6 sm:mb-12">
-          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-xl p-3 sm:p-6 border border-white/10">
-            <div className="text-2xl sm:text-4xl md:text-6xl font-bold text-white mb-1 sm:mb-2">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6 lg:mb-8">
+          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6 border border-white/10">
+            <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-6xl font-bold text-white mb-1 sm:mb-2">
               {timeLeft.days.toString().padStart(2, '0')}
             </div>
             <div className="text-xs sm:text-sm text-zinc-400">NGÀY</div>
           </div>
           
-          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-xl p-3 sm:p-6 border border-white/10">
-            <div className="text-2xl sm:text-4xl md:text-6xl font-bold text-white mb-1 sm:mb-2">
+          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6 border border-white/10">
+            <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-6xl font-bold text-white mb-1 sm:mb-2">
               {timeLeft.hours.toString().padStart(2, '0')}
             </div>
             <div className="text-xs sm:text-sm text-zinc-400">GIỜ</div>
           </div>
           
-          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-xl p-3 sm:p-6 border border-white/10">
-            <div className="text-2xl sm:text-4xl md:text-6xl font-bold text-white mb-1 sm:mb-2">
+          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6 border border-white/10">
+            <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-6xl font-bold text-white mb-1 sm:mb-2">
               {timeLeft.minutes.toString().padStart(2, '0')}
             </div>
             <div className="text-xs sm:text-sm text-zinc-400">PHÚT</div>
           </div>
           
-          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-xl p-3 sm:p-6 border border-white/10">
-            <div className="text-2xl sm:text-4xl md:text-6xl font-bold text-white mb-1 sm:mb-2">
+          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6 border border-white/10">
+            <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-6xl font-bold text-white mb-1 sm:mb-2">
               {timeLeft.seconds.toString().padStart(2, '0')}
             </div>
             <div className="text-xs sm:text-sm text-zinc-400">GIÂY</div>
@@ -262,24 +262,24 @@ export default function CountdownLaunch({ targetDate, onComplete }: CountdownLau
         </div>
 
         {/* Event Info */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm rounded-xl p-4 sm:p-8 border border-white/10 max-w-2xl mx-auto">
-          <h2 className="text-lg sm:text-2xl font-bold text-white mb-2 sm:mb-4">
+        <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-8 border border-white/10 max-w-2xl mx-auto">
+          <h2 className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-white mb-2 sm:mb-3 lg:mb-4">
             {LAUNCH_CONFIG.EVENT_INFO.name}
           </h2>
-          <p className="text-sm sm:text-base text-zinc-300 mb-4 sm:mb-6">
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-zinc-300 mb-3 sm:mb-4 lg:mb-6">
             {LAUNCH_CONFIG.EVENT_INFO.description}
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 lg:gap-4 text-xs sm:text-sm">
             <div className="flex items-center justify-center space-x-2">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#c53e00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-[#c53e00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
               </svg>
               <span className="text-zinc-300">{LAUNCH_CONFIG.EVENT_INFO.date}</span>
             </div>
             
             <div className="flex items-center justify-center space-x-2">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#c53e00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-[#c53e00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
               </svg>
@@ -289,11 +289,11 @@ export default function CountdownLaunch({ targetDate, onComplete }: CountdownLau
         </div>
 
         {/* Loading animation */}
-        <div className="mt-6 sm:mt-8 flex justify-center">
-          <div className="flex space-x-2">
-            <div className="w-2 h-2 sm:w-3 sm:h-3 bg-[#c53e00] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-            <div className="w-2 h-2 sm:w-3 sm:h-3 bg-[#c53e00] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-            <div className="w-2 h-2 sm:w-3 sm:h-3 bg-[#c53e00] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+        <div className="mt-4 sm:mt-6 lg:mt-8 flex justify-center">
+          <div className="flex space-x-1 sm:space-x-2">
+            <div className="w-1 h-1 sm:w-2 sm:h-2 lg:w-3 lg:h-3 bg-[#c53e00] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-1 h-1 sm:w-2 sm:h-2 lg:w-3 lg:h-3 bg-[#c53e00] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-1 h-1 sm:w-2 sm:h-2 lg:w-3 lg:h-3 bg-[#c53e00] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
           </div>
         </div>
       </div>

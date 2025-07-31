@@ -373,6 +373,38 @@ function CheckoutContent() {
 
       const order = await res.json();
       setOrderInfo(order);
+      
+      // Update user phone number if order creation was successful
+      if (order && order.user_id && userInfo.phone) {
+        try {
+          const updateData: any = {
+            phone: userInfo.phone
+          };
+          
+          // Also update name if provided
+          if (userInfo.fullName.trim()) {
+            updateData.name = userInfo.fullName.trim();
+          }
+          
+          const updateUserRes = await fetch(`${API_BASE_URL}/users/${order.user_id}`, {
+            method: "PATCH",
+            headers: {
+              "Authorization": `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updateData),
+          });
+          
+          if (updateUserRes.ok) {
+            console.log('User information updated successfully');
+          } else {
+            console.error('Failed to update user information:', await updateUserRes.text());
+          }
+        } catch (error) {
+          console.error('Error updating user information:', error);
+        }
+      }
+      
       setIsPaymentModalOpen(true);
       setIsProcessingPayment(false);
     } catch (error) {

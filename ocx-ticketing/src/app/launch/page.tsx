@@ -21,7 +21,6 @@ export default function LaunchPage() {
     const isLaunched = currentTime >= launchTime;
     
     if (isLaunched) {
-      console.log('Site is launched, setting cookie and redirecting to home');
       // Set launch cookie (expires in 1 day)
       Cookies.set('launch', '1', { expires: 1 });
       // Redirect to home page
@@ -41,17 +40,18 @@ export default function LaunchPage() {
   }
 
   return (
-    <div className="bg-black min-h-screen font-sans text-white">
+    <div className="bg-black min-h-screen font-sans text-white flex flex-col">
       <MainHeader lang={lang} setLang={setLang} />
-      <CountdownLaunch 
-        targetDate={launchDate}
-        onComplete={() => {
-          // When countdown completes, set cookie and redirect
-          console.log('Launch countdown completed!');
-          Cookies.set('launch', '1', { expires: 1 });
-          router.push('/');
-        }}
-      />
+      <div className="flex-1 flex items-center justify-center p-4">
+        <CountdownLaunch 
+          targetDate={launchDate}
+          onComplete={() => {
+            // When countdown completes, set cookie and redirect
+            Cookies.set('launch', '1', { expires: 1 });
+            router.push('/');
+          }}
+        />
+      </div>
     </div>
   );
 } 
