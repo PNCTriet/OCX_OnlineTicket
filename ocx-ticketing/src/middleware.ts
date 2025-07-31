@@ -10,8 +10,6 @@ export async function middleware(request: NextRequest) {
   // Check if current time is before launch date
   const isBeforeLaunch = currentDate < LAUNCH_CONFIG.LAUNCH_DATE;
   
-
-  
   // Get the pathname
   const pathname = request.nextUrl.pathname;
   
@@ -30,8 +28,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/launch', request.url));
   }
   
-  // If after launch and on launch page, redirect to home
+  // If after launch and on launch page, redirect to home with a small delay
   if (!isBeforeLaunch && pathname === '/launch') {
+    // Add a small delay to prevent rapid redirects
+    await new Promise(resolve => setTimeout(resolve, 100));
     return NextResponse.redirect(new URL('/', request.url));
   }
 
