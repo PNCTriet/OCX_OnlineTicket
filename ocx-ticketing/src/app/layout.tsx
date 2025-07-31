@@ -87,6 +87,7 @@ export default function RootLayout({
     <html lang="vi" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="antialiased">
         <AuthProvider>{children}</AuthProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
