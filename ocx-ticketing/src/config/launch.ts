@@ -1,7 +1,7 @@
 // Launch configuration
 export const LAUNCH_CONFIG = {
-  // Set your launch date here
-  LAUNCH_DATE: new Date('2025-08-01T03:30:00'),
+  // Set your launch date here (ISO string with timezone)
+  LAUNCH_TIME: '2025-08-01T03:31:00+07:00',
   
   // Event information
   EVENT_INFO: {
@@ -22,13 +22,15 @@ export const LAUNCH_CONFIG = {
 
 // Helper function to check if site is launched
 export function isSiteLaunched(): boolean {
-  return new Date() >= LAUNCH_CONFIG.LAUNCH_DATE;
+  const now = new Date();
+  const launchDate = new Date(LAUNCH_CONFIG.LAUNCH_TIME);
+  return now >= launchDate;
 }
 
 // Helper function to get time until launch
 export function getTimeUntilLaunch() {
   const now = new Date();
-  const launchDate = LAUNCH_CONFIG.LAUNCH_DATE;
+  const launchDate = new Date(LAUNCH_CONFIG.LAUNCH_TIME);
   const difference = launchDate.getTime() - now.getTime();
   
   if (difference <= 0) {
