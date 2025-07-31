@@ -102,7 +102,7 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
               setTimeout(() => {
                 onClose();
                 router.push("/");
-              }, 20000);
+              }, 10000);
             }, 1000); // Delay 1 giây để hiển thị trạng thái "Đang xử lý"
           }
         }
