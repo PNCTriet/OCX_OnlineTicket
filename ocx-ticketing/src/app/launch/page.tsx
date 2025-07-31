@@ -7,36 +7,11 @@ import MainHeader from "../components/MainHeader";
 export default function LaunchPage() {
   const [mounted, setMounted] = useState(false);
   const [lang, setLang] = useState<"vi" | "en">("vi");
-  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     document.documentElement.classList.add("dark");
-    
-    // Check if launch date has passed and redirect with delay
-    const currentDate = new Date();
-    if (currentDate >= LAUNCH_CONFIG.LAUNCH_DATE && !isRedirecting) {
-      setIsRedirecting(true);
-      // Add delay to prevent rapid redirects
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 2000);
-    }
-  }, [isRedirecting]);
-
-  // Auto redirect if already launched
-  useEffect(() => {
-    if (mounted && !isRedirecting) {
-      const currentDate = new Date();
-      if (currentDate >= LAUNCH_CONFIG.LAUNCH_DATE) {
-        setIsRedirecting(true);
-        // Longer delay to prevent rapid redirects
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 3000);
-      }
-    }
-  }, [mounted, isRedirecting]);
+  }, []);
 
   // Use launch date from config
   const launchDate = LAUNCH_CONFIG.LAUNCH_DATE;

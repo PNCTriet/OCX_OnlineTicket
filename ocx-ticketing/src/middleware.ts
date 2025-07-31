@@ -13,26 +13,45 @@ export async function middleware(request: NextRequest) {
   // Get the pathname
   const pathname = request.nextUrl.pathname;
   
+  // Check if we've already redirected to prevent loops
+  const hasRedirected = request.cookies.get('launch-redirect')?.value;
+  
+  // Debug logging
+  console.log('Middleware check:', {
+    currentDate: currentDate.toISOString(),
+    launchDate: LAUNCH_CONFIG.LAUNCH_DATE.toISOString(),
+    isBeforeLaunch,
+    pathname,
+    hasRedirected,
+    shouldRedirectToLaunch: isBeforeLaunch && pathname !== '/launch',
+    shouldRedirectToHome: !isBeforeLaunch && pathname === '/launch'
+  });
+  
   // Allow access to launch page and static assets
   if (pathname === '/launch' || 
       pathname.startsWith('/_next') || 
       pathname.startsWith('/api') ||
       pathname.startsWith('/images') ||
       pathname.startsWith('/fonts') ||
-      pathname.startsWith('/public')) {
+      pathname.startsWith('/public') ||
+      pathname.startsWith('/lottie')) {
     return NextResponse.next();
   }
   
   // If before launch and not on launch page, redirect to launch
-  if (isBeforeLaunch && pathname !== '/launch') {
-    return NextResponse.redirect(new URL('/launch', request.url));
+  if (isBeforeLaunch && pathname !== '/launch' && hasRedirected !== 'to-launch') {
+    console.log('Redirecting to launch page');
+    const response = NextResponse.redirect(new URL('/launch', request.url));
+    response.cookies.set('launch-redirect', 'to-launch', { maxAge: 60 }); // 1 minute
+    return response;
   }
   
-  // If after launch and on launch page, redirect to home with a small delay
-  if (!isBeforeLaunch && pathname === '/launch') {
-    // Add a small delay to prevent rapid redirects
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return NextResponse.redirect(new URL('/', request.url));
+  // If after launch and on launch page, redirect to home
+  if (!isBeforeLaunch && pathname === '/launch' && hasRedirected !== 'to-home') {
+    console.log('Redirecting to home page');
+    const response = NextResponse.redirect(new URL('/', request.url));
+    response.cookies.set('launch-redirect', 'to-home', { maxAge: 60 }); // 1 minute
+    return response;
   }
 
   let supabaseResponse = NextResponse.next({

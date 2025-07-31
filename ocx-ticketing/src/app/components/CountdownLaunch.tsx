@@ -216,7 +216,10 @@ export default function CountdownLaunch({ targetDate, onComplete }: CountdownLau
               alt="Logo"
               width={300}
               height={300}
-              className="w-32 h-32 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full object-cover transition-transform duration-300 hover:scale-110"
+              className="w-32 h-32 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full object-cover transition-transform duration-300 hover:scale-110 cursor-pointer"
+              onClick={() => {
+                router.push('/');
+              }}
             />
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-2 sm:mb-4">
