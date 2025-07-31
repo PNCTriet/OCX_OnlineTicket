@@ -55,7 +55,7 @@ const ARTISTS = [
     name: "Artist 10"
   },
   {
-    main: "/images/lineup_main_ss4_artis11_alt1.png",
+    main: "/images/lineup_main_ss4_artist11_alt1.png",
     sub: "/images/lineup_sub_ss4_artist11_alt1.png",
     name: "Artist 11"
   },
