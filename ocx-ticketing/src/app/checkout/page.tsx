@@ -21,6 +21,7 @@ type OrderInfo = {
     price: number;
   }>;
 };
+
 import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Ticket } from "../types/ticket";
@@ -373,6 +374,31 @@ function CheckoutContent() {
 
       const order = await res.json();
       setOrderInfo(order);
+      
+      // Update user phone number if order creation was successful
+      if (order && order.user_id && userInfo.phone) {
+        try {
+          const updateUserRes = await fetch(`${API_BASE_URL}/users/${order.user_id}`, {
+            method: "PATCH",
+            headers: {
+              // "Authorization": `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              phone: userInfo.phone
+            }),
+          });
+          
+          if (updateUserRes.ok) {
+            console.log('User phone updated successfully');
+          } else {
+            console.error('Failed to update user phone:', await updateUserRes.text());
+          }
+        } catch (error) {
+          console.error('Error updating user phone:', error);
+        }
+      }
+      
       setIsPaymentModalOpen(true);
       setIsProcessingPayment(false);
     } catch (error) {
