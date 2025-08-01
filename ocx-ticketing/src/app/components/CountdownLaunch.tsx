@@ -210,78 +210,78 @@ export default function CountdownLaunch({ targetDate, onComplete }: CountdownLau
         />
       </div>
       
-      <div className="relative z-10 text-center px-4 py-8 max-w-4xl w-full max-h-full overflow-y-auto" style={{ fontFamily: 'BDStreetSignSans' }}>
+      <div className="relative z-10 text-center px-4 py-4 max-w-4xl w-full h-full flex flex-col justify-center" style={{ fontFamily: 'BDStreetSignSans' }}>
         {/* Logo */}
-        <div className="mb-4 sm:mb-6 lg:mb-8">
-          <div className="flex justify-center mb-3 sm:mb-4 lg:mb-6">
+        <div className="mb-2 sm:mb-3 lg:mb-4">
+          <div className="flex justify-center mb-2 sm:mb-3 lg:mb-4">
             <Link href="/">
               <Image
                 src="/images/client_logo_ss4.svg"
                 alt="Logo"
                 width={300}
                 height={300}
-                className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full object-cover transition-transform duration-300 hover:scale-110 cursor-pointer"
+                className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-full object-cover transition-transform duration-300 hover:scale-110 cursor-pointer"
               />
             </Link>
           </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3 lg:mb-4">
+          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2 lg:mb-3">
             SẮP RA MẮT
           </h1>
-          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-zinc-300">
+          <p className="text-xs sm:text-sm md:text-base text-zinc-300">
             {LAUNCH_CONFIG.BRAND.description}
           </p>
         </div>
 
         {/* Countdown */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6 lg:mb-8">
-          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6 border border-white/10">
-            <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-6xl font-bold text-white mb-1 sm:mb-2">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-1 sm:gap-2 lg:gap-3 mb-2 sm:mb-3 lg:mb-4">
+          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-1 sm:p-2 lg:p-4 border border-white/10">
+            <div className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-white mb-1">
               {timeLeft.days.toString().padStart(2, '0')}
             </div>
-            <div className="text-xs sm:text-sm text-zinc-400">NGÀY</div>
+            <div className="text-xs text-zinc-400">NGÀY</div>
           </div>
           
-          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6 border border-white/10">
-            <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-6xl font-bold text-white mb-1 sm:mb-2">
+          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-1 sm:p-2 lg:p-4 border border-white/10">
+            <div className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-white mb-1">
               {timeLeft.hours.toString().padStart(2, '0')}
             </div>
-            <div className="text-xs sm:text-sm text-zinc-400">GIỜ</div>
+            <div className="text-xs text-zinc-400">GIỜ</div>
           </div>
           
-          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6 border border-white/10">
-            <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-6xl font-bold text-white mb-1 sm:mb-2">
+          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-1 sm:p-2 lg:p-4 border border-white/10">
+            <div className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-white mb-1">
               {timeLeft.minutes.toString().padStart(2, '0')}
             </div>
-            <div className="text-xs sm:text-sm text-zinc-400">PHÚT</div>
+            <div className="text-xs text-zinc-400">PHÚT</div>
           </div>
           
-          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-6 border border-white/10">
-            <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-6xl font-bold text-white mb-1 sm:mb-2">
+          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-1 sm:p-2 lg:p-4 border border-white/10">
+            <div className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-white mb-1">
               {timeLeft.seconds.toString().padStart(2, '0')}
             </div>
-            <div className="text-xs sm:text-sm text-zinc-400">GIÂY</div>
+            <div className="text-xs text-zinc-400">GIÂY</div>
           </div>
         </div>
 
         {/* Event Info */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-8 border border-white/10 max-w-2xl mx-auto">
-          <h2 className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-white mb-2 sm:mb-3 lg:mb-4">
+        <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-4 border border-white/10 max-w-2xl mx-auto">
+          <h2 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-white mb-1 sm:mb-2 lg:mb-3">
             {LAUNCH_CONFIG.EVENT_INFO.name}
           </h2>
-          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-zinc-300 mb-3 sm:mb-4 lg:mb-6">
+          <p className="text-xs sm:text-sm md:text-base text-zinc-300 mb-2 sm:mb-3 lg:mb-4">
             {LAUNCH_CONFIG.EVENT_INFO.description}
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 lg:gap-4 text-xs sm:text-sm">
-            <div className="flex items-center justify-center space-x-2">
-              <svg className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-[#c53e00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-2 lg:gap-3 text-xs">
+            <div className="flex items-center justify-center space-x-1 sm:space-x-2">
+              <svg className="w-3 h-3 sm:w-4 sm:h-4 text-[#c53e00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
               </svg>
               <span className="text-zinc-300">{LAUNCH_CONFIG.EVENT_INFO.date}</span>
             </div>
             
-            <div className="flex items-center justify-center space-x-2">
-              <svg className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-[#c53e00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center justify-center space-x-1 sm:space-x-2">
+              <svg className="w-3 h-3 sm:w-4 sm:h-4 text-[#c53e00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
               </svg>
@@ -291,11 +291,11 @@ export default function CountdownLaunch({ targetDate, onComplete }: CountdownLau
         </div>
 
         {/* Loading animation */}
-        <div className="mt-4 sm:mt-6 lg:mt-8 flex justify-center">
-          <div className="flex space-x-1 sm:space-x-2">
-            <div className="w-1 h-1 sm:w-2 sm:h-2 lg:w-3 lg:h-3 bg-[#c53e00] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-            <div className="w-1 h-1 sm:w-2 sm:h-2 lg:w-3 lg:h-3 bg-[#c53e00] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-            <div className="w-1 h-1 sm:w-2 sm:h-2 lg:w-3 lg:h-3 bg-[#c53e00] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+        <div className="mt-2 sm:mt-3 lg:mt-4 flex justify-center">
+          <div className="flex space-x-1">
+            <div className="w-1 h-1 sm:w-2 sm:h-2 bg-[#c53e00] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-1 h-1 sm:w-2 sm:h-2 bg-[#c53e00] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-1 h-1 sm:w-2 sm:h-2 bg-[#c53e00] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
           </div>
         </div>
       </div>
