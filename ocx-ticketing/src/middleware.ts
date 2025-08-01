@@ -2,6 +2,17 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  const userAgent = request.headers.get('user-agent') || ''
+
+  // ✅ Allow bots to bypass auth logic
+  if (
+    userAgent.includes('facebookexternalhit') ||
+    userAgent.includes('Facebot') ||
+    userAgent.includes('Instagram')
+  ) {
+    return NextResponse.next()
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -27,26 +38,19 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // IMPORTANT: Avoid writing any logic between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // If there's no user and the user is trying to access a protected route,
-  // redirect them to the login page
   if (!user && request.nextUrl.pathname.startsWith('/checkout')) {
     const redirectUrl = new URL('/auth/login', request.url)
     redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname)
-    
-    // Preserve ticket data if it exists
+
     const tickets = request.nextUrl.searchParams.get('tickets')
     if (tickets) {
       redirectUrl.searchParams.set('tickets', tickets)
     }
-    
+
     return NextResponse.redirect(redirectUrl)
   }
 
@@ -55,13 +59,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
-}; 
+};
