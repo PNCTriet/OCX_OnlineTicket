@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
     images: [
       {
-        url: "/images/client_logo_ss4_thumb.png",
+        url: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png",
         width: 800,
         height: 600,
         alt: "OCX Online Ticket Logo",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
     images: [
       {
-        url: "/images/client_logo_ss4_thumb.png",
+        url: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png",
         alt: "OCX Online Ticket Logo",
       },
     ],
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
 
   icons: {
     icon: "/favicon.ico",
-    apple: "/images/client_logo_ss4_thumb.png",
+    apple: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png",
   },
 };
 
