@@ -16,6 +16,36 @@ export default function HeroSection() {
         fontFamily: 'BDStreetSignSans'
       }}
     >
+      <div className="absolute inset-0 z-0">
+        {/* Desktop background */}
+        <div
+          className="hidden sm:block w-full h-full"
+          style={{
+            backgroundImage: "url(/images/hero_backround_ss4_alt1.svg)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            inset: 0,
+          }}
+        />
+        {/* Mobile background */}
+        <div
+          className="block sm:hidden w-full h-full"
+          style={{
+            backgroundImage: "url(/images/hero_background_ss4_mobile.jpg)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            inset: 0,
+          }}
+        />
+      </div>
       <div className="relative flex flex-col items-center justify-center text-center px-4 w-full">
         {/* Logo + Flame animation */}
         <div className="flex flex-col items-center w-full" style={{paddingTop: '4vh'}}>
@@ -44,8 +74,8 @@ export default function HeroSection() {
               </svg>
             </div>
             <div className="flex flex-col justify-center ml-3 text-left">
-              <span className="text-xl sm:text-2xl font-bold leading-tight">20/04/2025</span>
-              <span className="text-base sm:text-lg font-normal text-white/90 leading-tight">CHỦ NHẬT NGÀY 20 THÁNG 4 NĂM 2025 | 16H - 22H</span>
+              <span className="text-xl sm:text-2xl font-bold leading-tight">27/09/2025</span>
+              <span className="text-base sm:text-lg font-normal text-white/90 leading-tight">THỨ BẢY, 27/9/2025 | 15H - 22H</span>
             </div>
           </div>
           {/* Location Row */}
@@ -58,8 +88,8 @@ export default function HeroSection() {
               </svg>
             </div>
             <div className="flex flex-col justify-center ml-3 text-left">
-              <span className="text-xl sm:text-2xl font-bold leading-tight">SKYMART STUDIO</span>
-              <span className="text-base sm:text-lg font-normal text-white/90 leading-tight">123 Đường ABC, Quận XYZ, TP. HCM</span>
+              <span className="text-xl sm:text-2xl font-bold leading-tight">BÍ MẬT CẦN BẬT MÍ</span>
+              <span className="text-base sm:text-lg font-normal text-white/90 leading-tight">Thành Phố Hồ Chí Minh</span>
             </div>
           </div>
         </div>

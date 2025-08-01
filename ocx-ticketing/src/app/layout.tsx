@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,15 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 // Get the base URL from environment variables
-const getBaseUrl = () => {
-  if (process.env.NEXT_PUBLIC_BASE_URL) {
-    return process.env.NEXT_PUBLIC_BASE_URL;
-  }
-  
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  
+const getBaseUrl = () => { 
   // Use production URL by default, fallback to localhost for development
   if (process.env.NODE_ENV === 'production') {
     return 'https://www.otcayxe.com';
@@ -33,7 +26,7 @@ const getBaseUrl = () => {
 
 export const metadata: Metadata = {
   title: "Ớt cay xè 4",
-  description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
+  description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
   keywords: [
     "OCX",
     "Online Ticket",
@@ -48,14 +41,12 @@ export const metadata: Metadata = {
   robots: "index, follow",
 
   // Use a function to get the base URL to ensure it's always valid
-  ...(process.env.NODE_ENV === 'production' ? {
-    metadataBase: new URL(getBaseUrl())
-  } : {}),
+  metadataBase: new URL(getBaseUrl()),
 
   openGraph: {
     type: "website",
     title: "Ớt cay xè 4",
-    description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
+    description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
     images: [
       {
         url: "/images/client_logo_ss4_thumb.png",
@@ -69,7 +60,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Ớt cay xè 4",
-    description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
+    description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
     images: [
       {
         url: "/images/client_logo_ss4_thumb.png",
@@ -94,6 +85,7 @@ export default function RootLayout({
     <html lang="vi" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="antialiased">
         <AuthProvider>{children}</AuthProvider>
+        <SpeedInsights />
       </body>
     </html>
   );

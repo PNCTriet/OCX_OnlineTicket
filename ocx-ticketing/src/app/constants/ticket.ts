@@ -9,7 +9,7 @@ export const TICKETS: TicketType[] = [
     quantity: 0,
     sold: 50,
     label: "Khu vực A",
-    status: 'available',
+    status: 'ACTIVE',
   },
   {
     id: "farmers-ngoi-chill",
@@ -19,7 +19,7 @@ export const TICKETS: TicketType[] = [
     quantity: 0,
     sold: 30,
     label: "Khu vực B",
-    status: 'available',
+    status: 'ACTIVE',
   },
   {
     id: "farmers-vip",
@@ -29,7 +29,7 @@ export const TICKETS: TicketType[] = [
     quantity: 0,
     sold: 20,
     label: "Khu vực C",
-    status: 'available',
+    status: 'ACTIVE',
   },
   {
     id: "farmers-premium",
@@ -39,7 +39,7 @@ export const TICKETS: TicketType[] = [
     quantity: 0,
     sold: 25,
     label: "Khu vực D",
-    status: 'available',
+    status: 'ACTIVE',
   },
   {
     id: "farmers-standard",
@@ -49,7 +49,7 @@ export const TICKETS: TicketType[] = [
     quantity: 0,
     sold: 40,
     label: "Khu vực E",
-    status: 'available',
+    status: 'ACTIVE',
   },
 ];
 
@@ -103,11 +103,11 @@ export const ZONES: Zone[] = [
 
 export const EVENT_INFO: EventInfo = {
   id: "ocx-4",
-  name: "Ớt Cay Xè [Season 4]",
-  time: "20:00 - 22:00",
-  location: "2 Nguyễn Văn Tráng, Phường Bến Nghé, Quận 1, Hồ Chí Minh",
+  name: "Ớt Cay Xè 4",
+  time: "15:00 - 22:00",
+  location: "Nơi nào đó ở TP Hồ Chí Minh",
   avatar: "/images/ocx4_event_avatar.jpg",
-  date: "T7, 14/06/2024",
+  date: "T7, 27/09/2025",
 };
 
 // New layout configuration for the seat map
@@ -198,7 +198,7 @@ export const SEATS: Seat[] = SEAT_LAYOUT_CONFIG.SECTIONS.flatMap(section => {
         x,
         y,
         type: section.id,
-        status: Math.random() < 0.1 ? 'sold' : 'available',
+        status: Math.random() < 0.1 ? 'sold' : 'ACTIVE',
       });
     }
   }

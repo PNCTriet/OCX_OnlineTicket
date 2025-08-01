@@ -2,7 +2,7 @@ import { TicketType } from "../../types/ticket";
 import { useRef } from "react";
 
 type TicketSelectionCardProps = {
-  tickets: TicketType[];
+  tickets: (TicketType & { quantity: number; availableQty?: number })[];
   onQuantityChange: (ticketId: string, change: number) => void;
   selectedZoneId?: string | null;
 };
@@ -10,7 +10,7 @@ type TicketSelectionCardProps = {
 export default function TicketSelectionCard({ tickets, onQuantityChange, selectedZoneId }: TicketSelectionCardProps) {
   const ticketRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // Use selectedZoneId to determine if seatmap selections are available
+  // Use selectedZoneId to determine if seatmap selections are ACTIVE
   const hasSeatmapSelections = selectedZoneId !== null;
 
   return (
@@ -27,11 +27,11 @@ export default function TicketSelectionCard({ tickets, onQuantityChange, selecte
             <div className="flex justify-between items-center mb-2">
               <div>
                 <span className="font-medium text-white">{ticket.name}</span>
-                <span className="ml-2 text-sm text-zinc-400">[{ticket.label || "Khu vực tiêu chuẩn"}]</span>
+                <span className="ml-2 text-sm text-zinc-400">[{ticket.label || "Vé tiêu chuẩn"}]</span>
                 <span 
-                  className={`ml-2 text-xs font-semibold ${ticket.status === 'available' ? 'text-green-500' : ticket.status === 'sold-out' ? 'text-red-500' : 'text-yellow-500'}`}
+                  className={`ml-2 text-xs font-semibold ${ticket.status === 'ACTIVE' ? 'text-green-500' : ticket.status === 'SOLD_OUT' ? 'text-red-500' : 'text-yellow-500'}`}
                 >
-                  {ticket.status === 'available' ? 'Còn vé' : ticket.status === 'sold-out' ? 'Hết vé' : 'Chưa mở bán'}
+                  {ticket.status === 'ACTIVE' ? 'Còn vé' : ticket.status === 'SOLD_OUT' ? 'Hết vé' : 'Hết vé'}
                 </span>
                 {ticket.quantity > 0 && (
                   <span className="ml-2 text-sm text-[#c53e00]">({ticket.quantity} vé)</span>
@@ -45,8 +45,8 @@ export default function TicketSelectionCard({ tickets, onQuantityChange, selecte
                   onClick={() => onQuantityChange(ticket.id, -1)}
                   disabled={
                     ticket.quantity === 0 || 
-                    ticket.status === 'not-yet-on-sale' || 
-                    ticket.status === 'sold-out' ||
+                    ticket.status === 'INACTIVE' || 
+                    ticket.status === 'SOLD_OUT' ||
                     !hasSeatmapSelections
                   }
                   className="w-10 h-10 rounded-full bg-zinc-700 text-white disabled:opacity-50 hover:bg-zinc-600 transition-colors flex items-center justify-center text-xl"
@@ -57,9 +57,9 @@ export default function TicketSelectionCard({ tickets, onQuantityChange, selecte
                 <button
                   onClick={() => onQuantityChange(ticket.id, 1)}
                   disabled={
-                    ticket.quantity >= 5 ||
-                    ticket.status === 'sold-out' || 
-                    ticket.status === 'not-yet-on-sale' ||
+                    ticket.quantity >= Math.min(10, ticket.availableQty || 0) ||
+                    ticket.status === 'SOLD_OUT' || 
+                    ticket.status === 'INACTIVE' ||
                     !hasSeatmapSelections
                   }
                   className="w-10 h-10 rounded-full bg-zinc-700 text-white disabled:opacity-50 hover:bg-zinc-600 transition-colors flex items-center justify-center text-xl"

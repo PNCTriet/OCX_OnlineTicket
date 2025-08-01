@@ -9,10 +9,24 @@ import UserInfoForm from "../components/checkout/UserInfoForm";
 import CountdownTimer from "../components/checkout/CountdownTimer";
 import PolicyCheckbox from "../components/checkout/PolicyCheckbox";
 import PaymentModal from "../components/checkout/PaymentModal";
+
+type OrderInfo = {
+  id: string;
+  total_amount: number;
+  status: string;
+  order_items?: Array<{
+    id: string;
+    ticket_id: string;
+    quantity: number;
+    price: number;
+  }>;
+};
+
 import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Ticket } from "../types/ticket";
 import { useAuth } from "@/components/AuthProvider";
+import { createClient } from "@/lib/supabase";
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
@@ -27,16 +41,20 @@ function CheckoutContent() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isSessionExpiryModalOpen, setIsSessionExpiryModalOpen] =
     useState(false);
+  const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // New: Shared countdown state for the entire checkout process
-  const initialCheckoutSeconds = 180; // 3 minutes for checkout
+  const initialCheckoutSeconds = 600; // 10 minutes for checkout
   const [checkoutCountdown, setCheckoutCountdown] = useState(initialCheckoutSeconds);
   const [paymentStatus, setPaymentStatus] = useState<"pending" | "success" | "error">("pending");
-
-  // States for dynamic QR content, generated on client mount
-  const [orderNumber, setOrderNumber] = useState<string | null>(null);
-  const [orderDate, setOrderDate] = useState<string | null>(null);
-  const [orderTime, setOrderTime] = useState<string | null>(null);
+  
+  // Validation state
+  const [validationErrors, setValidationErrors] = useState({
+    phone: "",
+    name: "",
+    policies: ""
+  });
 
   // State to track if component has mounted on client
   const [mounted, setMounted] = useState(false);
@@ -45,7 +63,7 @@ function CheckoutContent() {
   const handleCountdownExpire = useCallback(() => setIsSessionExpiryModalOpen(true), []);
 
   // Parse tickets from URL
-  const ticketsParam = searchParams.get("tickets");
+  const ticketsParam = searchParams?.get("tickets");
   
   const selectedTickets: Ticket[] = useMemo(() => {
     if (!ticketsParam) {
@@ -131,9 +149,9 @@ function CheckoutContent() {
       orderNumberStr
     });
     
-    setOrderNumber(orderNumberStr);
-    setOrderDate(now.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "2-digit" }).replace(/\//g, '/'));
-    setOrderTime(now.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }));
+    // setOrderNumber(orderNumberStr); // Removed as per edit hint
+    // setOrderDate(now.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "2-digit" }).replace(/\//g, '/')); // Removed as per edit hint
+    // setOrderTime(now.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })); // Removed as per edit hint
   }, [selectedTickets]); // Add selectedTickets to dependencies since we use it
 
   // Auto-fill user info when user is logged in
@@ -179,6 +197,41 @@ function CheckoutContent() {
     }
   }, [hasValidTickets, mounted, router]);
 
+  // Cleanup order when component unmounts or user leaves
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (orderInfo?.id) {
+        // Cancel order when user leaves page
+        const cancelOrder = async () => {
+          try {
+            const supabase = createClient();
+            const { data: { session } } = await supabase.auth.getSession();
+            const accessToken = session?.access_token;
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+            
+            if (accessToken && API_BASE_URL) {
+              await fetch(`${API_BASE_URL}/orders/${orderInfo.id}/cancel`, {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${accessToken}`,
+                  "Content-Type": "application/json",
+                },
+              });
+            }
+          } catch (error) {
+            console.error("Error canceling order on page unload:", error);
+          }
+        };
+        cancelOrder();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [orderInfo?.id]);
+
   const handleUserInfoChange = (field: string, value: string) => {
     setUserInfo((prev) => ({
       ...prev,
@@ -186,28 +239,176 @@ function CheckoutContent() {
     }));
   };
 
-  const handlePayment = () => {
-    // Validate user info - only validate phone since name and email come from Google
-    const isPhoneValid = /^\d{10,}$/.test(userInfo.phone);
-    const isNameValid = userInfo.fullName.trim() !== ""; // Should always be valid from Google
-
-    if (!isPhoneValid || !isNameValid || !agreedToPolicies) {
+  const handlePayment = async () => {
+    // Prevent spam clicking
+    if (isProcessingPayment) {
       return;
     }
 
-    setIsPaymentModalOpen(true);
+    // Validate user info - chỉ validate phone và name
+    const isPhoneValid = /^\d{10,}$/.test(userInfo.phone);
+    const isNameValid = userInfo.fullName.trim() !== "";
+    
+    // Set validation errors
+    const newErrors = {
+      phone: !isPhoneValid ? "Vui lòng nhập số điện thoại hợp lệ" : "",
+      name: !isNameValid ? "Vui lòng nhập họ và tên" : "",
+      policies: !agreedToPolicies ? "Vui lòng đồng ý với điều khoản" : ""
+    };
+    setValidationErrors(newErrors);
+    
+    if (!isPhoneValid || !isNameValid || !agreedToPolicies) {
+      return;
+    }
+    if (!user) {
+      alert("Vui lòng đăng nhập!");
+      return;
+    }
+    if (!hasValidTickets) {
+      alert("Vui lòng chọn vé!");
+      return;
+    }
+
+    // Set loading state
+    setIsProcessingPayment(true);
+
+    try {
+      // Kiểm tra lại tồn kho trước khi tạo order
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const accessToken = session?.access_token;
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+      
+      if (!accessToken || !API_BASE_URL) {
+        alert("Không xác thực được tài khoản!");
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      // Kiểm tra tồn kho cho từng loại vé
+      const stockCheckPromises = selectedTickets
+        .filter(t => t.quantity > 0)
+        .map(async (ticket) => {
+          const res = await fetch(`${API_BASE_URL}/tickets/${ticket.id}`, {
+            headers: {
+              "Authorization": `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          });
+          
+          if (res.ok) {
+            const ticketData = await res.json();
+            const availableQty = ticketData.total_qty - ticketData.sold_qty;
+            return {
+              ticketId: ticket.id,
+              ticketName: ticket.name,
+              requestedQty: ticket.quantity,
+              availableQty: availableQty,
+              isAvailable: availableQty >= ticket.quantity
+            };
+          }
+          return null;
+        });
+
+      const stockResults = await Promise.all(stockCheckPromises);
+      const unavailableTickets = stockResults.filter(result => result && !result.isAvailable);
+      const partiallyAvailableTickets = stockResults.filter(result => 
+        result && result.isAvailable && result.availableQty < result.requestedQty
+      );
+
+      // Xử lý trường hợp hết vé hoặc thiếu vé
+      if (unavailableTickets.length > 0 || partiallyAvailableTickets.length > 0) {
+        let message = "Rất tiếc, tình trạng vé đã thay đổi:\n\n";
+        
+        unavailableTickets.forEach(ticket => {
+          if (ticket) {
+            message += `• ${ticket.ticketName}: Hết vé\n`;
+          }
+        });
+        
+        partiallyAvailableTickets.forEach(ticket => {
+          if (ticket) {
+            message += `• ${ticket.ticketName}: Chỉ còn ${ticket.availableQty} vé (bạn yêu cầu ${ticket.requestedQty})\n`;
+          }
+        });
+        
+        message += "\nVui lòng quay lại trang chọn vé để cập nhật.";
+        
+        if (confirm(message + "\n\nBạn có muốn quay lại trang chọn vé không?")) {
+          router.push('/ticket');
+        }
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      // Chuẩn bị dữ liệu order
+      const event_id = "cmd5gmqgp0005v78s79bina9z";
+      const organization_id = "cmd5g7d2w0003v78sdjha8onv"; 
+      const items = selectedTickets
+        .filter(t => t.quantity > 0)
+        .map(t => ({
+          ticket_id: t.id,
+          quantity: t.quantity,
+        }));
+
+      // Tạo order
+      const res = await fetch(`${API_BASE_URL}/orders`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          organization_id,
+          event_id,
+          items,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        alert("Tạo đơn hàng thất bại: " + (err.message || "Lỗi không xác định"));
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      const order = await res.json();
+      setOrderInfo(order);
+      
+      // Update user phone number if order creation was successful
+      if (order && order.user_id && userInfo.phone) {
+        try {
+          const updateUserRes = await fetch(`${API_BASE_URL}/users/${order.user_id}`, {
+            method: "PATCH",
+            headers: {
+              // "Authorization": `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              phone: userInfo.phone
+            }),
+          });
+          
+          if (updateUserRes.ok) {
+            console.log('User phone updated successfully');
+          } else {
+            console.error('Failed to update user phone:', await updateUserRes.text());
+          }
+        } catch (error) {
+          console.error('Error updating user phone:', error);
+        }
+      }
+      
+      setIsPaymentModalOpen(true);
+      setIsProcessingPayment(false);
+    } catch (error) {
+      console.error("Error during payment process:", error);
+      alert("Lỗi khi tạo đơn hàng!");
+      setIsProcessingPayment(false);
+    }
   };
 
-  const handlePaymentSuccess = () => {
-    // Handle successful payment
-    console.log('🎉 Thanh toán thành công!');
-    console.log('📧 Email vé điện tử đã được gửi');
-    
-    // For demo purposes, we'll just close the modal after a delay
-    setTimeout(() => {
-      setIsPaymentModalOpen(false);
-    }, 3000);
-  };
+  // Removed handlePaymentSuccess as per edit hint
 
   const totalAmount = selectedTickets.reduce(
     (sum, ticket) => sum + ticket.price * ticket.quantity,
@@ -225,35 +426,17 @@ function CheckoutContent() {
 
   // Show login required if no user
   if (!user) {
-    const loginUrl = (() => {
-      if (!hasValidTickets) {
-        return '/auth/login?redirectTo=/checkout';
-      }
-      
-      try {
-        const ticketsJson = JSON.stringify(selectedTickets);
-        const encodedTickets = encodeURIComponent(ticketsJson);
-        return `/auth/login?redirectTo=/checkout&tickets=${encodedTickets}`;
-      } catch (error) {
-        console.error('Error encoding tickets for login URL:', error);
-        return '/auth/login?redirectTo=/checkout';
-      }
-    })();
-    
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
           <div className="text-white text-xl mb-4">Vui lòng đăng nhập để tiếp tục</div>
-          <a 
-            href={loginUrl}
-            className="bg-[#c53e00] text-white px-6 py-3 rounded-lg hover:bg-[#b33800] transition-colors"
-          >
-            Đăng nhập
-          </a>
+          {/* Nút đăng nhập hoặc redirect sẽ được xử lý ở nơi khác */}
         </div>
       </div>
     );
   }
+
+  
 
   // Show error if no valid tickets
   if (!hasValidTickets) {
@@ -284,14 +467,14 @@ function CheckoutContent() {
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-[#c53e00] rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-bold">
-                    {user.email?.charAt(0).toUpperCase()}
+                    {user?.email?.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div>
                   <p className="text-white text-sm font-medium">
-                    {user.user_metadata?.full_name || user.user_metadata?.name || user.email}
+                    {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email}
                   </p>
-                  <p className="text-zinc-400 text-xs">{user.email}</p>
+                  <p className="text-zinc-400 text-xs">{user?.email}</p>
                 </div>
               </div>
               <button
@@ -319,7 +502,7 @@ function CheckoutContent() {
             
             {/* Event Info */}
             <div className="max-h-[300px] overflow-hidden">
-              <EventInfoCard event={EVENT_INFO} />
+              <EventInfoCard event={EVENT_INFO} showBackButton={true} />
             </div>
             
             {/* Ticket Summary */}
@@ -332,6 +515,7 @@ function CheckoutContent() {
             <UserInfoForm
               userInfo={userInfo}
               onUserInfoChange={handleUserInfoChange}
+              validationErrors={validationErrors}
             />
             
             {/* Policy and Payment Button at bottom for mobile */}
@@ -342,10 +526,20 @@ function CheckoutContent() {
               />
               <button
                 onClick={handlePayment}
-                disabled={!agreedToPolicies}
-                className="w-full py-3 px-4 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!agreedToPolicies || isProcessingPayment}
+                className="w-full py-3 px-4 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
-                Thanh toán
+                {isProcessingPayment ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Đang xử lý...
+                  </>
+                ) : (
+                  "Thanh toán"
+                )}
               </button>
             </div>
           </div>
@@ -355,7 +549,7 @@ function CheckoutContent() {
             {/* Left Column */}
             <div className="space-y-6">
               <div className="max-h-[300px] overflow-hidden">
-                <EventInfoCard event={EVENT_INFO} />
+                <EventInfoCard event={EVENT_INFO} showBackButton={true} />
               </div>
               <TicketSummaryTable
                 selectedTickets={selectedTickets}
@@ -385,6 +579,7 @@ function CheckoutContent() {
               <UserInfoForm
                 userInfo={userInfo}
                 onUserInfoChange={handleUserInfoChange}
+                validationErrors={validationErrors}
               />
             </div>
           </div>
@@ -392,19 +587,36 @@ function CheckoutContent() {
         <Footer />
       </div>
 
-      {mounted && isPaymentModalOpen && (
+      {mounted && isPaymentModalOpen && orderInfo && (
         <PaymentModal
           isOpen={isPaymentModalOpen}
-          onClose={() => setIsPaymentModalOpen(false)}
+          onClose={async () => {
+            // Cancel order when modal is closed
+            try {
+              const supabase = createClient();
+              const { data: { session } } = await supabase.auth.getSession();
+              const accessToken = session?.access_token;
+              const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+              
+              if (accessToken && API_BASE_URL && orderInfo.id) {
+                await fetch(`${API_BASE_URL}/orders/${orderInfo.id}/cancel`, {
+                  method: "POST",
+                  headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                  },
+                });
+              }
+            } catch (error) {
+              console.error("Error canceling order when modal closed:", error);
+            }
+            
+            setIsPaymentModalOpen(false);
+            setOrderInfo(null);
+          }}
+          orderInfo={orderInfo}
+          countdownSeconds={checkoutCountdown}
           selectedTickets={selectedTickets}
-          totalAmount={totalAmount}
-          userInfo={userInfo}
-          paymentRemainingSeconds={checkoutCountdown}
-          paymentStatus={paymentStatus}
-          orderNumber={orderNumber}
-          orderDate={orderDate}
-          orderTime={orderTime}
-          onPaymentSuccess={handlePaymentSuccess}
         />
       )}
 
