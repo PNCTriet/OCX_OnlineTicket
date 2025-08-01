@@ -2,11 +2,38 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  // Import launch config
+  const { LAUNCH_CONFIG } = await import('./config/launch');
+  
+  const currentTime = new Date();
+  const launchTime = new Date(LAUNCH_CONFIG.LAUNCH_TIME);
+  const isLaunched = currentTime >= launchTime;
+  
+  // Get the pathname
+  const pathname = request.nextUrl.pathname;
+  
+  // Check if user has already been through launch (cookie)
+  const hasLaunchedCookie = request.cookies.get('launch')?.value === '1';
+  
+  // Allow access to static assets and API routes
+  if (pathname.startsWith('/_next') || 
+      pathname.startsWith('/api') ||
+      pathname.startsWith('/images') ||
+      pathname.startsWith('/fonts') ||
+      pathname.startsWith('/public') ||
+      pathname.startsWith('/lottie') ||
+      pathname.startsWith('/auth/callback')) {
+    return NextResponse.next();
+  }
+  
+  // If site is launched or user has launch cookie, allow access
+  if (isLaunched || hasLaunchedCookie) {
+    // Continue with Supabase auth logic
+    let supabaseResponse = NextResponse.next({
+      request,
+    })
 
-  const supabase = createServerClient(
+    const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -50,18 +77,31 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl)
   }
 
-  return supabaseResponse
+    return supabaseResponse
+  }
+  
+  // If not launched and not on launch page, redirect to launch
+  if (pathname !== '/launch') {
+    console.log('Redirecting to launch page - site not launched yet');
+    return NextResponse.redirect(new URL('/launch', request.url));
+  }
+  
+  // If on launch page and not launched, allow access
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
+     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
+     * - images (image files)
+     * - fonts (font files)
+     * - lottie (animation files)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|images|fonts|lottie).*)',
   ],
 } 

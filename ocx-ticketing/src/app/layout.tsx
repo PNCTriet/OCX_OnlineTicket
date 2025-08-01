@@ -25,7 +25,7 @@ const getBaseUrl = () => {
 
 export const metadata: Metadata = {
   title: "Ớt cay xè 4",
-  description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
+  description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
   keywords: [
     "OCX",
     "Online Ticket",
@@ -40,17 +40,15 @@ export const metadata: Metadata = {
   robots: "index, follow",
 
   // Use a function to get the base URL to ensure it's always valid
-  ...(process.env.NODE_ENV === 'production' ? {
-    metadataBase: new URL(getBaseUrl())
-  } : {}),
+  metadataBase: new URL(getBaseUrl()),
 
   openGraph: {
     type: "website",
     title: "Ớt cay xè 4",
-    description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
+    description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
     images: [
       {
-        url: "https://otcayxe.com/images/client_logo_ss4_thumb.png",
+        url: "/images/client_logo_ss4_thumb.png",
         width: 800,
         height: 600,
         alt: "OCX Online Ticket Logo",
@@ -61,10 +59,10 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Ớt cay xè 4",
-    description: "OCX indie show | Sự kiện âm nhạc đỉnh vãi l*n",
+    description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
     images: [
       {
-        url: "https://otcayxe.com/images/client_logo_ss4_thumb.png",
+        url: "/images/client_logo_ss4_thumb.png",
         alt: "OCX Online Ticket Logo",
       },
     ],
@@ -73,7 +71,7 @@ export const metadata: Metadata = {
 
   icons: {
     icon: "/favicon.ico",
-    apple: "https://otcayxe.com/images/client_logo_ss4_thumb.png",
+    apple: "/images/client_logo_ss4_thumb.png",
   },
 };
 
