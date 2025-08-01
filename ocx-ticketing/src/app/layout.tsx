@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
+const baseUrl = "https://www.otcayxe.com";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -44,6 +45,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
 
   openGraph: {
+    url: baseUrl,
     type: "website",
     title: "Ớt cay xè 4",
     description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
@@ -68,6 +70,10 @@ export const metadata: Metadata = {
       },
     ],
     site: "@ocx_ticket",
+  },
+
+  other: {
+    "fb:app_id": "1241434124376586", 
   },
 
   icons: {
