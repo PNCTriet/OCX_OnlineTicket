@@ -37,8 +37,8 @@ export default function UserInfoForm({ userInfo, onUserInfoChange, validationErr
         const phoneRegex = /^\d{10,}$/;
         return !phoneRegex.test(value) ? "Số điện thoại phải có ít nhất 10 chữ số" : "";
       case "facebook":
-        // Facebook URL validation (optional field)
-        if (value.trim() === "") return ""; // Allow empty
+        // Facebook URL validation (required field)
+        if (value.trim() === "") return "Vui lòng nhập link Facebook";
         const facebookRegex = /^(https?:\/\/)?(www\.)?facebook\.com\/.+/;
         return !facebookRegex.test(value) ? "Link Facebook không hợp lệ" : "";
       default:
@@ -115,7 +115,7 @@ export default function UserInfoForm({ userInfo, onUserInfoChange, validationErr
         <div className="relative">
           <input
             type="url"
-            placeholder="Link Facebook (tùy chọn)"
+            placeholder="Link Facebook"
             className={`w-full p-3 pl-10 pr-10 rounded-lg bg-zinc-800 border ${
               displayErrors.facebook ? 'border-red-500' : 'border-zinc-700'
             } focus:ring-2 focus:ring-[#c53e00] focus:border-transparent text-white`}
@@ -125,7 +125,7 @@ export default function UserInfoForm({ userInfo, onUserInfoChange, validationErr
           {displayErrors.facebook && (
             <p className="text-red-500 text-sm mt-1">{displayErrors.facebook}</p>
           )}
-          <p className="text-zinc-400 text-xs mt-1">Nhập link Facebook để nhận thông báo (không bắt buộc)</p>
+          <p className="text-zinc-400 text-xs mt-1">Vui lòng nhập link Facebook để nhận thông báo</p>
         </div>
       </div>
     </div>

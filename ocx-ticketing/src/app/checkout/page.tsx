@@ -248,20 +248,21 @@ function CheckoutContent() {
       return;
     }
 
-    // Validate user info - chỉ validate phone và name
+    // Validate user info - validate phone, name và facebook
     const isPhoneValid = /^\d{10,}$/.test(userInfo.phone);
     const isNameValid = userInfo.fullName.trim() !== "";
+    const isFacebookValid = userInfo.facebook.trim() !== "";
     
     // Set validation errors
     const newErrors = {
       phone: !isPhoneValid ? "Vui lòng nhập số điện thoại hợp lệ" : "",
       name: !isNameValid ? "Vui lòng nhập họ và tên" : "",
       policies: !agreedToPolicies ? "Vui lòng đồng ý với điều khoản" : "",
-      facebook: ""
+      facebook: !isFacebookValid ? "Vui lòng nhập link Facebook" : ""
     };
     setValidationErrors(newErrors);
     
-    if (!isPhoneValid || !isNameValid || !agreedToPolicies) {
+    if (!isPhoneValid || !isNameValid || !isFacebookValid || !agreedToPolicies) {
       return;
     }
     if (!user) {
