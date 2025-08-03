@@ -5,6 +5,7 @@ type UserInfo = {
   fullName: string;
   email: string;
   phone: string;
+  facebook: string;
 };
 
 type UserInfoFormProps = {
@@ -13,6 +14,7 @@ type UserInfoFormProps = {
   validationErrors?: {
     phone?: string;
     name?: string;
+    facebook?: string;
   };
 };
 
@@ -20,7 +22,8 @@ export default function UserInfoForm({ userInfo, onUserInfoChange, validationErr
   const [errors, setErrors] = useState({
     fullName: "",
     email: "",
-    phone: ""
+    phone: "",
+    facebook: ""
   });
 
   const validateField = (field: string, value: string) => {
@@ -33,14 +36,19 @@ export default function UserInfoForm({ userInfo, onUserInfoChange, validationErr
       case "phone":
         const phoneRegex = /^\d{10,}$/;
         return !phoneRegex.test(value) ? "Số điện thoại phải có ít nhất 10 chữ số" : "";
+      case "facebook":
+        // Facebook URL validation (optional field)
+        if (value.trim() === "") return ""; // Allow empty
+        const facebookRegex = /^(https?:\/\/)?(www\.)?facebook\.com\/.+/;
+        return !facebookRegex.test(value) ? "Link Facebook không hợp lệ" : "";
       default:
         return "";
     }
   };
 
   const handleChange = (field: string, value: string) => {
-    // Only allow editing phone number
-    if (field !== "phone") return;
+    // Only allow editing phone and facebook
+    if (field !== "phone" && field !== "facebook") return;
     
     onUserInfoChange(field, value);
     setErrors(prev => ({
@@ -52,7 +60,8 @@ export default function UserInfoForm({ userInfo, onUserInfoChange, validationErr
   // Use validation errors from parent if provided, otherwise use local errors
   const displayErrors = {
     phone: validationErrors?.phone || errors.phone,
-    name: validationErrors?.name || errors.fullName
+    name: validationErrors?.name || errors.fullName,
+    facebook: validationErrors?.facebook || errors.facebook
   };
 
   return (
@@ -100,6 +109,23 @@ export default function UserInfoForm({ userInfo, onUserInfoChange, validationErr
             <p className="text-red-500 text-sm mt-1">{displayErrors.phone}</p>
           )}
           <p className="text-zinc-400 text-xs mt-1">Vui lòng nhập số điện thoại để nhận thông báo</p>
+        </div>
+
+        {/* Facebook - Editable */}
+        <div className="relative">
+          <input
+            type="url"
+            placeholder="Link Facebook (tùy chọn)"
+            className={`w-full p-3 pl-10 pr-10 rounded-lg bg-zinc-800 border ${
+              displayErrors.facebook ? 'border-red-500' : 'border-zinc-700'
+            } focus:ring-2 focus:ring-[#c53e00] focus:border-transparent text-white`}
+            value={userInfo.facebook}
+            onChange={(e) => handleChange("facebook", e.target.value)}
+          />
+          {displayErrors.facebook && (
+            <p className="text-red-500 text-sm mt-1">{displayErrors.facebook}</p>
+          )}
+          <p className="text-zinc-400 text-xs mt-1">Nhập link Facebook để nhận thông báo (không bắt buộc)</p>
         </div>
       </div>
     </div>
