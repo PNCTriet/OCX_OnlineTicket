@@ -36,6 +36,7 @@ function CheckoutContent() {
     fullName: "",
     email: "",
     phone: "",
+    facebook: "",
   });
   const [agreedToPolicies, setAgreedToPolicies] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -53,7 +54,8 @@ function CheckoutContent() {
   const [validationErrors, setValidationErrors] = useState({
     phone: "",
     name: "",
-    policies: ""
+    policies: "",
+    facebook: ""
   });
 
   // State to track if component has mounted on client
@@ -161,6 +163,7 @@ function CheckoutContent() {
         fullName: user.user_metadata?.full_name || user.user_metadata?.name || "",
         email: user.email || "",
         phone: user.user_metadata?.phone || "",
+        facebook: user.user_metadata?.facebook || "",
       });
     }
   }, [user, loading]);
@@ -245,19 +248,21 @@ function CheckoutContent() {
       return;
     }
 
-    // Validate user info - chỉ validate phone và name
+    // Validate user info - validate phone, name và facebook
     const isPhoneValid = /^\d{10,}$/.test(userInfo.phone);
     const isNameValid = userInfo.fullName.trim() !== "";
+    const isFacebookValid = userInfo.facebook.trim() !== "";
     
     // Set validation errors
     const newErrors = {
       phone: !isPhoneValid ? "Vui lòng nhập số điện thoại hợp lệ" : "",
       name: !isNameValid ? "Vui lòng nhập họ và tên" : "",
-      policies: !agreedToPolicies ? "Vui lòng đồng ý với điều khoản" : ""
+      policies: !agreedToPolicies ? "Vui lòng đồng ý với điều khoản" : "",
+      facebook: !isFacebookValid ? "Vui lòng nhập link Facebook" : ""
     };
     setValidationErrors(newErrors);
     
-    if (!isPhoneValid || !isNameValid || !agreedToPolicies) {
+    if (!isPhoneValid || !isNameValid || !isFacebookValid || !agreedToPolicies) {
       return;
     }
     if (!user) {
@@ -375,27 +380,29 @@ function CheckoutContent() {
       const order = await res.json();
       setOrderInfo(order);
       
-      // Update user phone number if order creation was successful
-      if (order && order.user_id && userInfo.phone) {
+      // Update user phone and facebook if order creation was successful
+      if (order && order.user_id && (userInfo.phone || userInfo.facebook)) {
         try {
+          const updateData: { phone?: string; fb?: string } = {};
+          if (userInfo.phone) updateData.phone = userInfo.phone;
+          if (userInfo.facebook) updateData.fb = userInfo.facebook;
+          
           const updateUserRes = await fetch(`${API_BASE_URL}/users/${order.user_id}`, {
             method: "PATCH",
             headers: {
               // "Authorization": `Bearer ${accessToken}`,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              phone: userInfo.phone
-            }),
+            body: JSON.stringify(updateData),
           });
           
           if (updateUserRes.ok) {
-            console.log('User phone updated successfully');
+            console.log('User phone and facebook updated successfully');
           } else {
-            console.error('Failed to update user phone:', await updateUserRes.text());
+            console.error('Failed to update user info:', await updateUserRes.text());
           }
         } catch (error) {
-          console.error('Error updating user phone:', error);
+          console.error('Error updating user info:', error);
         }
       }
       
