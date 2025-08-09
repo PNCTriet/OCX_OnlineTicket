@@ -40,25 +40,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    // Redirect to home page after sign out
-    window.location.href = '/';
+    // Centralized logout via Auth Gateway, then return to this site
+    const returnUrl = `${window.location.origin}/`;
+    const gatewayLogout = 'https://auth.howlstudio.tech/auth/logout?redirect_to=' + encodeURIComponent(returnUrl);
+    window.location.href = gatewayLogout;
   };
 
   const signInWithGoogle = async (redirectTo?: string, tickets?: string) => {
-    const redirectUrl = redirectTo 
-      ? `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}${tickets ? `&tickets=${encodeURIComponent(tickets)}` : ''}`
-      : `${window.location.origin}/auth/callback`;
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: redirectUrl,
-      },
-    });
-
-    if (error) {
-      throw error;
-    }
+    // Use Auth Gateway start route with redirect back to this site's /inject
+    const postLoginRedirect = redirectTo ?? '/';
+    const injectUrl = `${window.location.origin}/inject?post_login_redirect=${encodeURIComponent(postLoginRedirect)}${tickets ? `&tickets=${encodeURIComponent(tickets)}` : ''}`;
+    const gatewayStart = 'https://auth.howlstudio.tech/auth/start?redirect_to=' + encodeURIComponent(injectUrl);
+    window.location.href = gatewayStart;
   };
 
   const value = {
