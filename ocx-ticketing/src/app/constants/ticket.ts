@@ -105,7 +105,7 @@ export const EVENT_INFO: EventInfo = {
   id: "ocx-4",
   name: "Ớt Cay Xè 4",
   time: "15:00 - 22:00",
-  location: "Nơi nào đó ở TP Hồ Chí Minh",
+  location: "Capital Theatre - 212 Lý Chính Thắng, Phường 9, Quận 3, Hồ Chí Minh",
   avatar: "/images/ocx4_event_avatar.jpg",
   date: "T7, 27/09/2025",
 };
