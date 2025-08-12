@@ -89,7 +89,7 @@ export default function HeroSection() {
             </div>
             <div className="flex flex-col justify-center ml-3 text-left">
               <span className="text-xl sm:text-2xl font-bold leading-tight">BÍ MẬT CẦN BẬT MÍ</span>
-              <span className="text-base sm:text-lg font-normal text-white/90 leading-tight">Capital Theatre - 212 Lý Chính Thắng, Phường 9, Quận 3, Hồ Chí Minh</span>
+              <span className="text-base sm:text-lg font-normal text-white/90 leading-tight">Capital Theatre - 212 Lý Chính Thắng, Hồ Chí Minh</span>
             </div>
           </div>
         </div>
