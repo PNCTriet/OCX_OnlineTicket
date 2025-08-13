@@ -390,7 +390,7 @@ function CheckoutContent() {
           const updateUserRes = await fetch(`${API_BASE_URL}/users/${order.user_id}`, {
             method: "PATCH",
             headers: {
-              // "Authorization": `Bearer ${accessToken}`,
+              "Authorization": `Bearer ${accessToken}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify(updateData),
