@@ -108,7 +108,7 @@ function CheckoutContent() {
       });
       
       return validTickets;
-    } catch (error) {
+    } catch {
       // console.error('Error parsing tickets from URL:', {
       //   error,
       //   ticketsParam,
@@ -126,21 +126,21 @@ function CheckoutContent() {
   useEffect(() => {
     setMounted(true);
     // Generate order details only on client side
-    const now = new Date();
+    // const now = new Date();
     
     // Calculate total tickets
-    const totalTickets = selectedTickets.reduce((sum, ticket) => sum + ticket.quantity, 0);
+    // const totalTickets = selectedTickets.reduce((sum, ticket) => sum + ticket.quantity, 0);
     
     // Generate a unique 8-digit number using timestamp and random number
-    const uniqueId = Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
+    // const uniqueId = Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
     
     // Format date and time parts
-    const datePart = `${now.getDate().toString().padStart(2, '0')}${(now.getMonth() + 1).toString().padStart(2, '0')}`;
-    const timePart = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
+    // const datePart = `${now.getDate().toString().padStart(2, '0')}${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+    // const timePart = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
     
     // Create order number in format: OCX4-DDMM-HHMMSS-TT-XXXXXXXX
     // where TT is total tickets (2 digits) and XXXXXXXX is unique ID
-    const orderNumberStr = `OCX4-${datePart}-${timePart}-${totalTickets.toString().padStart(2, '0')}-${uniqueId}`;
+    // const orderNumberStr = `OCX4-${datePart}-${timePart}-${totalTickets.toString().padStart(2, '0')}-${uniqueId}`;
     
     // console.log('Debug - Order Generation:', {
     //   now: now.toISOString(),
@@ -221,7 +221,7 @@ function CheckoutContent() {
                 },
               });
             }
-          } catch (error) {
+          } catch {
             // console.error("Error canceling order on page unload:", error);
           }
         };
@@ -401,14 +401,14 @@ function CheckoutContent() {
           } else {
             // console.error('Failed to update user info:', await updateUserRes.text());
           }
-        } catch (error) {
+        } catch {
           // console.error('Error updating user info:', error);
         }
       }
       
       setIsPaymentModalOpen(true);
       setIsProcessingPayment(false);
-    } catch (error) {
+    } catch {
       // console.error("Error during payment process:", error);
       alert("Lỗi khi tạo đơn hàng!");
       setIsProcessingPayment(false);
@@ -614,7 +614,7 @@ function CheckoutContent() {
                   },
                 });
               }
-            } catch (error) {
+            } catch {
               // console.error("Error canceling order when modal closed:", error);
             }
             

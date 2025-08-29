@@ -106,7 +106,7 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
             }, 1000); // Delay 1 giây để hiển thị trạng thái "Đang xử lý"
           }
         }
-      } catch (error) {
+      } catch {
         // console.error("Error checking payment status:", error);
       }
     };
