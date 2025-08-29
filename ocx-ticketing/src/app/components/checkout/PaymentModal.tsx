@@ -107,7 +107,7 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
           }
         }
       } catch (error) {
-        console.error("Error checking payment status:", error);
+        // console.error("Error checking payment status:", error);
       }
     };
     

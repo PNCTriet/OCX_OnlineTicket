@@ -14,22 +14,22 @@ export default function PaymentSuccessModal({ isOpen, onClose }: PaymentSuccessM
 
   useEffect(() => {
     if (isOpen) {
-      console.log("PaymentSuccessModal opened");
+      // console.log("PaymentSuccessModal opened");
       // Reset states khi modal mở
       setShowCheckmark(false);
       setShowMessage(false);
       
       // Delay để tạo hiệu ứng animation
       const timer1 = setTimeout(() => {
-        console.log("Showing checkmark");
+        // console.log("Showing checkmark");
         setShowCheckmark(true);
       }, 300);
       const timer2 = setTimeout(() => {
-        console.log("Showing message");
+        // console.log("Showing message");
         setShowMessage(true);
       }, 800);
       const timer3 = setTimeout(() => {
-        console.log("Redirecting to home page");
+        // console.log("Redirecting to home page");
         onClose();
         router.push("/");
       }, 10000); // Tăng thời gian hiển thị lên 20 giây

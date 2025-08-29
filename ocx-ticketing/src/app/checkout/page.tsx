@@ -69,20 +69,20 @@ function CheckoutContent() {
   
   const selectedTickets: Ticket[] = useMemo(() => {
     if (!ticketsParam) {
-      console.log('No tickets parameter found in URL');
+      // console.log('No tickets parameter found in URL');
       return [];
     }
     
     try {
       // Log raw parameter for debugging
-      console.log('Raw tickets parameter:', ticketsParam);
+      // console.log('Raw tickets parameter:', ticketsParam);
       
       const decoded = decodeURIComponent(ticketsParam);
-      console.log('Decoded tickets parameter:', decoded);
+      // console.log('Decoded tickets parameter:', decoded);
       
       // Basic validation before parsing
       if (!decoded.startsWith('[') || !decoded.endsWith(']')) {
-        console.error('Invalid JSON format: Expected array');
+        // console.error('Invalid JSON format: Expected array');
         return [];
       }
       
@@ -90,7 +90,7 @@ function CheckoutContent() {
       
       // Validate parsed data structure
       if (!Array.isArray(parsed)) {
-        console.error('Invalid data structure: Expected array, got', typeof parsed);
+        // console.error('Invalid data structure: Expected array, got', typeof parsed);
         return [];
       }
       
@@ -102,18 +102,18 @@ function CheckoutContent() {
           && ticket.quantity > 0;
         
         if (!isValid) {
-          console.error('Invalid ticket object:', ticket);
+          // console.error('Invalid ticket object:', ticket);
         }
         return isValid;
       });
       
       return validTickets;
     } catch (error) {
-      console.error('Error parsing tickets from URL:', {
-        error,
-        ticketsParam,
-        message: error instanceof Error ? error.message : 'Unknown error'
-      });
+      // console.error('Error parsing tickets from URL:', {
+      //   error,
+      //   ticketsParam,
+      //   message: error instanceof Error ? error.message : 'Unknown error'
+      // });
       return [];
     }
   }, [ticketsParam]);
@@ -142,14 +142,14 @@ function CheckoutContent() {
     // where TT is total tickets (2 digits) and XXXXXXXX is unique ID
     const orderNumberStr = `OCX4-${datePart}-${timePart}-${totalTickets.toString().padStart(2, '0')}-${uniqueId}`;
     
-    console.log('Debug - Order Generation:', {
-      now: now.toISOString(),
-      totalTickets,
-      uniqueId,
-      datePart,
-      timePart,
-      orderNumberStr
-    });
+    // console.log('Debug - Order Generation:', {
+    //   now: now.toISOString(),
+    //   totalTickets,
+    //   uniqueId,
+    //   datePart,
+    //   timePart,
+    //   orderNumberStr
+    // });
     
     // setOrderNumber(orderNumberStr); // Removed as per edit hint
     // setOrderDate(now.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "2-digit" }).replace(/\//g, '/')); // Removed as per edit hint
@@ -222,7 +222,7 @@ function CheckoutContent() {
               });
             }
           } catch (error) {
-            console.error("Error canceling order on page unload:", error);
+            // console.error("Error canceling order on page unload:", error);
           }
         };
         cancelOrder();
@@ -397,19 +397,19 @@ function CheckoutContent() {
           });
           
           if (updateUserRes.ok) {
-            console.log('User phone and facebook updated successfully');
+            // console.log('User phone and facebook updated successfully');
           } else {
-            console.error('Failed to update user info:', await updateUserRes.text());
+            // console.error('Failed to update user info:', await updateUserRes.text());
           }
         } catch (error) {
-          console.error('Error updating user info:', error);
+          // console.error('Error updating user info:', error);
         }
       }
       
       setIsPaymentModalOpen(true);
       setIsProcessingPayment(false);
     } catch (error) {
-      console.error("Error during payment process:", error);
+      // console.error("Error during payment process:", error);
       alert("Lỗi khi tạo đơn hàng!");
       setIsProcessingPayment(false);
     }
@@ -615,7 +615,7 @@ function CheckoutContent() {
                 });
               }
             } catch (error) {
-              console.error("Error canceling order when modal closed:", error);
+              // console.error("Error canceling order when modal closed:", error);
             }
             
             setIsPaymentModalOpen(false);

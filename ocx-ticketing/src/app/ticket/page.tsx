@@ -123,7 +123,7 @@ export default function TicketOption2Page() {
 
       setSelectedTickets(transformedTickets);
     } catch (err) {
-      console.error('Error fetching tickets:', err);
+      // console.error('Error fetching tickets:', err);
       setError('Không thể tải thông tin vé. Vui lòng thử lại sau.');
     }
   };
@@ -163,7 +163,7 @@ export default function TicketOption2Page() {
       const encodedTickets = encodeURIComponent(ticketsJson);
       router.push(`/checkout?tickets=${encodedTickets}`);
     } catch (error) {
-      console.error('Error encoding tickets for checkout:', error);
+      // console.error('Error encoding tickets for checkout:', error);
       // Fallback: redirect without tickets
       router.push('/checkout');
     }
