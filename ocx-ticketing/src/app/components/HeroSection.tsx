@@ -9,7 +9,7 @@ export default function HeroSection() {
       id="about"
       className="aspect-[16/9] w-full mt-[45px] sm:mt-[64px] md:mt-[80px] flex flex-col items-center justify-center text-center relative pb-0"
       style={{
-        backgroundImage: 'url(/images/hero_backround_ss4_alt1.svg)',
+        backgroundImage: 'url(/images/hero_backround_ss4_alt1.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -21,7 +21,7 @@ export default function HeroSection() {
         <div
           className="hidden sm:block w-full h-full"
           style={{
-            backgroundImage: "url(/images/hero_backround_ss4_alt1.svg)",
+            backgroundImage: "url(/images/hero_backround_ss4_alt1.png)",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -35,7 +35,7 @@ export default function HeroSection() {
         <div
           className="block sm:hidden w-full h-full"
           style={{
-            backgroundImage: "url(/images/hero_background_ss4_mobile.jpg)",
+            backgroundImage: "url(/images/hero_background_ss4_mobile.png)",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",

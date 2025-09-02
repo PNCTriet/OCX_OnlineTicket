@@ -125,7 +125,7 @@ export default function CountdownLaunch({ targetDate, onComplete }: CountdownLau
           <div
             className="block sm:hidden w-full h-full"
             style={{
-              backgroundImage: "url(/images/hero_background_ss4_mobile.jpg)",
+              backgroundImage: "url(/images/hero_background_ss4_mobile.png)",
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
@@ -198,7 +198,7 @@ export default function CountdownLaunch({ targetDate, onComplete }: CountdownLau
         <div
           className="block sm:hidden w-full h-full"
           style={{
-            backgroundImage: "url(/images/hero_background_ss4_mobile.jpg)",
+            backgroundImage: "url(/images/hero_background_ss4_mobile.png)",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
