@@ -96,7 +96,7 @@ export default function TicketOption2Page() {
   const fetchTickets = async () => {
     try {
       setError(null);
-      const response = await fetch('https://api.otcayxe.com/tickets/event/cmd5gmqgp0005v78s79bina9z', {
+      const response = await fetch('https://api.otcayxe.com/tickets/event/cmf4q6suw00m7l912jqq76aqb', {
         method: 'GET',
         headers: {
           'accept': '*/*',

@@ -347,8 +347,8 @@ function CheckoutContent() {
       }
 
       // Chuẩn bị dữ liệu order
-      const event_id = "cmd5gmqgp0005v78s79bina9z";
-      const organization_id = "cmd5g7d2w0003v78sdjha8onv"; 
+      const event_id = "cmf4q6suw00m7l912jqq76aqb";
+      const organization_id = "cmf4pxbbh00m4l912i7m4pcs7"; 
       const items = selectedTickets
         .filter(t => t.quantity > 0)
         .map(t => ({
