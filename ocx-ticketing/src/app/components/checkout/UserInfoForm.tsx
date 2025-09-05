@@ -6,6 +6,7 @@ type UserInfo = {
   email: string;
   phone: string;
   facebook: string;
+  refcode: string;
 };
 
 type UserInfoFormProps = {
@@ -15,6 +16,7 @@ type UserInfoFormProps = {
     phone?: string;
     name?: string;
     facebook?: string;
+    refcode?: string;
   };
 };
 
@@ -23,7 +25,8 @@ export default function UserInfoForm({ userInfo, onUserInfoChange, validationErr
     fullName: "",
     email: "",
     phone: "",
-    facebook: ""
+    facebook: "",
+    refcode: ""
   });
 
   const validateField = (field: string, value: string) => {
@@ -41,14 +44,20 @@ export default function UserInfoForm({ userInfo, onUserInfoChange, validationErr
         if (value.trim() === "") return "Vui lòng nhập link Facebook";
         const facebookRegex = /^(https?:\/\/)?(www\.)?facebook\.com\/.+/;
         return !facebookRegex.test(value) ? "Link Facebook không hợp lệ" : "";
+      case "refcode":
+        // Refcode validation (optional field, but if provided must start with #ocx and be exactly 11 characters)
+        if (value.trim() === "") return ""; // Optional field
+        if (!value.startsWith("#ocx")) return "Mã giới thiệu không hợp lệ";
+        if (value.length !== 11) return "Mã giới thiệu không hợp lệ";
+        return "";
       default:
         return "";
     }
   };
 
   const handleChange = (field: string, value: string) => {
-    // Only allow editing phone and facebook
-    if (field !== "phone" && field !== "facebook") return;
+    // Only allow editing phone, facebook, and refcode
+    if (field !== "phone" && field !== "facebook" && field !== "refcode") return;
     
     onUserInfoChange(field, value);
     setErrors(prev => ({
@@ -61,7 +70,8 @@ export default function UserInfoForm({ userInfo, onUserInfoChange, validationErr
   const displayErrors = {
     phone: validationErrors?.phone || errors.phone,
     name: validationErrors?.name || errors.fullName,
-    facebook: validationErrors?.facebook || errors.facebook
+    facebook: validationErrors?.facebook || errors.facebook,
+    refcode: validationErrors?.refcode || errors.refcode
   };
 
   return (
@@ -126,6 +136,24 @@ export default function UserInfoForm({ userInfo, onUserInfoChange, validationErr
             <p className="text-red-500 text-sm mt-1">{displayErrors.facebook}</p>
           )}
           <p className="text-zinc-400 text-xs mt-1">Vui lòng nhập link Facebook để nhận thông báo</p>
+        </div>
+
+        {/* Refcode - Editable */}
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Mã giới thiệu (không bắt buộc)"
+            maxLength={11}
+            className={`w-full p-3 pl-10 pr-10 rounded-lg bg-zinc-800 border ${
+              displayErrors.refcode ? 'border-red-500' : 'border-zinc-700'
+            } focus:ring-2 focus:ring-[#c53e00] focus:border-transparent text-white`}
+            value={userInfo.refcode}
+            onChange={(e) => handleChange("refcode", e.target.value)}
+          />
+          {displayErrors.refcode && (
+            <p className="text-red-500 text-sm mt-1">{displayErrors.refcode}</p>
+          )}
+          <p className="text-zinc-400 text-xs mt-1">Nhập mã giới thiệu</p>
         </div>
       </div>
     </div>

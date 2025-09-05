@@ -37,6 +37,7 @@ function CheckoutContent() {
     email: "",
     phone: "",
     facebook: "",
+    refcode: "",
   });
   const [agreedToPolicies, setAgreedToPolicies] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -55,7 +56,8 @@ function CheckoutContent() {
     phone: "",
     name: "",
     policies: "",
-    facebook: ""
+    facebook: "",
+    refcode: ""
   });
 
   // State to track if component has mounted on client
@@ -164,6 +166,7 @@ function CheckoutContent() {
         email: user.email || "",
         phone: user.user_metadata?.phone || "",
         facebook: user.user_metadata?.facebook || "",
+        refcode: "",
       });
     }
   }, [user, loading]);
@@ -248,21 +251,23 @@ function CheckoutContent() {
       return;
     }
 
-    // Validate user info - validate phone, name và facebook
+    // Validate user info - validate phone, name, facebook và refcode
     const isPhoneValid = /^\d{10,}$/.test(userInfo.phone);
     const isNameValid = userInfo.fullName.trim() !== "";
     const isFacebookValid = userInfo.facebook.trim() !== "";
+    const isRefcodeValid = userInfo.refcode.trim() === "" || (userInfo.refcode.startsWith("#ocx") && userInfo.refcode.length === 11);
     
     // Set validation errors
     const newErrors = {
       phone: !isPhoneValid ? "Vui lòng nhập số điện thoại hợp lệ" : "",
       name: !isNameValid ? "Vui lòng nhập họ và tên" : "",
       policies: !agreedToPolicies ? "Vui lòng đồng ý với điều khoản" : "",
-      facebook: !isFacebookValid ? "Vui lòng nhập link Facebook" : ""
+      facebook: !isFacebookValid ? "Vui lòng nhập link Facebook" : "",
+      refcode: !isRefcodeValid ? "Mã giới thiệu không hợp lệ" : ""
     };
     setValidationErrors(newErrors);
     
-    if (!isPhoneValid || !isNameValid || !isFacebookValid || !agreedToPolicies) {
+    if (!isPhoneValid || !isNameValid || !isFacebookValid || !isRefcodeValid || !agreedToPolicies) {
       return;
     }
     if (!user) {
@@ -356,6 +361,10 @@ function CheckoutContent() {
           quantity: t.quantity,
         }));
 
+      // Xác định referral_code và referral_type
+      const referral_code = userInfo.refcode.trim() !== "" ? userInfo.refcode : "DIRECT";
+      const referral_type = userInfo.refcode.trim() !== "" && userInfo.refcode.startsWith("#ocx") && userInfo.refcode.length === 11 ? "SALER" : "DIRECT";
+
       // Tạo order
       const res = await fetch(`${API_BASE_URL}/orders`, {
         method: "POST",
@@ -367,6 +376,8 @@ function CheckoutContent() {
           organization_id,
           event_id,
           items,
+          referral_code,
+          referral_type,
         }),
       });
 
