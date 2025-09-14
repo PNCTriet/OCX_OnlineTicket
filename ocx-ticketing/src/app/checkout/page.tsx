@@ -82,7 +82,6 @@ function CheckoutContent() {
 
   // Parse tickets from URL
   const ticketsParam = searchParams?.get("tickets");
-  const couponParam = searchParams?.get("coupon");
   
   const selectedTickets: Ticket[] = useMemo(() => {
     if (!ticketsParam) {
@@ -456,7 +455,14 @@ function CheckoutContent() {
       const referral_type = userInfo.refcode.trim() !== "" && userInfo.refcode.startsWith("#ocx") && userInfo.refcode.length === 11 ? "SALER" : "DIRECT";
 
       // Tạo order
-      const orderData: any = {
+      const orderData: {
+        organization_id: string;
+        event_id: string;
+        items: Array<{ ticket_id: string; quantity: number }>;
+        referral_code: string;
+        referral_type: string;
+        coupon_code?: string;
+      } = {
         organization_id,
         event_id,
         items,
