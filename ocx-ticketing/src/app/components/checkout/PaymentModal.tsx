@@ -22,15 +22,33 @@ type Ticket = {
   price: number;
   quantity: number;
 };
+interface CouponValidationResponse {
+  valid: boolean;
+  discount_amount: number;
+  discount_type: string;
+  message?: string;
+}
 type PaymentModalProps = {
   isOpen: boolean;
   onClose: () => void;
   orderInfo: OrderInfo;
   countdownSeconds?: number;
   selectedTickets?: Ticket[];
+  finalAmount?: number;
+  appliedCoupon?: CouponValidationResponse | null;
+  couponCode?: string;
 };
 
-export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeconds, selectedTickets }: PaymentModalProps) {
+export default function PaymentModal({ 
+  isOpen, 
+  onClose, 
+  orderInfo, 
+  countdownSeconds, 
+  selectedTickets, 
+  finalAmount, 
+  appliedCoupon, 
+  couponCode 
+}: PaymentModalProps) {
   const [isPaid, setIsPaid] = useState(false);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [showCheckmark, setShowCheckmark] = useState(false);
@@ -121,9 +139,10 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
 
   if (!isOpen || !orderInfo) return null;
 
-  // Tạo link QR VietQR
-  // const qrUrl = `https://img.vietqr.io/image/VPB-214244527-compact.png?amount=${orderInfo.total_amount}&addInfo=OCX${orderInfo.id}&accountName=PHAM NG CAO TRIET`;
-  const qrUrl = `https://img.vietqr.io/image/VPB-0934782703-compact.png?amount=${orderInfo.total_amount}&addInfo=OCX${orderInfo.id}&accountName=LE THI NGOC HAN`;
+  // Tạo link QR VietQR với giá cuối cùng sau giảm
+  const paymentAmount = finalAmount || orderInfo.total_amount;
+  // const qrUrl = `https://img.vietqr.io/image/VPB-214244527-compact.png?amount=${paymentAmount}&addInfo=OCX${orderInfo.id}&accountName=PHAM NG CAO TRIET`;
+  const qrUrl = `https://img.vietqr.io/image/VPB-0934782703-compact.png?amount=${paymentAmount}&addInfo=OCX${orderInfo.id}&accountName=LE THI NGOC HAN`;
 
   return (
     <>
@@ -193,10 +212,10 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
                     {/* <span className="font-medium">PHAM NG CAO TRIET</span> */}
                     <span className="font-medium">LE THI NGOC HAN</span>
                   </div>
-                  {/* <div className="flex justify-between">
+                  <div className="flex justify-between">
                     <span className="text-zinc-400">Amount:</span>
-                    <span className="font-medium text-[#c53e00]">{Number(orderInfo.total_amount).toLocaleString()} ₫</span>
-                  </div> */}
+                    <span className="font-medium text-[#c53e00]">{Number(paymentAmount).toLocaleString()} ₫</span>
+                  </div>
                 </div>
               </div>
 
@@ -247,6 +266,26 @@ export default function PaymentModal({ isOpen, onClose, orderInfo, countdownSeco
                       <span className="text-zinc-400 font-mono font-bold">
                         {selectedTickets?.reduce((total, ticket) => total + ticket.quantity, 0)} vé
                       </span>
+                    </div>
+                  </div>
+                  
+                  {/* Price Summary */}
+                  <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3 mt-3 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-zinc-400">Tạm tính:</span>
+                      <span className="text-white">{Number(orderInfo.total_amount).toLocaleString()} ₫</span>
+                    </div>
+                    
+                    {appliedCoupon && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-green-400">Giảm giá ({couponCode}):</span>
+                        <span className="text-green-400">-{appliedCoupon.discount_amount.toLocaleString()} ₫</span>
+                      </div>
+                    )}
+                    
+                    <div className="flex justify-between items-center border-t border-zinc-600 pt-2">
+                      <span className="text-zinc-400 font-bold">Tổng cộng:</span>
+                      <span className="text-[#c53e00] font-bold text-lg">{Number(paymentAmount).toLocaleString()} ₫</span>
                     </div>
                   </div>
                 </div>

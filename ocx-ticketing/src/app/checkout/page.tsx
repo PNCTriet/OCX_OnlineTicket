@@ -22,6 +22,14 @@ type OrderInfo = {
   }>;
 };
 
+// Interface for coupon validation response
+interface CouponValidationResponse {
+  valid: boolean;
+  discount_amount: number;
+  discount_type: string;
+  message?: string;
+}
+
 import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Ticket } from "../types/ticket";
@@ -45,6 +53,12 @@ function CheckoutContent() {
     useState(false);
   const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  
+  // Coupon states
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<CouponValidationResponse | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
 
   // New: Shared countdown state for the entire checkout process
   const initialCheckoutSeconds = 600; // 10 minutes for checkout
@@ -68,6 +82,7 @@ function CheckoutContent() {
 
   // Parse tickets from URL
   const ticketsParam = searchParams?.get("tickets");
+  const couponParam = searchParams?.get("coupon");
   
   const selectedTickets: Ticket[] = useMemo(() => {
     if (!ticketsParam) {
@@ -245,6 +260,81 @@ function CheckoutContent() {
     }));
   };
 
+  // Validate coupon
+  const validateCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError("Vui lòng nhập mã coupon");
+      return;
+    }
+
+    if (totalAmount === 0) {
+      setCouponError("Vui lòng chọn vé trước khi áp dụng coupon");
+      return;
+    }
+
+    setIsValidatingCoupon(true);
+    setCouponError("");
+
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const accessToken = session?.access_token;
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+      if (!accessToken || !API_BASE_URL) {
+        setCouponError("Không xác thực được tài khoản!");
+        return;
+      }
+
+      const selectedTicketIds = selectedTickets
+        .filter(t => t.quantity > 0)
+        .map(t => t.id);
+
+      const response = await fetch(`${API_BASE_URL}/coupons/validate`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          code: couponCode.trim(),
+          order_amount: totalAmount,
+          user_id: user?.id,
+          organization_id: "cmf4pxbbh00m4l912i7m4pcs7",
+          event_id: "cmf4q6suw00m7l912jqq76aqb",
+          ticket_ids: selectedTicketIds,
+        }),
+      });
+
+      const result: CouponValidationResponse = await response.json();
+
+      if (response.ok && result.valid) {
+        setAppliedCoupon(result);
+        setCouponError("");
+      } else {
+        setAppliedCoupon(null);
+        // Chỉ thay đổi thông báo cho 2 trường hợp cụ thể
+        if (result.message?.includes("has reached usage limit") || result.message?.includes("not found")) {
+          setCouponError("Coupon không khả dụng hoặc đã hết hạn sử dụng");
+        } else {
+          setCouponError(result.message || "Mã coupon không hợp lệ");
+        }
+      }
+    } catch {
+      setCouponError("Lỗi khi xác thực coupon");
+      setAppliedCoupon(null);
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
+
+  // Remove coupon
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+  };
+
   const handlePayment = async () => {
     // Prevent spam clicking
     if (isProcessingPayment) {
@@ -366,19 +456,26 @@ function CheckoutContent() {
       const referral_type = userInfo.refcode.trim() !== "" && userInfo.refcode.startsWith("#ocx") && userInfo.refcode.length === 11 ? "SALER" : "DIRECT";
 
       // Tạo order
+      const orderData: any = {
+        organization_id,
+        event_id,
+        items,
+        referral_code,
+        referral_type,
+      };
+
+      // Thêm coupon nếu có
+      if (appliedCoupon && couponCode.trim()) {
+        orderData.coupon_code = couponCode.trim();
+      }
+
       const res = await fetch(`${API_BASE_URL}/orders`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          organization_id,
-          event_id,
-          items,
-          referral_code,
-          referral_type,
-        }),
+        body: JSON.stringify(orderData),
       });
 
       if (!res.ok) {
@@ -432,6 +529,9 @@ function CheckoutContent() {
     (sum, ticket) => sum + ticket.price * ticket.quantity,
     0
   );
+
+  // Calculate final amount after coupon discount
+  const finalAmount = appliedCoupon ? totalAmount - appliedCoupon.discount_amount : totalAmount;
 
   // Show loading state
   if (loading) {
@@ -527,6 +627,8 @@ function CheckoutContent() {
             <TicketSummaryTable
               selectedTickets={selectedTickets}
               totalAmount={totalAmount}
+              finalAmount={finalAmount}
+              appliedCoupon={appliedCoupon}
             />
             
             {/* User Info Form */}
@@ -535,6 +637,53 @@ function CheckoutContent() {
               onUserInfoChange={handleUserInfoChange}
               validationErrors={validationErrors}
             />
+            
+            {/* Coupon Section */}
+            <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+              <h3 className="text-xl font-bold text-white mb-4">Mã Giảm Giá</h3>
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    placeholder="Nhập mã coupon"
+                    className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white/40"
+                    disabled={isValidatingCoupon}
+                  />
+                  <button
+                    onClick={validateCoupon}
+                    disabled={isValidatingCoupon || !couponCode.trim()}
+                    className="px-6 py-2 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isValidatingCoupon ? "Đang kiểm tra..." : "Áp dụng"}
+                  </button>
+                </div>
+                
+                {couponError && (
+                  <div className="text-red-400 text-sm">{couponError}</div>
+                )}
+                
+                {appliedCoupon && (
+                  <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-green-400 font-medium">Coupon đã áp dụng: {couponCode}</p>
+                        <p className="text-green-300 text-sm">
+                          Giảm {appliedCoupon.discount_amount.toLocaleString('vi-VN')} VNĐ
+                        </p>
+                      </div>
+                      <button
+                        onClick={removeCoupon}
+                        className="text-red-400 hover:text-red-300 text-sm"
+                      >
+                        Xóa
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
             
             {/* Policy and Payment Button at bottom for mobile */}
             <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
@@ -572,6 +721,8 @@ function CheckoutContent() {
               <TicketSummaryTable
                 selectedTickets={selectedTickets}
                 totalAmount={totalAmount}
+                finalAmount={finalAmount}
+                appliedCoupon={appliedCoupon}
               />
               <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
                 <PolicyCheckbox
@@ -599,6 +750,53 @@ function CheckoutContent() {
                 onUserInfoChange={handleUserInfoChange}
                 validationErrors={validationErrors}
               />
+              
+              {/* Coupon Section for Desktop */}
+              <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+                <h3 className="text-xl font-bold text-white mb-4">Mã Giảm Giá</h3>
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      placeholder="Nhập mã coupon"
+                      className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white/40"
+                      disabled={isValidatingCoupon}
+                    />
+                    <button
+                      onClick={validateCoupon}
+                      disabled={isValidatingCoupon || !couponCode.trim()}
+                      className="px-6 py-2 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isValidatingCoupon ? "Đang kiểm tra..." : "Áp dụng"}
+                    </button>
+                  </div>
+                  
+                  {couponError && (
+                    <div className="text-red-400 text-sm">{couponError}</div>
+                  )}
+                  
+                  {appliedCoupon && (
+                    <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-green-400 font-medium">Coupon đã áp dụng: {couponCode}</p>
+                          <p className="text-green-300 text-sm">
+                            Giảm {appliedCoupon.discount_amount.toLocaleString('vi-VN')} VNĐ
+                          </p>
+                        </div>
+                        <button
+                          onClick={removeCoupon}
+                          className="text-red-400 hover:text-red-300 text-sm"
+                        >
+                          Xóa
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </main>
@@ -635,6 +833,9 @@ function CheckoutContent() {
           orderInfo={orderInfo}
           countdownSeconds={checkoutCountdown}
           selectedTickets={selectedTickets}
+          finalAmount={finalAmount}
+          appliedCoupon={appliedCoupon}
+          couponCode={couponCode}
         />
       )}
 

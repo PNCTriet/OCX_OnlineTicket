@@ -1,14 +1,30 @@
 "use client";
 import { Ticket } from "../../types/ticket";
 
+interface CouponValidationResponse {
+  valid: boolean;
+  discount_amount: number;
+  discount_type: string;
+  message?: string;
+}
+
 type OrderSummaryCardProps = {
   totalAmount: number;
+  finalAmount?: number;
+  appliedCoupon?: CouponValidationResponse | null;
   onContinue: () => void;
   hasTickets: boolean;
   selectedTickets: Ticket[];
 };
 
-export default function OrderSummaryCard({ totalAmount, onContinue, hasTickets, selectedTickets }: OrderSummaryCardProps) {
+export default function OrderSummaryCard({ 
+  totalAmount, 
+  finalAmount, 
+  appliedCoupon, 
+  onContinue, 
+  hasTickets, 
+  selectedTickets 
+}: OrderSummaryCardProps) {
   return (
     <div className="bg-zinc-800/50 rounded-lg p-6 flex flex-col h-full">
       <div className="space-y-4 mb-4">
@@ -42,10 +58,24 @@ export default function OrderSummaryCard({ totalAmount, onContinue, hasTickets, 
             </div>
           )
         ))}
-        <div className="border-t border-zinc-700 pt-4">
+        <div className="border-t border-zinc-700 pt-4 space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-zinc-400">Tạm tính:</span>
-            <span className="text-xl font-bold text-white">{totalAmount.toLocaleString()}đ</span>
+            <span className="text-white">{totalAmount.toLocaleString()}đ</span>
+          </div>
+          
+          {appliedCoupon && (
+            <div className="flex justify-between items-center">
+              <span className="text-green-400">Giảm giá:</span>
+              <span className="text-green-400">-{appliedCoupon.discount_amount.toLocaleString()}đ</span>
+            </div>
+          )}
+          
+          <div className="flex justify-between items-center border-t border-zinc-600 pt-2">
+            <span className="text-zinc-400 font-medium">Tổng cộng:</span>
+            <span className="text-xl font-bold text-white">
+              {(finalAmount || totalAmount).toLocaleString()}đ
+            </span>
           </div>
         </div>
       </div>

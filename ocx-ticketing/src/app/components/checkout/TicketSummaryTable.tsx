@@ -1,12 +1,26 @@
 "use client";
 import { Ticket } from "../../types/ticket";
 
+interface CouponValidationResponse {
+  valid: boolean;
+  discount_amount: number;
+  discount_type: string;
+  message?: string;
+}
+
 type TicketSummaryTableProps = {
   selectedTickets: (Ticket & { quantity: number })[];
   totalAmount: number;
+  finalAmount?: number;
+  appliedCoupon?: CouponValidationResponse | null;
 };
 
-export default function TicketSummaryTable({ selectedTickets, totalAmount }: TicketSummaryTableProps) {
+export default function TicketSummaryTable({ 
+  selectedTickets, 
+  totalAmount, 
+  finalAmount, 
+  appliedCoupon 
+}: TicketSummaryTableProps) {
   return (
     <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm text-white">
       <h2 className="text-xl font-bold mb-4">Chi tiết vé</h2>
@@ -29,8 +43,18 @@ export default function TicketSummaryTable({ selectedTickets, totalAmount }: Tic
         </tbody>
         <tfoot>
           <tr>
+            <td colSpan={2} className="py-2 text-sm text-zinc-400">Tạm tính</td>
+            <td className="py-2 text-sm text-zinc-400 text-right">{totalAmount.toLocaleString()}đ</td>
+          </tr>
+          {appliedCoupon && (
+            <tr>
+              <td colSpan={2} className="py-2 text-sm text-green-400">Giảm giá</td>
+              <td className="py-2 text-sm text-green-400 text-right">-{appliedCoupon.discount_amount.toLocaleString()}đ</td>
+            </tr>
+          )}
+          <tr className="border-t border-zinc-600">
             <td colSpan={2} className="py-4 text-lg font-bold">Tổng cộng</td>
-            <td className="py-4 text-lg font-bold text-right">{totalAmount.toLocaleString()}đ</td>
+            <td className="py-4 text-lg font-bold text-right">{(finalAmount || totalAmount).toLocaleString()}đ</td>
           </tr>
         </tfoot>
       </table>
