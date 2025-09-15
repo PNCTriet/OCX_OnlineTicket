@@ -21,7 +21,7 @@ export default function HeroSection() {
         <div
           className="hidden sm:block w-full h-full"
           style={{
-            backgroundImage: "url(/images/hero_backround_ss4_alt1.png)",
+            backgroundImage: "url(/images/hero_backround_ss4_alt1.svg)",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -35,7 +35,7 @@ export default function HeroSection() {
         <div
           className="block sm:hidden w-full h-full"
           style={{
-            backgroundImage: "url(/images/hero_background_ss4_mobile.png)",
+            backgroundImage: "url(/images/hero_background_ss4_mobile_1.jpg)",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
