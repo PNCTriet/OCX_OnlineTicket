@@ -1,9 +1,41 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 // import FlameLottie from "../components/FlameLottie";
 
 export default function HeroSection() {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  // NOTE: Cập nhật mục tiêu thời gian cho đúng với sự kiện của bạn
+  // 27/09/2025 15:00:00 (GMT+7)
+  const targetDate = useMemo(() => new Date("2025-09-27T15:00:00+07:00"), []);
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const difference = targetDate.getTime() - new Date().getTime();
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(timer);
+  }, [targetDate]);
+
   return (
     <section
       id="about"
@@ -90,6 +122,35 @@ export default function HeroSection() {
             <div className="flex flex-col justify-center ml-3 text-left">
               <span className="text-xl sm:text-2xl font-bold leading-tight"> CAPITAL THEATRE</span>
               <span className="text-base sm:text-lg font-normal text-white/90 leading-tight">212 Lý Chính Thắng, Phường 9, Quận 3, Hồ Chí Minh</span>
+            </div>
+          </div>
+        </div>
+        {/* Countdown (compact) */}
+        <div className="mt-4 sm:mt-6 w-full">
+          <div className="flex flex-nowrap items-stretch justify-center gap-2 sm:gap-3 overflow-x-auto px-2">
+            <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg p-2 sm:p-3 border border-white/10 min-w-[68px] text-center">
+              <div className="text-lg sm:text-2xl font-bold text-white leading-none mb-1">
+                {timeLeft.days.toString().padStart(2, '0')}
+              </div>
+              <div className="text-[10px] sm:text-xs text-zinc-400">NGÀY</div>
+            </div>
+            <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg p-2 sm:p-3 border border-white/10 min-w-[68px] text-center">
+              <div className="text-lg sm:text-2xl font-bold text-white leading-none mb-1">
+                {timeLeft.hours.toString().padStart(2, '0')}
+              </div>
+              <div className="text-[10px] sm:text-xs text-zinc-400">GIỜ</div>
+            </div>
+            <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg p-2 sm:p-3 border border-white/10 min-w-[68px] text-center">
+              <div className="text-lg sm:text-2xl font-bold text-white leading-none mb-1">
+                {timeLeft.minutes.toString().padStart(2, '0')}
+              </div>
+              <div className="text-[10px] sm:text-xs text-zinc-400">PHÚT</div>
+            </div>
+            <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg p-2 sm:p-3 border border-white/10 min-w-[68px] text-center">
+              <div className="text-lg sm:text-2xl font-bold text-white leading-none mb-1">
+                {timeLeft.seconds.toString().padStart(2, '0')}
+              </div>
+              <div className="text-[10px] sm:text-xs text-zinc-400">GIÂY</div>
             </div>
           </div>
         </div>
