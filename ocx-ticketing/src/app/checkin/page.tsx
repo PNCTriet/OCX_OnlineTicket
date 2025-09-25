@@ -241,7 +241,13 @@ export default function CheckinPage() {
     return () => clearInterval(t);
   }, []);
 
+  // Note: We don't stop/start the scanner to avoid performance issues
+  // Instead, we just block processing in handleQRCodeDetected
+
   const handleQRCodeDetected = (text: string) => {
+    // Don't process if modal is showing or verifying
+    if (showModal || verifying) return;
+    
     const now = Date.now();
     const isDup = lastScannedCodeRef.current === text && now - lastScanTimeRef.current < 1500;
     if (!text || isDup) return;
@@ -550,11 +556,11 @@ export default function CheckinPage() {
                         )}
                         {isScanning && videoReady && (
                           <>
-                            <div className="absolute inset-0 border-2 border-green-500/60 rounded-lg pointer-events-none"></div>
+                            <div className={`absolute inset-0 border-2 rounded-lg pointer-events-none ${showModal || verifying ? "border-yellow-500/60" : "border-green-500/60"}`}></div>
                             <div className="absolute top-2 left-1/2 -translate-x-1/2">
-                              <div className="flex items-center gap-2 bg-green-600 text-white px-2 py-1 rounded-full text-xs">
-                                <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
-                                Đang quét...
+                              <div className={`flex items-center gap-2 text-white px-2 py-1 rounded-full text-xs ${showModal || verifying ? "bg-yellow-600" : "bg-green-600"}`}>
+                                <div className={`w-1.5 h-1.5 bg-white rounded-full ${showModal || verifying ? "" : "animate-pulse"}`}></div>
+                                {verifying ? "Đang xác thực..." : showModal ? "Tạm dừng (đang xử lý)" : "Đang quét..."}
                               </div>
                             </div>
                           </>
