@@ -331,6 +331,10 @@ export default function CheckinPage() {
   const handleVerify = async (rawCode?: string) => {
     const codeToVerify = (rawCode ?? scannedCode).trim();
     if (!codeToVerify || !API_BASE_URL || !selectedEventId) return;
+    
+    // Block if modal is already showing
+    if (showModal) return;
+    
     setVerifying(true);
     setNotif(null);
     
