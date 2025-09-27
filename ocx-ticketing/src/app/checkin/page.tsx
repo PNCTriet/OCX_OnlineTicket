@@ -65,6 +65,7 @@ export default function CheckinPage() {
   const [selectedEventId] = useState<string>("cmf4q6suw00m7l912jqq76aqb");
   const [ticketMap, setTicketMap] = useState<Map<string, TicketData>>(new Map());
   const [lastTicketData, setLastTicketData] = useState<TicketData | null>(null);
+  const [lastCheckinInfo, setLastCheckinInfo] = useState<{ verifiedBy?: string; checkinTime?: string } | null>(null);
   const [nowTime, setNowTime] = useState<string>("");
   const [ticketsReady, setTicketsReady] = useState<boolean>(false);
 
@@ -351,6 +352,10 @@ export default function CheckinPage() {
       // Check if ticket is already used
       if (ticketData.used) {
         setLastTicketData(ticketData);
+        setLastCheckinInfo({ 
+          verifiedBy: "system", // Default fallback, should be from API
+          checkinTime: ticketData.used_at || undefined 
+        });
         setNotif({ type: "warning", message: "Vé đã được check-in trước đó." });
         setShowModal(true);
         return;
@@ -396,6 +401,13 @@ export default function CheckinPage() {
       const success = !!body?.success;
       const msg = body?.message || (success ? "Check-in thành công" : "Xác thực hoàn tất");
       setLastTicketData(ticketData);
+      
+      // Store check-in info from API response
+      setLastCheckinInfo({
+        verifiedBy: body?.data?.verifiedBy || user?.email || "system",
+        checkinTime: body?.data?.checkinTime || new Date().toISOString()
+      });
+      
       setNotif({ type: success ? "success" : "info", message: msg });
       setShowModal(true);
       
@@ -408,6 +420,7 @@ export default function CheckinPage() {
       }
     } catch {
       setLastTicketData(null);
+      setLastCheckinInfo(null);
       setNotif({ type: "error", message: "Có lỗi xảy ra khi xác thực vé. Liên hệ bàn thông tin để hỗ trợ chi tiết." });
       setShowModal(true);
     } finally {
@@ -655,7 +668,7 @@ export default function CheckinPage() {
                     <>
                       <div className="flex justify-between"><span className="text-zinc-400">Đã check-in lúc:</span><span className="text-white font-medium">{new Date(lastTicketData.used_at).toLocaleString("vi-VN", { hour12: false })}</span></div>
                       <div className="flex justify-between"><span className="text-zinc-400">Check-in cách đây:</span><span className="text-white font-medium">{Math.floor((Date.now() - new Date(lastTicketData.used_at).getTime()) / (1000 * 60))} phút</span></div>
-                      <div className="flex justify-between"><span className="text-zinc-400">Check bởi:</span><span className="text-white font-medium truncate">{user?.email || "system"}</span></div>
+                      <div className="flex justify-between"><span className="text-zinc-400">Check bởi:</span><span className="text-white font-medium truncate">{lastCheckinInfo?.verifiedBy || "system"}</span></div>
                     </>
                   )}
                   <div className="flex justify-between"><span className="text-zinc-400">Khách hàng:</span><span className="text-white font-medium truncate">{lastTicketData.orderItem?.order?.user?.email || "—"}</span></div>
