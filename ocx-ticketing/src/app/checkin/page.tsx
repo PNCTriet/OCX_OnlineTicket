@@ -62,6 +62,25 @@ export default function CheckinPage() {
     }>;
   }
 
+  interface CheckinLog {
+    id: string;
+    checkin_time: string;
+    verified_by: string;
+    user: {
+      first_name: string;
+      last_name: string;
+      email: string;
+    };
+    ticket: {
+      name: string;
+    };
+    event: {
+      title: string;
+    };
+    order_id: string;
+    notes?: string;
+  }
+
   const [selectedEventId] = useState<string>("cmf4q6suw00m7l912jqq76aqb");
   const [ticketMap, setTicketMap] = useState<Map<string, TicketData>>(new Map());
   const [lastTicketData, setLastTicketData] = useState<TicketData | null>(null);
@@ -352,10 +371,59 @@ export default function CheckinPage() {
       // Check if ticket is already used
       if (ticketData.used) {
         setLastTicketData(ticketData);
-        setLastCheckinInfo({ 
-          verifiedBy: "system", // Default fallback, should be from API
-          checkinTime: ticketData.used_at || undefined 
-        });
+        
+        // Try to get check-in log from API
+        try {
+          const supabase = createClient();
+          const { data: { session } } = await supabase.auth.getSession();
+          const accessToken = session?.access_token;
+          
+          if (accessToken) {
+            // Get check-in logs for this event
+            const logRes = await fetch(`${API_BASE_URL}/checkin/logs?eventId=${selectedEventId}`, {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+              },
+            });
+            
+            if (logRes.ok) {
+              const logs = await logRes.json() as CheckinLog[];
+              // Find the log for this specific order
+              const ticketLog = logs.find((log: CheckinLog) => 
+                log.order_id === ticketData.orderItem.order_id
+              );
+              
+              if (ticketLog) {
+                setLastCheckinInfo({
+                  verifiedBy: ticketLog.verified_by,
+                  checkinTime: ticketLog.checkin_time
+                });
+              } else {
+                setLastCheckinInfo({
+                  verifiedBy: "system",
+                  checkinTime: ticketData.used_at || undefined
+                });
+              }
+            } else {
+              setLastCheckinInfo({
+                verifiedBy: "system",
+                checkinTime: ticketData.used_at || undefined
+              });
+            }
+          } else {
+            setLastCheckinInfo({
+              verifiedBy: "system",
+              checkinTime: ticketData.used_at || undefined
+            });
+          }
+        } catch {
+          setLastCheckinInfo({
+            verifiedBy: "system",
+            checkinTime: ticketData.used_at || undefined
+          });
+        }
+        
         setNotif({ type: "warning", message: "Vé đã được check-in trước đó." });
         setShowModal(true);
         return;
