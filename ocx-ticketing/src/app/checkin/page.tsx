@@ -360,7 +360,18 @@ export default function CheckinPage() {
     
     try {
       // First, check if ticket exists in our local map
-      const ticketData = ticketMap.get(codeToVerify);
+      let ticketData = ticketMap.get(codeToVerify);
+      let actualCode = codeToVerify;
+      
+      // If not found in map, try to extract prefix and search again
+      if (!ticketData) {
+        const prefix = codeToVerify.split('_')[0];
+        if (prefix && prefix !== codeToVerify) {
+          ticketData = ticketMap.get(prefix);
+          actualCode = prefix;
+        }
+      }
+      
       if (!ticketData) {
         setLastTicketData(null);
         setNotif({ type: "error", message: "Mã vé không hợp lệ hoặc không tìm thấy. Liên hệ bàn thông tin để hỗ trợ chi tiết." });
@@ -445,7 +456,7 @@ export default function CheckinPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          qrCode: codeToVerify,
+          qrCode: actualCode,
           checkedBy: user?.email || "system",
         }),
       });
@@ -483,7 +494,7 @@ export default function CheckinPage() {
       if (success) {
         const updatedTicketMap = new Map(ticketMap);
         const updatedTicket = { ...ticketData, used: true, used_at: new Date().toISOString() };
-        updatedTicketMap.set(codeToVerify, updatedTicket);
+        updatedTicketMap.set(actualCode, updatedTicket);
         setTicketMap(updatedTicketMap);
       }
     } catch {
