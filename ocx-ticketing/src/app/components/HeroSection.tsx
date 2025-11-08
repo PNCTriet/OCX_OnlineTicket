@@ -1,233 +1,125 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 // import FlameLottie from "../components/FlameLottie";
 
 export default function HeroSection() {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+  // const [timeLeft, setTimeLeft] = useState({
+  //   days: 0,
+  //   hours: 0,
+  //   minutes: 0,
+  //   seconds: 0,
+  // });
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   // NOTE: Cập nhật mục tiêu thời gian cho đúng với sự kiện của bạn
   // 27/09/2025 15:00:00 (GMT+7)
-  const targetDate = useMemo(() => new Date("2025-09-27T15:00:00+07:00"), []);
+  // const targetDate = useMemo(() => new Date("2025-09-27T15:00:00+07:00"), []);
 
+  // Force video to play on mount
   useEffect(() => {
-    const calculateTimeLeft = () => {
-      const difference = targetDate.getTime() - new Date().getTime();
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
-        });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      }
-    };
-
-    calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000);
-    return () => clearInterval(timer);
-  }, [targetDate]);
+    const video = document.querySelector('video');
+    if (video) {
+      video.play().catch(error => {
+        console.log('Video autoplay was prevented:', error);
+      });
+    }
+  }, []);
 
   return (
     <section
       id="about"
-      className="aspect-[16/9] w-full mt-[45px] sm:mt-[64px] md:mt-[80px] flex flex-col items-center justify-center text-center relative pb-0"
+      className="w-full h-screen flex flex-col items-center justify-between text-center relative bg-black overflow-hidden py-12 md:py-16"
       style={{
-        backgroundImage: 'url(/images/hero_backround_ss4_alt1.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
         fontFamily: 'BDStreetSignSans'
       }}
     >
-      <div className="absolute inset-0 z-0">
-        {/* Desktop background */}
-        <div
-          className="hidden sm:block w-full h-full"
-          style={{
-            backgroundImage: "url(/images/hero_backround_ss4_alt1.svg)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-            inset: 0,
-          }}
-        />
-        {/* Mobile background */}
-        <div
-          className="block sm:hidden w-full h-full"
-          style={{
-            backgroundImage: "url(/images/hero_background_ss4_mobile_1.jpg)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-            inset: 0,
-          }}
-        />
+      <div className="absolute inset-0 z-0 bg-black">
+        {/* Video loading placeholder */}
+        {!videoLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+          </div>
+        )}
+        
+        {/* Video background */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          onLoadedData={() => setVideoLoaded(true)}
+          onError={() => setVideoLoaded(true)}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoLoaded ? 'opacity-70' : 'opacity-0'}`}
+        >
+          <source src="/videos/fpv-drone.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        
+        {/* Black overlay - 50% opacity */}
+        <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
       </div>
-      <div className="relative flex flex-col items-center justify-center text-center px-4 w-full">
-        {/* Logo + Flame animation */}
-        <div className="flex flex-col items-center w-full" style={{paddingTop: '4vh'}}>
-          {/* Flame animation absolutely around logo */}
-          {/* <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0" style={{width: '56vw', height: '56vw', maxWidth: 340, maxHeight: 340}}>
-            <FlameLottie />
-          </div> */}
+      
+      {/* Spacer top */}
+      <div className="flex-shrink-0"></div>
+      
+      {/* Main Content - Logo + Button + Spotify */}
+      <div className="relative flex flex-col text-center px-4 w-full z-20 flex-1 min-h-0 max-w-2xl">
+        {/* Logo */}
+        <div className="flex flex-col items-center w-full mb-2">
           <Image 
-            src="/images/hero_logo_ss3_alt1.svg" 
+            src="/images/hero_logo_ss3_alt1.png" 
             alt="Hero Logo" 
-            width={4000} 
-            height={4000} 
-            className="w-[50vw] mx-auto transition-transform duration-300 hover:scale-105 relative z-10"
+            width={3000} 
+            height={3000} 
+            className="w-[65vw] sm:w-[50vw] md:w-[40vw] lg:w-[35vw] max-w-lg mx-auto transition-transform duration-300 hover:scale-105 relative z-20"
             priority
           />
         </div>
-        {/* Event Info */}
-        <div className="mt-2 flex flex-col items-center gap-6 max-w-xl mx-auto justify-center">
-          {/* Date/Time Row */}
-          <div className="flex items-center w-full">
-            {/* Calendar Icon */}
-            <div className="flex-shrink-0 flex items-center justify-center w-12 h-12">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <rect x="3" y="4" width="18" height="18" rx="2" className="stroke-current" />
-                <path d="M16 2v4M8 2v4M3 10h18" className="stroke-current" />
-              </svg>
-            </div>
-            <div className="flex flex-col justify-center ml-3 text-left">
-              <span className="text-xl sm:text-2xl font-bold leading-tight">27/09/2025</span>
-              <span className="text-base sm:text-lg font-normal text-white/90 leading-tight">THỨ BẢY, 27/9/2025 | 15H - 22H</span>
-            </div>
-          </div>
-          {/* Location Row */}
-          <div className="flex items-center w-full">
-            {/* Location Icon */}
-            <div className="flex-shrink-0 flex items-center justify-center w-12 h-12">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path d="M12 21c-4.418 0-8-5.373-8-10a8 8 0 1 1 16 0c0 4.627-3.582 10-8 10z" className="stroke-current" />
-                <circle cx="12" cy="11" r="3" className="stroke-current" />
-              </svg>
-            </div>
-            <div className="flex flex-col justify-center ml-3 text-left">
-              <span className="text-xl sm:text-2xl font-bold leading-tight"> CAPITAL THEATRE</span>
-              <span className="text-base sm:text-lg font-normal text-white/90 leading-tight">212 Lý Chính Thắng, Phường 9, Quận 3, Hồ Chí Minh</span>
-            </div>
-          </div>
-        </div>
-        {/* Countdown (compact) */}
-        <div className="mt-4 sm:mt-6 w-full">
-          <div className="flex flex-nowrap items-stretch justify-center gap-2 sm:gap-3 overflow-x-auto px-2">
-            <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg p-2 sm:p-3 border border-white/10 min-w-[68px] text-center">
-              <div className="text-lg sm:text-2xl font-bold text-white leading-none mb-1">
-                {timeLeft.days.toString().padStart(2, '0')}
-              </div>
-              <div className="text-[10px] sm:text-xs text-zinc-400">NGÀY</div>
-            </div>
-            <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg p-2 sm:p-3 border border-white/10 min-w-[68px] text-center">
-              <div className="text-lg sm:text-2xl font-bold text-white leading-none mb-1">
-                {timeLeft.hours.toString().padStart(2, '0')}
-              </div>
-              <div className="text-[10px] sm:text-xs text-zinc-400">GIỜ</div>
-            </div>
-            <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg p-2 sm:p-3 border border-white/10 min-w-[68px] text-center">
-              <div className="text-lg sm:text-2xl font-bold text-white leading-none mb-1">
-                {timeLeft.minutes.toString().padStart(2, '0')}
-              </div>
-              <div className="text-[10px] sm:text-xs text-zinc-400">PHÚT</div>
-            </div>
-            <div className="bg-zinc-900/50 backdrop-blur-sm rounded-lg p-2 sm:p-3 border border-white/10 min-w-[68px] text-center">
-              <div className="text-lg sm:text-2xl font-bold text-white leading-none mb-1">
-                {timeLeft.seconds.toString().padStart(2, '0')}
-              </div>
-              <div className="text-[10px] sm:text-xs text-zinc-400">GIÂY</div>
-            </div>
-          </div>
-        </div>
-        {/* Buy Ticket Button + Flame animation as background */}
-        <div className="relative mt-8 mb-8 flex flex-col items-center">
-          <div className="relative inline-block">
-            {/* Flame background: 4 flames, absolutely positioned and overlapping */}
-            {/* <div className="absolute inset-0 pointer-events-none z-11" style={{ width: "100%", height: "100%" }}>
-              <FlameLottie
-                style={{
-                  position: "absolute",
-                  left: "10%",
-                  bottom: "-10%",
-                  width: 50,
-                  height: 70,
-                  zIndex: 1,
-                  transform: "rotate(-8deg) scale(1.05)",
-                }}
-              />
-              <FlameLottie
-                style={{
-                  position: "absolute",
-                  left: "32%",
-                  bottom: "-12%",
-                  width: 60,
-                  height: 80,
-                  zIndex: 2,
-                  transform: "scale(1.15)",
-                }}
-              />
-              <FlameLottie
-                style={{
-                  position: "absolute",
-                  left: "54%",
-                  bottom: "-10%",
-                  width: 50,
-                  height: 70,
-                  zIndex: 1,
-                  transform: "rotate(8deg) scale(1.05)",
-                }}
-              />
-              <FlameLottie
-                style={{
-                  position: "absolute",
-                  left: "75%",
-                  bottom: "-8%",
-                  width: 40,
-                  height: 60,
-                  zIndex: 0,
-                  transform: "rotate(12deg) scale(0.95)",
-                }}
-              />
-            </div> */}
-            {/* Button on top */}
-            <Link
-              href="#tickets"
-              className="relative z-10 inline-flex items-center px-8 py-3 text-lg font-bold text-white bg-[#c53e00] rounded-full hover:bg-[#b33800] transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+        
+        {/* Buy Ticket Button */}
+        <div className="relative flex flex-col items-center mb-4">
+          <Link
+            href="/ticket"
+            className="relative z-20 inline-flex items-center px-4 py-2 sm:px-6 sm:py-2.5 md:px-8 md:py-3 text-sm sm:text-base md:text-lg font-bold text-white bg-[#c53e00] rounded-full hover:bg-[#b33800] transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+          >
+            MUA VÉ NGAY
+            <svg
+              className="w-4 h-4 sm:w-5 sm:h-5 ml-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              MUA VÉ NGAY
-              <svg
-                className="w-5 h-5 ml-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </svg>
-            </Link>
-          </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          </Link>
+        </div>
+        
+        {/* Spotify Player - In same container */}
+        <div className="relative w-full pt-5 px-8 z-20 flex-shrink-0">
+          <iframe
+            data-testid="embed-iframe"
+            style={{ borderRadius: '12px' }}
+            src="https://open.spotify.com/embed/playlist/395aL8Jd34UnMfj6QhuvuD?utm_source=generator&theme=0"
+            width="100%"
+            height="152"
+            frameBorder="0"
+            allowFullScreen
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+          ></iframe>
         </div>
       </div>
+      
+      {/* Spacer bottom */}
+      <div className="flex-shrink-0"></div>
     </section>
   );
 }
-

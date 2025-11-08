@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import SimpleHeader from "../components/SimpleHeader";
 import EventInfoCard from "../components/ticket/EventInfoCard";
 import OrderSummaryCard from "../components/ticket/OrderSummaryCard";
@@ -238,6 +239,21 @@ export default function TicketOption2Page() {
               <div className="block sm:hidden">
                 <EventInfoCard event={EVENT_INFO} />
               </div>
+              
+              {/* Seatmap - Left column */}
+              <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+                <h3 className="text-xl font-bold text-white mb-4 text-center">Sơ đồ chỗ ngồi</h3>
+                <div className="relative w-full flex justify-center">
+                  <Image
+                    src="/images/seatmap.jpg"
+                    alt="Sơ đồ chỗ ngồi"
+                    width={400}
+                    height={500}
+                    className="w-1/2 h-auto rounded-lg"
+                  />
+                </div>
+              </div>
+              
               <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
                 <h2 className="text-2xl font-bold text-white mb-4">Chọn Vé</h2>
                 <p className="text-gray-300 mb-6">
@@ -327,6 +343,7 @@ export default function TicketOption2Page() {
                   <div className="hidden sm:block">
                     <EventInfoCard event={EVENT_INFO} />
                   </div>
+                  
                   {/* <TicketSelectionCard 
                     tickets={selectedTickets} 
                     onQuantityChange={handleQuantityChange}
