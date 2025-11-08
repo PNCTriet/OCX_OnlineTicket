@@ -8,7 +8,7 @@ export const LAUNCH_CONFIG = {
     name: "Ớt Cay Xè mùa 4",
     description: "Sự kiện âm nhạc indie đỉnh VKL",
     date: "27/09/2025 - 15:00",
-    location: "Capital Theatre - 212 Lý Chính Thắng, Phường 9, Quận 3, Hồ Chí Minh",
+    location: "??, Hồ Chí Minh",
     organizer: "Ớt Cay Xè Organization"
   },
   

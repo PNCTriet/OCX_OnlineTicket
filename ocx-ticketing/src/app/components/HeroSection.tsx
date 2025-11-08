@@ -12,6 +12,7 @@ export default function HeroSection() {
   //   seconds: 0,
   // });
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
 
   // NOTE: Cập nhật mục tiêu thời gian cho đúng với sự kiện của bạn
   // 27/09/2025 15:00:00 (GMT+7)
@@ -30,7 +31,7 @@ export default function HeroSection() {
   return (
     <section
       id="about"
-      className="w-full h-screen flex flex-col items-center justify-between text-center relative bg-black overflow-hidden py-12 md:py-16"
+      className="w-full h-screen flex items-center justify-center text-center relative bg-black overflow-hidden"
       style={{
         fontFamily: 'BDStreetSignSans'
       }}
@@ -62,64 +63,73 @@ export default function HeroSection() {
         <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
       </div>
       
-      {/* Spacer top */}
-      <div className="flex-shrink-0"></div>
-      
-      {/* Main Content - Logo + Button + Spotify */}
-      <div className="relative flex flex-col text-center px-4 w-full z-20 flex-1 min-h-0 max-w-2xl">
-        {/* Logo */}
-        <div className="flex flex-col items-center w-full mb-2">
+      {/* Main Content - Logo + Button - Horizontally centered, vertically offset */}
+      <div className="relative flex flex-col items-center justify-center px-4 w-full z-20 max-w-4xl mx-auto -mt-30">
+        {/* Logo - 50% larger */}
+        <div className="flex flex-col items-center w-full mb-4 sm:mb-6">
           <Image 
-            src="/images/hero_logo_ss3_alt1.png" 
+            src="/images/hero_logo_ss3_alt1.svg" 
             alt="Hero Logo" 
-            width={3000} 
-            height={3000} 
-            className="w-[65vw] sm:w-[50vw] md:w-[40vw] lg:w-[35vw] max-w-lg mx-auto transition-transform duration-300 hover:scale-105 relative z-20"
+            width={4500} 
+            height={4500} 
+            className="w-[90vw] sm:w-[70vw] md:w-[55vw] lg:w-[45vw] max-w-3xl mx-auto transition-transform duration-300 hover:scale-105 relative z-20"
             priority
           />
         </div>
         
-        {/* Buy Ticket Button */}
-        <div className="relative flex flex-col items-center mb-4">
-          <Link
+        {/* Buy Ticket Button with animated text */}
+        <div className="relative flex flex-col items-center">
+            <Link
             href="/ticket"
-            className="relative z-20 inline-flex items-center px-4 py-2 sm:px-6 sm:py-2.5 md:px-8 md:py-3 text-sm sm:text-base md:text-lg font-bold text-white bg-[#c53e00] rounded-full hover:bg-[#b33800] transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            onMouseEnter={() => setIsButtonHovered(true)}
+            onMouseLeave={() => setIsButtonHovered(false)}
+            className="relative z-20 inline-flex items-center px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 text-base sm:text-lg md:text-xl font-bold text-white bg-[#c53e00] rounded-full hover:bg-[#b33800] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 overflow-hidden"
           >
-            MUA VÉ NGAY
+            <span className="relative inline-block whitespace-nowrap">
+              VUÝP
+              {isButtonHovered && (
+                <>
+                  <span className="inline-block animate-[slideIn_0.1s_ease-out_0.05s_both]">P</span>
+                  <span className="inline-block animate-[slideIn_0.1s_ease-out_0.1s_both]">P</span>
+                  <span className="inline-block animate-[slideIn_0.1s_ease-out_0.15s_both]">P</span>
+                  <span className="inline-block animate-[slideIn_0.1s_ease-out_0.2s_both]">P</span>
+                  <span className="inline-block animate-[slideIn_0.1s_ease-out_0.25s_both]">P</span>
+                  <span className="inline-block animate-[slideIn_0.1s_ease-out_0.3s_both]">P</span>
+                  <span className="inline-block animate-[slideIn_0.1s_ease-out_0.35s_both]">P</span>
+                  <span className="inline-block animate-[slideIn_0.1s_ease-out_0.4s_both]">P</span>
+                  <span className="inline-block animate-[slideIn_0.1s_ease-out_0.45s_both]">!</span>
+                </>
+              )}
+            </span>
             <svg
-              className="w-4 h-4 sm:w-5 sm:h-5 ml-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </svg>
-          </Link>
+              className="w-5 h-5 sm:w-6 sm:h-6 ml-2 sm:ml-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
+              </svg>
+            </Link>
+          </div>
         </div>
-        
-        {/* Spotify Player - In same container */}
-        <div className="relative w-full pt-5 px-8 z-20 flex-shrink-0">
-          <iframe
-            data-testid="embed-iframe"
-            style={{ borderRadius: '12px' }}
-            src="https://open.spotify.com/embed/playlist/395aL8Jd34UnMfj6QhuvuD?utm_source=generator&theme=0"
-            width="100%"
-            height="152"
-            frameBorder="0"
-            allowFullScreen
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-          ></iframe>
-        </div>
-      </div>
       
-      {/* Spacer bottom */}
-      <div className="flex-shrink-0"></div>
+      <style jsx>{`
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </section>
   );
 }

@@ -27,7 +27,7 @@ const getBaseUrl = () => {
 };
 
 export const metadata: Metadata = {
-  title: "Ớt cay xè 4",
+  title: "Ớt Cay Xè 5",
   description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
   keywords: [
     "OCX",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   openGraph: {
     url: baseUrl,
     type: "website",
-    title: "Ớt cay xè 4",
+    title: "Ớt Cay Xè 5",
     description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
     images: [
       {
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Ớt cay xè 4",
+    title: "Ớt Cay Xè 5",
     description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
     images: [
       {
