@@ -244,9 +244,9 @@ export default function TicketOption2Page() {
               <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
                 <h3 className="text-xl font-bold text-white mb-4 text-center">Sơ đồ chỗ ngồi</h3>
                 <div className="relative w-full flex justify-center">
-                  <div className="w-3/5 aspect-square relative">
+                  <div className="w-[90%] aspect-square relative">
                     <Image
-                      src="/images/seatmap.svg"
+                      src="/images/seatmap.png"
                       alt="Sơ đồ chỗ ngồi"
                       fill
                       className="object-contain rounded-lg"
