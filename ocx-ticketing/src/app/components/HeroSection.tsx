@@ -129,7 +129,7 @@ export default function HeroSection() {
             
             {/* Modal Content - glass effect, rounded, with animation */}
             <div
-              className="relative z-[101] max-w-md w-full mx-auto bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8 transform transition-all duration-300 animate-[modalFadeIn_0.3s_ease-out]"
+              className="relative z-[101] max-w-lg w-full mx-auto bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8 transform transition-all duration-300 animate-[modalFadeIn_0.3s_ease-out]"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
@@ -155,8 +155,15 @@ export default function HeroSection() {
 
               {/* Modal Message */}
               <div className="text-center">
-                <p className="text-white text-lg sm:text-xl leading-relaxed">
-                  Khách guột ơi vé OCX5 cho khách guột hiện đã hết rồi, hẹn khách guột tới đợt mở bán vé EB nha khách guột ~
+                <p 
+                  className="text-white text-lg sm:text-xl leading-relaxed break-words"
+                  style={{
+                    wordBreak: 'keep-all',
+                    hyphens: 'none',
+                    wordSpacing: '0.05em'
+                  }}
+                >
+                  Khách guột ơi vé OCX5 cho khách guột hiện đã hết, hẹn khách guột tới đợt mở bán vé EB nha khách guột ~
                 </p>
               </div>
             </div>
