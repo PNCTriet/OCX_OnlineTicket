@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 // import FlameLottie from "../components/FlameLottie";
 
@@ -13,6 +12,7 @@ export default function HeroSection() {
   // });
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [isButtonHovered, setIsButtonHovered] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // NOTE: Cập nhật mục tiêu thời gian cho đúng với sự kiện của bạn
   // 27/09/2025 15:00:00 (GMT+7)
@@ -79,11 +79,11 @@ export default function HeroSection() {
         
         {/* Buy Ticket Button with animated text */}
         <div className="relative flex flex-col items-center">
-            <Link
-            href="/ticket"
+            <button
+            onClick={() => setIsModalOpen(true)}
             onMouseEnter={() => setIsButtonHovered(true)}
             onMouseLeave={() => setIsButtonHovered(false)}
-            className="relative z-20 inline-flex items-center px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 text-base sm:text-lg md:text-xl font-bold text-white bg-[#c53e00] rounded-full hover:bg-[#b33800] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 overflow-hidden"
+            className="relative z-20 inline-flex items-center px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 text-base sm:text-lg md:text-xl font-bold text-white bg-[#c53e00] rounded-full hover:bg-[#b33800] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 overflow-hidden cursor-pointer"
           >
             <span className="relative inline-block whitespace-nowrap">
               VUÝP
@@ -114,9 +114,54 @@ export default function HeroSection() {
                   d="M17 8l4 4m0 0l-4 4m4-4H3"
                 />
               </svg>
-            </Link>
+            </button>
           </div>
         </div>
+
+        {/* Modal Popup */}
+        {isModalOpen && (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            onClick={() => setIsModalOpen(false)}
+          >
+            {/* Backdrop - transparent with blur */}
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300" />
+            
+            {/* Modal Content - glass effect, rounded, with animation */}
+            <div
+              className="relative z-[101] max-w-md w-full mx-auto bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8 transform transition-all duration-300 animate-[modalFadeIn_0.3s_ease-out]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors duration-200"
+                aria-label="Đóng"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+
+              {/* Modal Message */}
+              <div className="text-center">
+                <p className="text-white text-lg sm:text-xl leading-relaxed">
+                  Khách guột ơi vé OCX5 cho khách guột hiện đã hết rồi, hẹn khách guột tới đợt mở bán vé EB nha khách guột ~
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       
       <style jsx>{`
         @keyframes slideIn {
@@ -127,6 +172,16 @@ export default function HeroSection() {
           to {
             opacity: 1;
             transform: translateX(0);
+          }
+        }
+        @keyframes modalFadeIn {
+          from {
+            opacity: 0;
+            transform: scale(0.9) translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
           }
         }
       `}</style>
