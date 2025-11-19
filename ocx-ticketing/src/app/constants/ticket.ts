@@ -107,7 +107,7 @@ export const EVENT_INFO: EventInfo = {
   time: "??",
   location: "??, Hồ Chí Minh",
   avatar: "/images/ocx4_event_avatar.jpg",
-  date: "T7, ??/??/????",
+  date: "??/??/????",
 };
 
 // New layout configuration for the seat map
