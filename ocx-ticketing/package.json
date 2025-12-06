@@ -13,6 +13,7 @@
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.50.5",
+    "@tabler/icons-react": "^3.35.0",
     "@types/js-cookie": "^3.0.6",
     "@vercel/speed-insights": "^1.2.0",
     "gsap": "^3.13.0",
@@ -23,7 +24,10 @@
     "qrcode.react": "^4.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-markdown": "^10.1.0",
     "react-zoom-pan-pinch": "^3.7.0",
+    "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.1",
     "resend": "^4.6.0"
   },
   "devDependencies": {
