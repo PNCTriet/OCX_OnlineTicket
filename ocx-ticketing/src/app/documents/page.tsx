@@ -51,7 +51,7 @@ function DocumentsContent() {
     const docParam = searchParams?.get("doc");
     if (docParam) {
       const doc = DOCUMENTS.find((d) => d.id === docParam);
-      if (doc) {
+      if (doc && selectedDoc !== docParam) {
         handleSelectDoc(docParam);
         return;
       }
@@ -65,14 +65,17 @@ function DocumentsContent() {
 
   const handleSelectDoc = async (docId: string) => {
     const doc = DOCUMENTS.find((d) => d.id === docId);
-    if (!doc) return;
+    if (!doc || selectedDoc === docId) return;
 
     setSelectedDoc(docId);
     setLoading(true);
     setContent("");
 
-    // Update URL với query param
-    router.push(`/documents?doc=${docId}`, { scroll: false });
+    // Update URL với query param (chỉ khi không phải từ URL param)
+    const currentDocParam = searchParams?.get("doc");
+    if (currentDocParam !== docId) {
+      router.push(`/documents?doc=${docId}`, { scroll: false });
+    }
 
     try {
       const response = await fetch(doc.file);
