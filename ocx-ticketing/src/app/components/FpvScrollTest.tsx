@@ -438,7 +438,7 @@ export default function FpvScrollTest() {
               </div>
               <div className="relative w-full aspect-square max-w-2xl mx-auto">
                 <Image
-                  src="/images/seatmap.png"
+                  src="/images/ocx5_seatmap_alt2.jpg"
                   alt="Sơ đồ chỗ ngồi"
                   fill
                   className="object-contain rounded-lg"

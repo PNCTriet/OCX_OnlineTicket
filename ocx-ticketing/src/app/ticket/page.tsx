@@ -246,7 +246,7 @@ export default function TicketOption2Page() {
                 <div className="relative w-full flex justify-center">
                   <div className="w-[90%] aspect-square relative">
                     <Image
-                      src="/images/seatmap.png"
+                      src="/images/ocx5_seatmap_alt2.jpg"
                       alt="Sơ đồ chỗ ngồi"
                       fill
                       className="object-contain rounded-lg"

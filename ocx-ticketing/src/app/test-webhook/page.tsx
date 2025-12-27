@@ -1,126 +1,169 @@
 "use client";
-import { useState, useRef } from "react";
-import { createClient } from "@/lib/supabase";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import { MotionPathPlugin } from "gsap/dist/MotionPathPlugin";
 
-type OrderStatusInfo = {
-  status: string;
-  amount?: number;
-  userEmail?: string;
-  paidAt?: string;
-};
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
-export default function TestWebhookPage() {
-  const [orderId, setOrderId] = useState("");
-  const [tracking, setTracking] = useState(false);
-  const [status, setStatus] = useState<string | null>(null);
-  const [info, setInfo] = useState<OrderStatusInfo | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+export default function HomeClient() {
+  const snitchRef = useRef<HTMLDivElement>(null);
+  const pathRef = useRef<SVGPathElement>(null);
 
-  const startTracking = () => {
-    if (!orderId) return;
-    setTracking(true);
-    setStatus(null);
-    setInfo(null);
-    pollStatus(orderId);
-    intervalRef.current = setInterval(() => pollStatus(orderId), 3000); // 10s
+  useEffect(() => {
+    if (!snitchRef.current || !pathRef.current) return;
+
+    gsap.to(snitchRef.current, {
+      motionPath: {
+        path: pathRef.current,
+        align: pathRef.current,
+        autoRotate: true,
+        start: 0,
+        end: 1,
+      },
+      ease: "power1.out",
+      scrollTrigger: {
+        trigger: "body",
+        start: "top top",
+        end: () => document.body.scrollHeight - window.innerHeight,
+        scrub: 1.5,
+      },
+    });
+
+    gsap.to(snitchRef.current, {
+      scale: 1.3,
+      repeat: -1,
+      yoyo: true,
+      duration: 0.6,
+    });
+  }, []);
+
+  const shuffleCard = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (!target.classList.contains("card")) return;
+
+    gsap.to(target, {
+      x: 400,
+      rotation: 20,
+      opacity: 0,
+      duration: 0.5,
+      onComplete: () => {
+        target.parentElement?.appendChild(target);
+        gsap.set(target, { x: 0, rotation: 0, opacity: 1 });
+      },
+    });
   };
 
-  const stopTracking = () => {
-    setTracking(false);
-    setStatus(null);
-    setInfo(null);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
-
-  const pollStatus = async (oid: string) => {
-    try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      const accessToken = session?.access_token;
-      console.log("[pollStatus] Gọi GET:", `${API_BASE_URL}/orders/${oid}`);
-      console.log("[pollStatus] AccessToken:", accessToken);
-      const res = await fetch(`${API_BASE_URL}/orders/${oid}`, {
-        headers: {
-          "Authorization": `Bearer ${accessToken}`,
-          "Content-Type": "application/json"
-        }
-      });
-      console.log("[pollStatus] Response status:", res.status);
-      if (res.ok) {
-        const data = await res.json();
-        console.log("[pollStatus] Data:", data);
-        setStatus(data.status);
-        setInfo(data);
-        if (data.status === "PAID" || data.status === "SUCCESS") {
-          if (intervalRef.current) clearInterval(intervalRef.current);
-        }
-      } else {
-        setStatus(null);
-        setInfo(null);
-        console.log("[pollStatus] Không lấy được trạng thái order hoặc lỗi.");
-      }
-    } catch (err) {
-      setStatus(null);
-      setInfo(null);
-      console.error("[pollStatus] Lỗi khi gọi GET:", err);
-    }
+  const toggleFAQ = (e: React.MouseEvent<HTMLHeadingElement>) => {
+    const p = (e.target as HTMLElement).nextElementSibling as HTMLElement;
+    const open = p.style.display === "block";
+    gsap.to(p, {
+      height: open ? 0 : "auto",
+      opacity: open ? 0 : 1,
+      duration: 0.3,
+      onStart: () => {
+        p.style.display = "block";
+      },
+    });
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-900 p-4">
-      <div className="bg-zinc-800 rounded-xl p-8 shadow-lg w-full max-w-md">
-        <h1 className="text-2xl font-bold text-white mb-6 text-center">Test nhận Webhook thanh toán</h1>
-        <div className="mb-4">
-          <label className="block text-zinc-300 mb-2">Order ID cần theo dõi:</label>
-          <input
-            type="text"
-            value={orderId}
-            onChange={e => setOrderId(e.target.value)}
-            className="w-full p-2 rounded bg-zinc-700 text-white border border-zinc-600 focus:outline-none"
-            disabled={tracking}
-            placeholder="Nhập orderId..."
-          />
-        </div>
-        <div className="flex gap-2 mb-6">
-          {!tracking ? (
-            <button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-semibold"
-              onClick={startTracking}
-              disabled={!orderId}
-            >
-              Bắt đầu theo dõi
-            </button>
-          ) : (
-            <button
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold"
-              onClick={stopTracking}
-            >
-              Dừng theo dõi
-            </button>
-          )}
-        </div>
-        {tracking && (
-          <div className="mt-4">
-            <p className="text-zinc-300">Đang theo dõi trạng thái order: <span className="font-mono text-white">{orderId}</span></p>
-            {status === "PAID" || status === "SUCCESS" ? (
-              <div className="bg-green-600 text-white p-4 rounded-lg text-center mt-4">
-                🎉 Đã nhận webhook! Thanh toán thành công cho order <b>{orderId}</b>.<br/>
-                <span className="text-xs">(status: {status})</span>
-              </div>
-            ) : status ? (
-              <div className="bg-yellow-600 text-white p-4 rounded-lg text-center mt-4">
-                Đã nhận webhook, trạng thái hiện tại: <b>{status}</b>
-              </div>
-            ) : (
-              <div className="text-zinc-400 mt-4">Chưa nhận được webhook hoặc chưa có trạng thái.</div>
-            )}
-            {info && (
-              <pre className="bg-zinc-900 text-zinc-200 rounded p-2 mt-2 text-xs overflow-x-auto">{JSON.stringify(info, null, 2)}</pre>
-            )}
-          </div>
-        )}
+    <div className="relative text-white font-sans overflow-x-hidden">
+      {/* Background Image Container - Full image, scrollable, no crop */}
+      <div className="relative w-full z-0 pointer-events-none">
+        <img
+          src="/images/ocx5_backround_alt3.png"
+          alt="Background"
+          className="w-full h-auto block"
+        />
+        {/* Dark Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/40 pointer-events-none" />
       </div>
+      
+      {/* Snitch Flight */}
+      <div className="fixed inset-0 pointer-events-none z-20">
+        <svg
+          width="600"
+          height="3200"
+          viewBox="0 0 600 3200"
+          className="absolute left-1/2 -translate-x-1/2 opacity-30"
+        >
+          <path
+            ref={pathRef}
+            d="M300 0 C100 300, 500 600, 300 900
+               C120 1200, 520 1500, 300 1800
+               C80 2100, 520 2400, 300 2700
+               C200 2900, 350 3100, 300 3200"
+            fill="none"
+            stroke="#d6b25e"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+        </svg>
+        <div
+          ref={snitchRef}
+          className="absolute w-5 h-5 rounded-full bg-gradient-to-br from-yellow-200 to-yellow-600 shadow-[0_0_20px_#d6b25e,0_0_60px_#d6b25e]"
+        ></div>
+      </div>
+
+      {/* HEADER */}
+      <header className="fixed top-0 left-0 w-full z-30 bg-black/60 backdrop-blur-md border-b border-white/10">
+        <div className="max-w-6xl mx-auto flex justify-between items-center p-4">
+          <div className="text-yellow-400 font-bold text-xl">WIZARD NIGHT</div>
+          <nav className="space-x-6 text-white/80">
+            <a href="#hero" className="hover:text-yellow-400">Hero</a>
+            <a href="#houses" className="hover:text-yellow-400">Houses</a>
+            <a href="#lineup" className="hover:text-yellow-400">Lineup</a>
+            <a href="#tickets" className="hover:text-yellow-400">Tickets</a>
+            <a href="#faq" className="hover:text-yellow-400">Q&A</a>
+          </nav>
+        </div>
+      </header>
+
+      {/* HERO */}
+      <section id="hero" className="relative h-screen flex flex-col justify-center items-center text-center z-10">
+        <h1 className="text-5xl mb-6">Enter The Wizarding Night</h1>
+        <button className="px-8 py-3 border border-yellow-500 rounded-full hover:bg-yellow-600 hover:text-black transition">Unlock Your Fate</button>
+      </section>
+
+      {/* HOUSES */}
+      <section id="houses" className="relative py-36 max-w-6xl mx-auto text-center z-10">
+        <h2 className="text-4xl text-yellow-500 mb-16">Choose Your House</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"].map(h => (
+            <div key={h} className="p-12 bg-white/5 rounded-xl">{h}</div>
+          ))}
+        </div>
+      </section>
+
+      {/* LINEUP */}
+      <section id="lineup" className="relative py-36 max-w-6xl mx-auto text-center z-10">
+        <h2 className="text-4xl text-yellow-500 mb-16">Artist Lineup</h2>
+        <div className="lineup relative h-96" onClick={shuffleCard}>
+          {["Artist A", "Artist B", "Artist C"].map(a => (
+            <div key={a} className="card absolute w-56 h-72 rounded-xl bg-gradient-to-b from-gray-900 to-black border border-white/20 flex items-center justify-center shadow-2xl cursor-pointer">{a}</div>
+          ))}
+        </div>
+      </section>
+
+      {/* TICKETS */}
+      <section id="tickets" className="relative py-36 max-w-6xl mx-auto text-center z-10">
+        <h2 className="text-4xl text-yellow-500 mb-16">Tickets</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {["Gryffindor Pass","Slytherin Pass","Ravenclaw Pass","Hufflepuff Pass"].map(t => (
+            <div key={t} className="ticket p-10 bg-white/5 rounded-xl border border-white/20 hover:shadow-[0_0_40px_rgba(214,178,94,0.25)] transition">{t}</div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="relative py-36 max-w-3xl mx-auto text-center z-10">
+        <h2 className="text-4xl text-yellow-500 mb-16">Q & A</h2>
+        <div className="faq-item">
+          <h4 className="cursor-pointer mb-4" onClick={toggleFAQ}>⟶ Khi nào cổng mở?</h4>
+          <p className="text-gray-300">Cổng sẽ mở khi màn đêm buông xuống.</p>
+        </div>
+      </section>
     </div>
   );
-} 
+}

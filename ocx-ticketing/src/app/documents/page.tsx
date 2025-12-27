@@ -1,10 +1,11 @@
 "use client";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { IconFileText, IconBook, IconLoader2, IconChevronRight, IconSearch, IconX, IconLink } from "@tabler/icons-react";
+import { createClient } from "@/lib/supabase";
 
 // Danh sách các file markdown có sẵn
 const DOCUMENTS = [
@@ -35,6 +36,15 @@ function DocumentsContent() {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const supabase = createClient();
+  const BUCKET_NAME = "documents";
+  const MAX_UPLOAD_MB = 5;
 
   // Filter documents based on search query
   const filteredDocuments = DOCUMENTS.filter((doc) => {
@@ -103,6 +113,70 @@ function DocumentsContent() {
       setTimeout(() => setCopied(false), 2000);
     });
   };
+
+  // Upload zip (<5MB) and allow download
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadError(null);
+
+    if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+      setUploadError(`File vượt quá ${MAX_UPLOAD_MB}MB.`);
+      setUploadedFileName(null);
+      setUploadedFileUrl(null);
+      return;
+    }
+
+    if (!file.name.toLowerCase().endsWith(".zip")) {
+      setUploadError("Chỉ hỗ trợ file .zip.");
+      setUploadedFileName(null);
+      setUploadedFileUrl(null);
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const filePath = `uploads/${Date.now()}-${file.name}`;
+      const { error: uploadErr } = await supabase.storage
+        .from(BUCKET_NAME)
+        .upload(filePath, file, {
+          upsert: false,
+          cacheControl: "3600",
+        });
+
+      if (uploadErr) {
+        setUploadError(`Upload thất bại: ${uploadErr.message}`);
+        setUploadedFileName(null);
+        setUploadedFileUrl(null);
+        return;
+      }
+
+      const { data: publicData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(filePath);
+      const publicUrl = publicData?.publicUrl;
+      if (!publicUrl) {
+        setUploadError("Không lấy được link tải xuống.");
+        setUploadedFileName(null);
+        setUploadedFileUrl(null);
+        return;
+      }
+
+      setUploadedFileName(file.name);
+      setUploadedFileUrl(publicUrl);
+    } catch (err) {
+      setUploadError("Upload thất bại. Vui lòng thử lại.");
+      setUploadedFileName(null);
+      setUploadedFileUrl(null);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (uploadedFileUrl) URL.revokeObjectURL(uploadedFileUrl);
+    };
+  }, [uploadedFileUrl]);
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col md:flex-row">
@@ -182,6 +256,38 @@ function DocumentsContent() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto max-h-screen bg-black">
         <div className="max-w-4xl mx-auto p-4 md:p-8">
+          {/* Hidden upload control (zip <5MB) */}
+          <div className="mb-6 flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-sm text-zinc-400">
+              <span>Upload ZIP (ẩn):</span>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-white text-xs transition-colors"
+              >
+                {uploading ? "Đang upload..." : "Chọn file"}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".zip,application/zip"
+                className="hidden"
+                onChange={handleFileChange}
+                disabled={uploading}
+              />
+              {uploadedFileName && uploadedFileUrl && (
+                <a
+                  href={uploadedFileUrl}
+                  download={uploadedFileName}
+                  className="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white text-xs transition-colors"
+                >
+                  Tải xuống {uploadedFileName}
+                </a>
+              )}
+            </div>
+            {uploadError && <p className="text-xs text-red-400">{uploadError}</p>}
+          </div>
+
           {selectedDoc && content && !loading && (
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-zinc-400">
