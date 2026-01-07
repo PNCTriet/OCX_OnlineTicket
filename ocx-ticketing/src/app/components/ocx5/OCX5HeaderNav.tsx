@@ -4,6 +4,7 @@ import { MouseEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
+import { Youtube, Facebook, Instagram, Twitter } from "lucide-react"; // Import icon
 
 const SECTIONS = [
   { id: "hero-section", label: "Hero" },
@@ -18,23 +19,17 @@ export default function OCX5HeaderNav() {
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollYRef = useRef(0);
 
-  // Hide on scroll down, show on scroll up
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
       const diff = currentY - lastScrollYRef.current;
-
       if (diff > 5) {
-        // Scroll down
         setIsVisible(false);
       } else if (diff < -5) {
-        // Scroll up
         setIsVisible(true);
       }
-
       lastScrollYRef.current = currentY;
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -42,92 +37,93 @@ export default function OCX5HeaderNav() {
   const handleScrollTo = (event: MouseEvent<HTMLButtonElement>, id: string) => {
     event.preventDefault();
     if (typeof window === "undefined") return;
-
     const target = document.getElementById(id);
     if (!target) return;
-
-    // Scroll smoothly so that the section's top aligns with viewport top
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-transform duration-300 ${
+      className={`fixed top-0 left-0 w-full z-50 transition-transform duration-500 bg-[#030305] shadow-2xl ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      <nav
-        className="flex w-full items-center justify-between px-4 sm:px-6 lg:px-8 py-3 text-sm"
-        style={{
-          background:
-            "linear-gradient(to bottom, rgba(154, 26, 21, 0.85) 0%, rgba(106, 20, 20, 0.75) 50%, rgba(74, 12, 16, 0.65) 100%)",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          fontFamily: "fantasy, serif",
-        }}
-      >
-        {/* Logo lớn hơn 50% */}
-        <div className="flex items-center gap-3">
-          <Link
-            href="/"
-            className="flex items-center gap-3 font-bold text-lg text-white"
-          >
+      {/* TẦNG 1: TOP BAR */}
+      <div className="flex items-center justify-between px-4 sm:px-10 py-3 border-b border-white/10">
+        
+        {/* NHÓM TRÁI: Social Icons (Bổ sung theo yêu cầu) */}
+        <div className="flex-1 hidden md:flex items-center gap-5 text-gray-400">
+          <Link href="#" className="hover:text-white transition-colors"><Youtube size={20} /></Link>
+          <Link href="#" className="hover:text-white transition-colors"><Facebook size={18} /></Link>
+          <Link href="#" className="hover:text-white transition-colors"><Instagram size={18} /></Link>
+          <Link href="#" className="hover:text-white transition-colors"><Twitter size={18} /></Link>
+        </div>
+
+        {/* LOGO CHÍNH GIỮA */}
+        <div className="flex-none">
+          <Link href="/">
             <Image
-              src="/images/client_logo_ss4.svg"
+              src="/images/ocx5_images/elements/ocx_logo_ss5_horizon_alt1.png" 
               alt="OCX Logo"
-              width={96}
-              height={96}
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover transition-transform duration-300 hover:scale-110"
+              width={104}
+              height={104}
+              className="w-[60px] h-[60px] sm:w-[75px] sm:h-[75px] object-contain brightness-125 transition-transform hover:scale-110"
             />
           </Link>
         </div>
 
-        {/* Section titles ở giữa - Font Harry Beast Display */}
-        <div className="hidden sm:flex flex-1 justify-center gap-4 lg:gap-6">
+        {/* NHÓM PHẢI: Auth Buttons (Chỉnh lại theo mẫu Harry Potter) */}
+        <div className="flex-1 flex justify-end items-center gap-4">
+          {user ? (
+            <div className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center text-sm font-bold border-2 border-red-800">
+              {user.email?.charAt(0).toUpperCase()}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link
+                href="/login"
+                className="px-4 py-2 text-[11px] sm:text-[12px] font-bold text-white tracking-[1px] border border-white rounded-full hover:bg-white hover:text-black transition-all"
+                style={{ fontFamily: "WizardWorldSimplified, fantasy, serif" }}
+              >
+                LOG IN
+              </Link>
+              <Link
+                href="/signup"
+                className="px-4 py-2 text-[11px] sm:text-[12px] font-bold text-white tracking-[1px] bg-[#4e46e5] rounded-full hover:bg-[#3f38c2] transition-all shadow-[0_0_15px_rgba(78,70,229,0.4)]"
+                style={{ fontFamily: "WizardWorldSimplified, fantasy, serif" }}
+              >
+                SIGN UP
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* TẦNG 2: NAVIGATION MENU */}
+      <nav 
+        className="w-full flex justify-center py-4 bg-black/40"
+        style={{ backdropFilter: "blur(8px)" }}
+      >
+        <div className="flex flex-wrap justify-center gap-6 md:gap-14 px-4">
           {SECTIONS.map((section) => (
             <button
               key={section.id}
               type="button"
               onClick={(e) => handleScrollTo(e, section.id)}
-              className="px-3 py-1.5 hover:text-red-200 transition-colors"
+              className="relative group text-white uppercase transition-colors"
               style={{
                 fontFamily: "WizardWorldSimplified, fantasy, serif",
-                fontSize: "clamp(24px, 3.5vw, 20px)",
+                fontSize: "13px",
+                letterSpacing: "2px",
                 fontWeight: 400,
-                fontStyle: "normal",
-                lineHeight: "20px",
-                letterSpacing: "normal",
-                textTransform: "none",
-                color: "#FFFFFF",
-                whiteSpace: "nowrap",
               }}
             >
               {section.label}
+              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
             </button>
           ))}
-        </div>
-
-        {/* Avatar / Sign in bên phải */}
-        <div className="flex items-center justify-end flex-1 gap-3">
-          {user ? (
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center text-sm font-bold">
-                {user.email?.charAt(0).toUpperCase()}
-              </div>
-            </div>
-          ) : (
-            <Link
-              href="/login"
-              className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider hover:text-red-200 transition-colors"
-              style={{ fontFamily: "WizardWorldSimplified, fantasy, serif" }}
-            >
-              SIGN IN
-            </Link>
-          )}
         </div>
       </nav>
     </header>
   );
 }
-
-
