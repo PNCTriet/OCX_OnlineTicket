@@ -49,7 +49,7 @@ export default function OCX5HeroSectionFrame({
         {/* Logo hero lớn - giữ tỷ lệ theo chiều dọc, responsive mobile */}
         <div className="flex flex-col items-center justify-center w-full">
           <Image
-            src="/images/ocx5_images/elements/ocx_logo_ss5_alt2.svg"
+            src="/images/ocx5_images/elements/ocx_logo_ss5_horizon_alt1.png"
             alt="OCX Hero Logo"
             width={4500}
             height={4500}
