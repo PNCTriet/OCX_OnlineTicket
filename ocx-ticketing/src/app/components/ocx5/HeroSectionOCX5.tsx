@@ -1,14 +1,249 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import gsap from "gsap";
+
+/**
+ * Interactive 3D Hero Logo Component using GSAP
+ *
+ * Features:
+ * - 3D tilt effect based on mouse or touch movement
+ * - Elastic spring back animation
+ * - Brightness/glow on hover
+ * - Works on desktop and touch devices
+ * - GPU-accelerated transforms
+ * - Auto-play idle animation on mount
+ * - Interactive across entire hero section
+ */
 export default function HeroSectionOCX5() {
-  // Hero content shell only – background is now handled by the parent section
+  const containerRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
+  const [isHovering, setIsHovering] = useState(false);
+  const hasUserInteracted = useRef(false);
+
+  // Use a single object to store current transform values
+  const transformState = useRef({
+    rotateX: 0,
+    rotateY: 0,
+    translateX: 0,
+    translateY: 0,
+  });
+
+  // GSAP tweens
+  const tweenRefs = useRef<gsap.core.Tween[]>([]);
+  const idleAnimationRef = useRef<gsap.core.Timeline | null>(null);
+
+  // Helper function to apply transforms
+  const applyTransform = () => {
+    if (logoRef.current) {
+      const t = transformState.current;
+      logoRef.current.style.transform = `
+        perspective(1000px)
+        rotateX(${t.rotateX}deg)
+        rotateY(${t.rotateY}deg)
+        translateX(${t.translateX}px)
+        translateY(${t.translateY}px)
+      `;
+    }
+  };
+
+  // Idle animation: tự động chuyển động mẫu khi vào trang
+  useEffect(() => {
+    if (!logoRef.current || hasUserInteracted.current) return;
+
+    // Tạo timeline cho idle animation - mô phỏng chuyển động 3D nhẹ nhàng
+    idleAnimationRef.current = gsap.timeline({ repeat: -1, yoyo: true });
+    
+    idleAnimationRef.current
+      .to(transformState.current, {
+        rotateX: 5,
+        rotateY: -5,
+        translateX: 8,
+        translateY: -8,
+        duration: 3,
+        ease: "sine.inOut",
+        onUpdate: applyTransform,
+      })
+      .to(transformState.current, {
+        rotateX: -5,
+        rotateY: 5,
+        translateX: -8,
+        translateY: 8,
+        duration: 3,
+        ease: "sine.inOut",
+        onUpdate: applyTransform,
+      });
+
+    return () => {
+      idleAnimationRef.current?.kill();
+    };
+  }, []);
+
+  // Interactive mouse/touch tracking - hoạt động trên toàn bộ section hero
+  useEffect(() => {
+    const handlePointerMove = (e: PointerEvent | MouseEvent | TouchEvent) => {
+      if (!containerRef.current || !logoRef.current) return;
+
+      // Dừng idle animation khi người dùng tương tác
+      if (!hasUserInteracted.current) {
+        hasUserInteracted.current = true;
+        idleAnimationRef.current?.kill();
+        idleAnimationRef.current = null;
+      }
+
+      const rect = containerRef.current.getBoundingClientRect();
+
+      let clientX: number, clientY: number;
+
+      if ("touches" in e && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else if ("clientX" in e) {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      } else {
+        return;
+      }
+
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const normalizedX = (clientX - centerX) / rect.width;
+      const normalizedY = (clientY - centerY) / rect.height;
+
+      // Target transforms
+      const targetRotateX = normalizedY * 30; // -15 ~ +15 deg
+      const targetRotateY = normalizedX * -30; // -15 ~ +15 deg
+      const targetTranslateX = normalizedX * 40; // -20 ~ +20 px
+      const targetTranslateY = normalizedY * 40; // -20 ~ +20 px
+
+      // Kill previous tweens
+      tweenRefs.current.forEach(t => t.kill());
+      tweenRefs.current = [];
+
+      // Animate transforms with spring-like ease
+      tweenRefs.current.push(
+        gsap.to(transformState.current, {
+          rotateX: targetRotateX,
+          rotateY: targetRotateY,
+          translateX: targetTranslateX,
+          translateY: targetTranslateY,
+          duration: 0.6,
+          ease: "power2.out",
+          onUpdate: applyTransform,
+        })
+      );
+    };
+
+    const handlePointerLeave = () => {
+      // Kill previous tweens
+      tweenRefs.current.forEach(t => t.kill());
+      tweenRefs.current = [];
+
+      // Animate back to center with elastic spring
+      tweenRefs.current.push(
+        gsap.to(transformState.current, {
+          rotateX: 0,
+          rotateY: 0,
+          translateX: 0,
+          translateY: 0,
+          duration: 0.8,
+          ease: "elastic.out(1, 0.5)",
+          onUpdate: applyTransform,
+          onComplete: () => {
+            // Sau khi trả về vị trí ban đầu, nếu chưa có tương tác thì tiếp tục idle animation
+            if (!hasUserInteracted.current && !idleAnimationRef.current) {
+              idleAnimationRef.current = gsap.timeline({ repeat: -1, yoyo: true });
+              idleAnimationRef.current
+                .to(transformState.current, {
+                  rotateX: 5,
+                  rotateY: -5,
+                  translateX: 8,
+                  translateY: -8,
+                  duration: 3,
+                  ease: "sine.inOut",
+                  onUpdate: applyTransform,
+                })
+                .to(transformState.current, {
+                  rotateX: -5,
+                  rotateY: 5,
+                  translateX: -8,
+                  translateY: 8,
+                  duration: 3,
+                  ease: "sine.inOut",
+                  onUpdate: applyTransform,
+                });
+            }
+          },
+        })
+      );
+
+      setIsHovering(false);
+    };
+
+    const handlePointerEnter = () => {
+      setIsHovering(true);
+    };
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Attach listeners to entire container (full hero section) - không chỉ logo
+    container.addEventListener("pointermove", handlePointerMove);
+    container.addEventListener("pointerleave", handlePointerLeave);
+    container.addEventListener("pointerenter", handlePointerEnter);
+    container.addEventListener("touchmove", handlePointerMove, { passive: true });
+    container.addEventListener("touchend", handlePointerLeave);
+
+    // Also listen on window for better coverage
+    window.addEventListener("mousemove", handlePointerMove);
+    window.addEventListener("mouseleave", handlePointerLeave);
+
+    return () => {
+      container.removeEventListener("pointermove", handlePointerMove);
+      container.removeEventListener("pointerleave", handlePointerLeave);
+      container.removeEventListener("pointerenter", handlePointerEnter);
+      container.removeEventListener("touchmove", handlePointerMove);
+      container.removeEventListener("touchend", handlePointerLeave);
+      
+      window.removeEventListener("mousemove", handlePointerMove);
+      window.removeEventListener("mouseleave", handlePointerLeave);
+
+      tweenRefs.current.forEach(t => t.kill());
+      idleAnimationRef.current?.kill();
+    };
+  }, []);
+
   return (
     <div
-      id="hero"
-      className="relative w-full h-full"
+      ref={containerRef}
+      className="relative w-full h-full flex items-center justify-center"
     >
-      {/* Hero content will be added here later */}
+      {/* Interactive 3D Logo */}
+      <div
+        ref={logoRef}
+        className="relative"
+        style={{
+          transformStyle: "preserve-3d",
+          willChange: "transform",
+        }}
+      >
+        <Image
+          src="/images/ocx5_images/elements/ocx_logo_ss5_horizon_alt1.png"
+          alt="OCX Hero Logo"
+          width={4500}
+          height={4500}
+          className="w-full max-w-[50vw] h-auto transition-all duration-300"
+          style={{
+            filter: isHovering
+              ? "brightness(1.1) drop-shadow(0 0 30px rgba(255,255,255,0.3))"
+              : "brightness(1)",
+            willChange: "transform, filter",
+          }}
+          priority
+        />
+      </div>
     </div>
   );
 }
-

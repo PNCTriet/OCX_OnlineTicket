@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import HeroSectionOCX5 from "@/app/components/ocx5/HeroSectionOCX5";
 import HorizonBridge from "@/app/components/ocx5/HorizonBridge";
 import StarsBackground from "@/app/components/ocx5/StarsBackground";
@@ -41,26 +40,9 @@ export default function OCX5HeroSectionFrame({
         </div>
       )}
 
-      {/* Background / hero content shell */}
-      <HeroSectionOCX5 />
-
-      {/* Content Area - padding-top tính từ header để logo không bị che */}
-      <div className="relative z-30 flex items-center justify-center px-4 pt-[100px] sm:pt-[120px] pb-8 min-h-[60vh]">
-        {/* Logo hero lớn - giữ tỷ lệ theo chiều dọc, responsive mobile */}
-        <div className="flex flex-col items-center justify-center w-full">
-          <Image
-            src="/images/ocx5_images/elements/ocx_logo_ss5_horizon_alt1.png"
-            alt="OCX Hero Logo"
-            width={4500}
-            height={4500}
-            className="w-[85vw] h-auto sm:w-[65vw] md:w-[50vw] lg:w-[40vw] max-w-3xl mx-auto transition-transform duration-300 hover:scale-105"
-            style={{
-              objectFit: "contain",
-              objectPosition: "center",
-            }}
-            priority
-          />
-        </div>
+      {/* Interactive 3D Hero Logo - logo cách đều header và footer */}
+      <div className="relative z-30 min-h-screen pt-[100px] sm:pt-[120px] pb-[100px] sm:pb-[120px]">
+        <HeroSectionOCX5 />
       </div>
 
       {/* Horizon Bridge - Visual connection to next section, anchored to bottom */}
