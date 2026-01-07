@@ -5,13 +5,20 @@ import HeroSectionOCX5 from "@/app/components/ocx5/HeroSectionOCX5";
 import HorizonBridge from "@/app/components/ocx5/HorizonBridge";
 import StarsBackground from "@/app/components/ocx5/StarsBackground";
 import OCX5HeaderNav from "@/app/components/ocx5/OCX5HeaderNav";
+import FloatingLightningElements from "@/app/components/ocx5/FloatingLightningElements";
 
 interface OCX5HeroSectionFrameProps {
   debugLayout: boolean;
+  /**
+   * Bật/tắt tương tác với logo (mouse/touch tracking)
+   * @default true
+   */
+  enableLogoInteraction?: boolean;
 }
 
 export default function OCX5HeroSectionFrame({
   debugLayout,
+  enableLogoInteraction = true,
 }: OCX5HeroSectionFrameProps) {
   const debugBorderClass = debugLayout ? "border-2 border-red-500" : "";
   const contentRef = useRef<HTMLDivElement>(null);
@@ -82,6 +89,12 @@ export default function OCX5HeroSectionFrame({
       {/* Stars overlay specific to hero */}
       <StarsBackground />
 
+      {/* Floating Lightning Elements - rơi tự do và phản ứng với chuột */}
+      <FloatingLightningElements
+        count={6}
+        containerRef={contentRef}
+      />
+
       {/* Marker Badge - only visible in debug mode */}
       {debugLayout && (
         <div className="absolute top-4 left-4 z-50 bg-red-500/80 text-white px-3 py-1 rounded text-xs font-bold">
@@ -104,7 +117,7 @@ export default function OCX5HeroSectionFrame({
           boxSizing: "border-box",
         }}
       >
-        <HeroSectionOCX5 />
+        <HeroSectionOCX5 enableInteraction={enableLogoInteraction} />
       </div>
 
       {/* Horizon Bridge - Visual connection to next section, anchored to bottom */}

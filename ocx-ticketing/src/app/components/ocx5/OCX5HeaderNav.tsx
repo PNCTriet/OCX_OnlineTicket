@@ -63,7 +63,7 @@ export default function OCX5HeaderNav() {
         <div className="flex-none">
           <Link href="/">
             <Image
-              src="/images/ocx5_images/elements/ocx_logo_ss5_horizon_alt1.png" 
+              src="/images/ocx5_images/elements/ocx_logo_ss5_shorten_alt1.png" 
               alt="OCX Logo"
               width={104}
               height={104}

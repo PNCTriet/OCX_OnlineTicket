@@ -4,6 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 
+interface HeroSectionOCX5Props {
+  /**
+   * Bật/tắt tương tác với logo (mouse/touch tracking)
+   * @default true
+   */
+  enableInteraction?: boolean;
+}
+
 /**
  * Interactive 3D Hero Logo Component using GSAP
  *
@@ -16,7 +24,9 @@ import gsap from "gsap";
  * - Auto-play idle animation on mount
  * - Interactive across entire hero section
  */
-export default function HeroSectionOCX5() {
+export default function HeroSectionOCX5({
+  enableInteraction = true,
+}: HeroSectionOCX5Props = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
@@ -49,6 +59,9 @@ export default function HeroSectionOCX5() {
   };
 
   useEffect(() => {
+    // Chỉ bật orientation interaction nếu enableInteraction = true
+    if (!enableInteraction) return;
+
     // mobile orientation tilt interaction
     const handleOrientation = (event: DeviceOrientationEvent) => {
       if (!logoRef.current) return;
@@ -89,7 +102,7 @@ export default function HeroSectionOCX5() {
     return () => {
       window.removeEventListener("deviceorientation", handleOrientation);
     };
-  }, []);
+  }, [enableInteraction]);
   
 
   // Idle animation: tự động chuyển động mẫu khi vào trang
@@ -126,6 +139,9 @@ export default function HeroSectionOCX5() {
 
   // Interactive mouse/touch tracking - hoạt động trên toàn bộ section hero
   useEffect(() => {
+    // Chỉ bật mouse/touch interaction nếu enableInteraction = true
+    if (!enableInteraction) return;
+
     const handlePointerMove = (e: PointerEvent | MouseEvent | TouchEvent) => {
       if (!containerRef.current || !logoRef.current) return;
 
@@ -257,7 +273,7 @@ export default function HeroSectionOCX5() {
       tweenRefs.current.forEach(t => t.kill());
       idleAnimationRef.current?.kill();
     };
-  }, []);
+  }, [enableInteraction]);
 
   return (
     <div
