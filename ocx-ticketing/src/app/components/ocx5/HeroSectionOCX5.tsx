@@ -48,6 +48,50 @@ export default function HeroSectionOCX5() {
     }
   };
 
+  useEffect(() => {
+    // mobile orientation tilt interaction
+    const handleOrientation = (event: DeviceOrientationEvent) => {
+      if (!logoRef.current) return;
+  
+      const beta = event.beta || 0;   // up-down tilt (-180 to 180)
+      const gamma = event.gamma || 0; // left-right tilt (-90 to 90)
+  
+      // normalize & clamp
+      const maxTilt = 20;
+  
+      const rotateX = Math.max(Math.min(beta / 3, maxTilt), -maxTilt);
+      const rotateY = Math.max(Math.min(gamma / 3, maxTilt), -maxTilt);
+  
+      logoRef.current.style.transform = `
+        perspective(1000px)
+        rotateX(${rotateX}deg)
+        rotateY(${rotateY}deg)
+      `;
+    };
+  
+    // iOS permission gate
+    const enableOrientation = async () => {
+      try {
+        // @ts-ignore
+        if (typeof DeviceOrientationEvent?.requestPermission === "function") {
+          // @ts-ignore
+          const res = await DeviceOrientationEvent.requestPermission();
+          if (res !== "granted") return;
+        }
+        window.addEventListener("deviceorientation", handleOrientation);
+      } catch {
+        // silently ignore
+      }
+    };
+  
+    enableOrientation();
+  
+    return () => {
+      window.removeEventListener("deviceorientation", handleOrientation);
+    };
+  }, []);
+  
+
   // Idle animation: tự động chuyển động mẫu khi vào trang
   useEffect(() => {
     if (!logoRef.current || hasUserInteracted.current) return;

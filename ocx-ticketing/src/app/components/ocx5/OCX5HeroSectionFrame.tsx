@@ -32,24 +32,27 @@ export default function OCX5HeroSectionFrame({
       const viewportHeight = window.innerHeight;
       const estimatedFooterHeight = viewportHeight * 0.25; // ~25% viewport
 
-      // Tính toán để logo cách đều header và footer
+      // Tính toán để logo cách đều header và footer với khoảng cách nhỏ hơn
       // Logo sẽ nằm chính giữa khoảng trống còn lại
-      // padding-top = headerHeight + X
-      // padding-bottom = footerHeight + X
-      // Trong đó X là khoảng cách đều nhau từ logo đến header và footer
       const totalUsedHeight = headerHeight + estimatedFooterHeight;
       const availableSpace = viewportHeight - totalUsedHeight;
-      const equalSpacing = availableSpace / 2; // Khoảng cách đều nhau
+      
+      // Giảm khoảng cách: chỉ dùng một phần nhỏ của availableSpace
+      // Thay vì chia đôi, chỉ dùng 30-40% để có khoảng cách vừa phải
+      const spacingRatio = 0.35; // 35% của availableSpace
+      const equalSpacing = availableSpace * spacingRatio;
 
       // Padding-top: headerHeight + equalSpacing (để logo cách header bằng equalSpacing)
       // Padding-bottom: footerHeight + equalSpacing (để logo cách footer bằng equalSpacing)
       const calculatedTop = headerHeight + equalSpacing;
       const calculatedBottom = estimatedFooterHeight + equalSpacing;
 
-      // Đảm bảo padding tối thiểu
-      const minSpacing = 80;
-      setPaddingTop(Math.max(calculatedTop, headerHeight + minSpacing));
-      setPaddingBottom(Math.max(calculatedBottom, estimatedFooterHeight + minSpacing));
+      // Đảm bảo padding tối thiểu nhưng nhỏ hơn
+      const minSpacing = 40; // Giảm từ 80 xuống 40
+      const maxSpacing = 80; // Giới hạn tối đa để không quá lớn
+      
+      setPaddingTop(Math.min(Math.max(calculatedTop, headerHeight + minSpacing), headerHeight + maxSpacing));
+      setPaddingBottom(Math.min(Math.max(calculatedBottom, estimatedFooterHeight + minSpacing), estimatedFooterHeight + maxSpacing));
     };
 
     calculatePadding();
@@ -60,7 +63,7 @@ export default function OCX5HeroSectionFrame({
   return (
     <section
       id="hero-section"
-      className={`relative min-h-screen overflow-hidden bg-gradient-to-b from-black to-red-900 ${debugBorderClass}`}
+      className={`relative overflow-hidden bg-gradient-to-b from-black to-red-900 ${debugBorderClass}`}
       style={{
         // Hero background image
         backgroundImage:
@@ -68,6 +71,9 @@ export default function OCX5HeroSectionFrame({
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
+        // Đảm bảo section nằm trong viewport
+        height: "100vh",
+        maxHeight: "100vh",
       }}
     >
       {/* Header thuộc hero (fixed, ẩn khi scroll xuống, hiện khi scroll lên) */}
@@ -90,10 +96,12 @@ export default function OCX5HeroSectionFrame({
       */}
       <div
         ref={contentRef}
-        className="relative z-30 min-h-screen flex items-center justify-center"
+        className="relative z-30 flex items-center justify-center"
         style={{
+          height: "100%",
           paddingTop: `${paddingTop}px`,
           paddingBottom: `${paddingBottom}px`,
+          boxSizing: "border-box",
         }}
       >
         <HeroSectionOCX5 />
