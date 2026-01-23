@@ -12,12 +12,12 @@ export default function EventInfoCard({ event, showBackButton = false }: EventIn
   const router = useRouter();
 
   const handleBackClick = () => {
-    router.push('/ticket');
+    router.push("/ticketocx5");
   };
 
   return (
-    <div className="bg-zinc-800/50 rounded-lg p-6 flex flex-col h-full">
-      <div className="grid grid-cols-[auto,1fr] gap-4 items-start">
+    <div className="bg-zinc-800/50 rounded-lg p-6 flex flex-col justify-center h-full">
+      <div className="grid grid-cols-[auto,1fr] gap-4 items-center">
         {/* Column 1: Event Avatar */}
         <div className="w-24 h-24 relative rounded-lg overflow-hidden flex-shrink-0">
           <Image

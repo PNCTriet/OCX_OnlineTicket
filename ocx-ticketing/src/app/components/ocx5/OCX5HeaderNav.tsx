@@ -14,7 +14,15 @@ const SECTIONS = [
   { id: "cta", label: "CTA" },
 ];
 
-export default function OCX5HeaderNav() {
+type OCX5HeaderNavProps = {
+  /**
+   * Ticket pages don't need section navigation.
+   * @default true
+   */
+  showSectionNav?: boolean;
+};
+
+export default function OCX5HeaderNav({ showSectionNav = true }: OCX5HeaderNavProps) {
   const { user } = useAuth();
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollYRef = useRef(0);
@@ -100,30 +108,32 @@ export default function OCX5HeaderNav() {
       </div>
 
       {/* TẦNG 2: NAVIGATION MENU */}
-      <nav 
-        className="w-full flex justify-center py-4 bg-black/40"
-        style={{ backdropFilter: "blur(8px)" }}
-      >
-        <div className="flex flex-wrap justify-center gap-6 md:gap-14 px-4">
-          {SECTIONS.map((section) => (
-            <button
-              key={section.id}
-              type="button"
-              onClick={(e) => handleScrollTo(e, section.id)}
-              className="relative group text-white uppercase transition-colors"
-              style={{
-                fontFamily: "WizardWorldSimplified, fantasy, serif",
-                fontSize: "13px",
-                letterSpacing: "2px",
-                fontWeight: 400,
-              }}
-            >
-              {section.label}
-              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
-            </button>
-          ))}
-        </div>
-      </nav>
+      {showSectionNav && (
+        <nav 
+          className="w-full flex justify-center py-4 bg-black/40"
+          style={{ backdropFilter: "blur(8px)" }}
+        >
+          <div className="flex flex-wrap justify-center gap-6 md:gap-14 px-4">
+            {SECTIONS.map((section) => (
+              <button
+                key={section.id}
+                type="button"
+                onClick={(e) => handleScrollTo(e, section.id)}
+                className="relative group text-white uppercase transition-colors"
+                style={{
+                  fontFamily: "WizardWorldSimplified, fantasy, serif",
+                  fontSize: "13px",
+                  letterSpacing: "2px",
+                  fontWeight: 400,
+                }}
+              >
+                {section.label}
+                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-red-600 transition-all duration-300 group-hover:w-full"></span>
+              </button>
+            ))}
+          </div>
+        </nav>
+      )}
     </header>
   );
 }

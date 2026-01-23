@@ -43,6 +43,7 @@ export default function HeroSectionOCX5({
   // GSAP tweens
   const tweenRefs = useRef<gsap.core.Tween[]>([]);
   const idleAnimationRef = useRef<gsap.core.Timeline | null>(null);
+  const isMobileDevice = useRef(false);
 
   // Helper function to apply transforms
   const applyTransform = () => {
@@ -56,6 +57,45 @@ export default function HeroSectionOCX5({
         translateY(${t.translateY}px)
       `;
     }
+  };
+
+  // Helper function to start idle animation
+  const startIdleAnimation = () => {
+    if (!logoRef.current) return;
+    
+    // Kill existing idle animation
+    idleAnimationRef.current?.kill();
+    
+    // Reset transform state to center
+    transformState.current = {
+      rotateX: 0,
+      rotateY: 0,
+      translateX: 0,
+      translateY: 0,
+    };
+    applyTransform();
+
+    // Start new idle animation
+    idleAnimationRef.current = gsap.timeline({ repeat: -1, yoyo: true });
+    idleAnimationRef.current
+      .to(transformState.current, {
+        rotateX: 5,
+        rotateY: -5,
+        translateX: 8,
+        translateY: -8,
+        duration: 3,
+        ease: "sine.inOut",
+        onUpdate: applyTransform,
+      })
+      .to(transformState.current, {
+        rotateX: -5,
+        rotateY: 5,
+        translateX: -8,
+        translateY: 8,
+        duration: 3,
+        ease: "sine.inOut",
+        onUpdate: applyTransform,
+      });
   };
 
   useEffect(() => {
@@ -105,34 +145,38 @@ export default function HeroSectionOCX5({
   }, [enableInteraction]);
   
 
-  // Idle animation: tự động chuyển động mẫu khi vào trang
+  // Detect mobile device and start idle animation
   useEffect(() => {
-    if (!logoRef.current || hasUserInteracted.current) return;
+    if (typeof window === "undefined") return;
 
-    // Tạo timeline cho idle animation - mô phỏng chuyển động 3D nhẹ nhàng
-    idleAnimationRef.current = gsap.timeline({ repeat: -1, yoyo: true });
-    
-    idleAnimationRef.current
-      .to(transformState.current, {
-        rotateX: 5,
-        rotateY: -5,
-        translateX: 8,
-        translateY: -8,
-        duration: 3,
-        ease: "sine.inOut",
-        onUpdate: applyTransform,
-      })
-      .to(transformState.current, {
-        rotateX: -5,
-        rotateY: 5,
-        translateX: -8,
-        translateY: 8,
-        duration: 3,
-        ease: "sine.inOut",
-        onUpdate: applyTransform,
-      });
+    // Detect mobile device
+    const checkMobile = () => {
+      const isMobile = 
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (window.innerWidth <= 768) ||
+        ('ontouchstart' in window);
+      isMobileDevice.current = isMobile;
+      return isMobile;
+    };
+
+    const mobile = checkMobile();
+
+    // Trên mobile: chỉ chạy idle animation, không cần tương tác
+    // Trên desktop: chạy idle animation khi mount
+    if (!logoRef.current) return;
+
+    if (mobile || !hasUserInteracted.current) {
+      startIdleAnimation();
+    }
+
+    // Listen for resize to update mobile detection
+    const handleResize = () => {
+      checkMobile();
+    };
+    window.addEventListener("resize", handleResize);
 
     return () => {
+      window.removeEventListener("resize", handleResize);
       idleAnimationRef.current?.kill();
     };
   }, []);
@@ -141,6 +185,9 @@ export default function HeroSectionOCX5({
   useEffect(() => {
     // Chỉ bật mouse/touch interaction nếu enableInteraction = true
     if (!enableInteraction) return;
+    
+    // Trên mobile: không cần mouse/touch interaction, chỉ chạy idle animation
+    if (isMobileDevice.current) return;
 
     const handlePointerMove = (e: PointerEvent | MouseEvent | TouchEvent) => {
       if (!containerRef.current || !logoRef.current) return;
@@ -201,6 +248,9 @@ export default function HeroSectionOCX5({
       tweenRefs.current.forEach(t => t.kill());
       tweenRefs.current = [];
 
+      // Reset flag để cho phép idle animation chạy lại
+      hasUserInteracted.current = false;
+
       // Animate back to center with elastic spring
       tweenRefs.current.push(
         gsap.to(transformState.current, {
@@ -212,29 +262,8 @@ export default function HeroSectionOCX5({
           ease: "elastic.out(1, 0.5)",
           onUpdate: applyTransform,
           onComplete: () => {
-            // Sau khi trả về vị trí ban đầu, nếu chưa có tương tác thì tiếp tục idle animation
-            if (!hasUserInteracted.current && !idleAnimationRef.current) {
-              idleAnimationRef.current = gsap.timeline({ repeat: -1, yoyo: true });
-              idleAnimationRef.current
-                .to(transformState.current, {
-                  rotateX: 5,
-                  rotateY: -5,
-                  translateX: 8,
-                  translateY: -8,
-                  duration: 3,
-                  ease: "sine.inOut",
-                  onUpdate: applyTransform,
-                })
-                .to(transformState.current, {
-                  rotateX: -5,
-                  rotateY: 5,
-                  translateX: -8,
-                  translateY: 8,
-                  duration: 3,
-                  ease: "sine.inOut",
-                  onUpdate: applyTransform,
-                });
-            }
+            // Sau khi trả về vị trí ban đầu, chạy lại idle animation
+            startIdleAnimation();
           },
         })
       );

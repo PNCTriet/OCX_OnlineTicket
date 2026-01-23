@@ -4,7 +4,30 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 
-export default function SimpleHeader({ lang, setLang }: { lang: "vi" | "en"; setLang: (lang: "vi" | "en") => void }) {
+type SimpleHeaderProps = {
+  lang: "vi" | "en";
+  setLang: (lang: "vi" | "en") => void;
+  /**
+   * Optional: customize header background color / style.
+   * Default matches existing pages.
+   */
+  headerClassName?: string;
+  /**
+   * Optional: customize logo src (defaults to SS4 logo).
+   */
+  logoSrc?: string;
+  logoAlt?: string;
+  logoClassName?: string;
+};
+
+export default function SimpleHeader({
+  lang,
+  setLang,
+  headerClassName = "bg-[#c53e00]",
+  logoSrc = "/images/client_logo_ss4.svg",
+  logoAlt = "Logo",
+  logoClassName = "w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full object-cover transition-transform duration-300 hover:scale-110",
+}: SimpleHeaderProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
 
@@ -20,17 +43,20 @@ export default function SimpleHeader({ lang, setLang }: { lang: "vi" | "en"; set
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-[#c53e00] px-4 sm:px-12 transition-transform duration-300" style={{ fontFamily: 'BDStreetSignSans' }}>
+    <header
+      className={`fixed top-0 left-0 w-full z-50 px-4 sm:px-12 transition-transform duration-300 ${headerClassName}`}
+      style={{ fontFamily: 'BDStreetSignSans' }}
+    >
       <div className="flex items-center justify-between w-full">
         {/* Logo - left */}
         <div className="flex justify-start">
           <Link href="/" className="flex items-center gap-2 font-bold text-xl text-red-600">
             <Image
-              src="/images/client_logo_ss4.svg"
-              alt="Logo"
+              src={logoSrc}
+              alt={logoAlt}
               width={100}
               height={100}
-              className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full object-cover transition-transform duration-300 hover:scale-110"
+              className={logoClassName}
             />
           </Link>
         </div>
@@ -50,11 +76,11 @@ export default function SimpleHeader({ lang, setLang }: { lang: "vi" | "en"; set
             <div className="relative">
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center space-x-2 p-2 rounded-full hover:bg-[#b33800] transition-colors"
+                className="flex items-center space-x-2 p-2 rounded-full hover:bg-white/10 transition-colors"
                 aria-label="User menu"
               >
                 <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                  <span className="text-[#c53e00] text-sm font-bold">
+                  <span className="text-black text-sm font-bold">
                     {user.email?.charAt(0).toUpperCase()}
                   </span>
                 </div>

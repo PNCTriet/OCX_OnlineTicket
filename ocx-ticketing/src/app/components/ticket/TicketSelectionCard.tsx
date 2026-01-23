@@ -14,9 +14,9 @@ export default function TicketSelectionCard({ tickets, onQuantityChange, selecte
   const hasSeatmapSelections = selectedZoneId !== null;
 
   return (
-    <div className="bg-zinc-800/50 rounded-lg p-6 flex flex-col h-[300px]">
+    <div className="bg-zinc-800/50 rounded-lg p-6 flex flex-col min-h-0 h-full">
       <h3 className="text-lg font-semibold text-white mb-4">Chọn vé</h3>
-      <div className="flex-1 overflow-y-auto hide-scrollbar space-y-4">
+      <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar space-y-4">
         {tickets.map(ticket => (
           <div 
             key={ticket.id} 

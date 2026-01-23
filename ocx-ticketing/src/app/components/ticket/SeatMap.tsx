@@ -3,23 +3,42 @@ import React from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { SEAT_LAYOUT_CONFIG, TICKETS } from "../../constants/ticket";
 
+type SeatLayoutConfig = typeof SEAT_LAYOUT_CONFIG;
+
 type SeatMapProps = {
   selectedZoneId: string | null;
   onZoneSelect: (zoneId: string) => void;
+  tooltipBySectionId?: Record<string, string>;
+  /**
+   * Optional: show a seatmap image as background to help users visualize zones.
+   * Example: "/images/ocx5_seatmap_alt2.jpg"
+   */
+  backgroundImageHref?: string;
+  /**
+   * Optional: provide a custom seat layout (used for OCX5 ticket mapping).
+   * Defaults to the shared SEAT_LAYOUT_CONFIG.
+   */
+  layoutConfig?: SeatLayoutConfig;
 };
 
-export default function SeatMap({ selectedZoneId, onZoneSelect }: SeatMapProps) {
+export default function SeatMap({
+  selectedZoneId,
+  onZoneSelect,
+  tooltipBySectionId,
+  backgroundImageHref,
+  layoutConfig = SEAT_LAYOUT_CONFIG,
+}: SeatMapProps) {
   // Calculate SVG dimensions based on layout config for proper viewBox
-  const minX = Math.min(SEAT_LAYOUT_CONFIG.STAGE.x, ...SEAT_LAYOUT_CONFIG.SECTIONS.map(s => s.x));
-  const minY = Math.min(SEAT_LAYOUT_CONFIG.STAGE.y, ...SEAT_LAYOUT_CONFIG.SECTIONS.map(s => s.y));
-  const maxX = Math.max(SEAT_LAYOUT_CONFIG.STAGE.x + SEAT_LAYOUT_CONFIG.STAGE.width, ...SEAT_LAYOUT_CONFIG.SECTIONS.map(s => s.x + s.width));
-  const maxY = Math.max(SEAT_LAYOUT_CONFIG.STAGE.y + SEAT_LAYOUT_CONFIG.STAGE.height, ...SEAT_LAYOUT_CONFIG.SECTIONS.map(s => s.y + s.height));
+  const minX = Math.min(layoutConfig.STAGE.x, ...layoutConfig.SECTIONS.map(s => s.x));
+  const minY = Math.min(layoutConfig.STAGE.y, ...layoutConfig.SECTIONS.map(s => s.y));
+  const maxX = Math.max(layoutConfig.STAGE.x + layoutConfig.STAGE.width, ...layoutConfig.SECTIONS.map(s => s.x + s.width));
+  const maxY = Math.max(layoutConfig.STAGE.y + layoutConfig.STAGE.height, ...layoutConfig.SECTIONS.map(s => s.y + s.height));
 
   const viewBoxWidth = maxX - minX + 100; // Add some padding
   const viewBoxHeight = maxY - minY + 100; // Add some padding
 
   return (
-    <div className="w-full h-full min-h-[400px] bg-zinc-900 rounded-lg overflow-hidden flex items-center justify-center relative">
+    <div className="w-full h-full min-h-[320px] md:min-h-0 bg-zinc-900 rounded-lg overflow-hidden flex items-center justify-center relative">
       <TransformWrapper
         initialScale={1}
         minScale={0.5}
@@ -59,19 +78,32 @@ export default function SeatMap({ selectedZoneId, onZoneSelect }: SeatMapProps) 
                 viewBox={`${minX} ${minY} ${viewBoxWidth} ${viewBoxHeight}`}
                 className="select-none"
               >
+                {/* Background image (optional) */}
+                {backgroundImageHref && (
+                  <image
+                    href={backgroundImageHref}
+                    x={minX}
+                    y={minY}
+                    width={viewBoxWidth}
+                    height={viewBoxHeight}
+                    preserveAspectRatio="none"
+                    opacity={0.9}
+                  />
+                )}
+
                 {/* Stage */}
                 <rect
-                  x={SEAT_LAYOUT_CONFIG.STAGE.x}
-                  y={SEAT_LAYOUT_CONFIG.STAGE.y}
-                  width={SEAT_LAYOUT_CONFIG.STAGE.width}
-                  height={SEAT_LAYOUT_CONFIG.STAGE.height}
-                  fill="black"
+                  x={layoutConfig.STAGE.x}
+                  y={layoutConfig.STAGE.y}
+                  width={layoutConfig.STAGE.width}
+                  height={layoutConfig.STAGE.height}
+                  fill="rgba(0,0,0,0.85)"
                   rx="5"
                   ry="5"
                 />
                 <text
-                  x={SEAT_LAYOUT_CONFIG.STAGE.x + SEAT_LAYOUT_CONFIG.STAGE.width / 2}
-                  y={SEAT_LAYOUT_CONFIG.STAGE.y + SEAT_LAYOUT_CONFIG.STAGE.height / 2}
+                  x={layoutConfig.STAGE.x + layoutConfig.STAGE.width / 2}
+                  y={layoutConfig.STAGE.y + layoutConfig.STAGE.height / 2}
                   textAnchor="middle"
                   dominantBaseline="middle"
                   fill="white"
@@ -83,11 +115,14 @@ export default function SeatMap({ selectedZoneId, onZoneSelect }: SeatMapProps) 
                 </text>
 
                 {/* Seat Sections */}
-                {SEAT_LAYOUT_CONFIG.SECTIONS.map(section => {
+                {layoutConfig.SECTIONS.map(section => {
                   const ticketInfo = TICKETS.find(ticket => ticket.id === section.ticketTypeId);
-                  const tooltipText = ticketInfo ? 
-                    `${ticketInfo.name} - ${ticketInfo.price.toLocaleString()}đ` :
-                    `Khu vực ${section.label}`;
+                  const tooltipText =
+                    tooltipBySectionId?.[section.id] ??
+                    (ticketInfo
+                      ? `${ticketInfo.name} - ${ticketInfo.price.toLocaleString()}đ`
+                      : `Khu vực ${section.label}`);
+                  const isSelected = selectedZoneId === section.id;
                   return (
                     <React.Fragment key={section.id}>
                       <rect
@@ -96,12 +131,12 @@ export default function SeatMap({ selectedZoneId, onZoneSelect }: SeatMapProps) 
                         width={section.width}
                         height={section.height}
                         fill={section.color}
-                        opacity="0.2" // Slightly transparent background for sections
+                        opacity={isSelected ? 0.45 : 0.3}
+                        stroke="rgba(255,255,255,0.9)"
+                        strokeWidth={isSelected ? 4 : 2}
                         rx="5"
                         ry="5"
-                        className={`cursor-pointer transition-all duration-100 ${
-                          selectedZoneId === section.id ? "ring-2 ring-white" : ""
-                        }`}
+                        className="cursor-pointer transition-all duration-150"
                         onClick={() => onZoneSelect(section.id)}
                       >
                         <title>{tooltipText}</title>

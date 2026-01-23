@@ -11,6 +11,15 @@ interface HorizonBridgeProps {
   baseName: string; // e.g., "imgi_52_horizons_village"
   imageAlt: string;
   parallaxSpeed?: number;
+  /**
+   * - "absolute" (default): overlays at the bottom of parent (existing behavior)
+   * - "flow": participates in document flow (useful for fixed-height pages)
+   */
+  position?: "absolute" | "flow";
+  /**
+   * Optional override for the <Image> className to control scale on special pages.
+   */
+  imageClassName?: string;
 }
 
 /**
@@ -28,6 +37,8 @@ export default function HorizonBridge({
   baseName,
   imageAlt,
   parallaxSpeed = 0.5,
+  position = "absolute",
+  imageClassName = "block h-auto w-full md:w-[110%] max-w-none transform origin-bottom md:scale-150",
 }: HorizonBridgeProps) {
   const [isMobile, setIsMobile] = useState(false);
   const bridgeRef = useRef<HTMLDivElement>(null);
@@ -102,7 +113,9 @@ export default function HorizonBridge({
   return (
     <div
       ref={bridgeRef}
-      className="absolute bottom-0 left-0 right-0 w-full pointer-events-none z-20"
+      className={`w-full pointer-events-none z-20 ${
+        position === "absolute" ? "absolute bottom-0 left-0 right-0" : "relative"
+      }`}
       aria-hidden="true"
     >
       {/* 
@@ -121,7 +134,7 @@ export default function HorizonBridge({
           height={1080}
           // Mobile: full width, giữ đúng tỉ lệ
           // Desktop: tăng chiều ngang ~130% và scale 2x để horizon trông lớn hơn nhiều (có thể bị cắt bớt hai bên)
-          className="block h-auto w-full md:w-[110%] max-w-none transform origin-bottom md:scale-150"
+          className={imageClassName}
           quality={90}
           priority={false}
           sizes="100vw"
