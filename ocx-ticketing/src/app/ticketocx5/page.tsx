@@ -15,7 +15,7 @@ import { EventInfo, TicketType, Zone } from "../types/ticket";
 import { useAuth } from "@/components/AuthProvider";
 import { createClient } from "@/lib/supabase";
 
-// Function to generate random colors for tickets (same behavior as /ticket)
+// Function to generate random colors for tickets (same behavior as /ticket) - for redeploy
 const getRandomColor = () => {
   const colors = [
     "#56F482",
