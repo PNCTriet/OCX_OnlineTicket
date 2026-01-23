@@ -7,11 +7,22 @@ import gsap from "gsap";
 interface Props {
   containerRef: React.RefObject<HTMLDivElement | null>;
   count?: number;
+  /**
+   * Control layering (e.g. "z-20", "z-40") and optional opacity.
+   * Defaults to "z-20".
+   */
+  wrapperClassName?: string;
+  /**
+   * Optional inline style for wrapper (e.g. filter).
+   */
+  wrapperStyle?: React.CSSProperties;
 }
 
 export default function FlashLightningElements({
   containerRef,
   count = 12, // slightly more elements for better spatial coverage
+  wrapperClassName = "z-20",
+  wrapperStyle,
 }: Props) {
   const elementsRef = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -86,7 +97,10 @@ export default function FlashLightningElements({
   }, [containerRef]);
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-20">
+    <div
+      className={`pointer-events-none absolute inset-0 ${wrapperClassName}`}
+      style={wrapperStyle}
+    >
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}

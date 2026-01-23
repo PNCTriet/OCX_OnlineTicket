@@ -104,10 +104,10 @@ export const ZONES: Zone[] = [
 export const EVENT_INFO: EventInfo = {
   id: "ocx-4",
   name: "Ớt Cay Xè 5",
-  time: "??",
-  location: "??, Hồ Chí Minh",
+  time: "15:00",
+  location: "Hồ Chí Minh",
   avatar: "/images/ocx4_event_avatar.jpg",
-  date: "??/??/????",
+  date: "18/04/2026",
 };
 
 // New layout configuration for the seat map

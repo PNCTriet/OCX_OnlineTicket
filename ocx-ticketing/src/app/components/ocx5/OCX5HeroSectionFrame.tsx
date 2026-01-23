@@ -109,7 +109,7 @@ export default function OCX5HeroSectionFrame({
       */}
       <div
         ref={contentRef}
-        className="relative z-30 flex items-center justify-center"
+        className="relative z-50 flex items-center justify-center"
         style={{
           height: "100%",
           paddingTop: `${paddingTop}px`,

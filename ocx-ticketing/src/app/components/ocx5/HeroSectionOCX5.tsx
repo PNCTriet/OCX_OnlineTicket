@@ -323,7 +323,7 @@ export default function HeroSectionOCX5({
           alt="OCX Hero Logo"
           width={4500}
           height={4500}
-          className="w-full max-w-[50vw] h-auto transition-all duration-300"
+          className="w-full max-w-[80vw] h-auto transition-all duration-300"
           style={{
             filter: isHovering
               ? "brightness(1.1) drop-shadow(0 0 30px rgba(255,255,255,0.3))"

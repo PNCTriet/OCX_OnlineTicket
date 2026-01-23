@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import EventInfoCard from "../components/ticket/EventInfoCard";
 import TicketSelectionCard from "../components/ticket/TicketSelectionCard";
 import OrderSummaryCard from "../components/ticket/OrderSummaryCard";
@@ -49,11 +50,11 @@ interface ApiTicketType {
 
 const EVENT_INFO_OCX5: EventInfo = {
   id: "ocx-5",
-  name: "Ớt Cay Xè 5",
-  time: "??",
-  location: "??, Hồ Chí Minh",
+  name: "Ớt Cay Xè",
+  time: "15:00",
+  location: "Hồ Chí Minh",
   avatar: "/images/client_logo_ss3.jpg",
-  date: "??/??/????",
+  date: "18/04/2026",
 };
 
 function extractSeatSectionId(text: string | undefined | null): string | null {
@@ -64,6 +65,32 @@ function extractSeatSectionId(text: string | undefined | null): string | null {
 }
 
 type Ocx5ZoneId = "A" | "B" | "C" | "D";
+
+const HOUSE_BY_ZONE_ID: Record<
+  Ocx5ZoneId,
+  { code: "GRY" | "HUF" | "SLY" | "RAV"; name: string; logo: string }
+> = {
+  D: {
+    code: "GRY",
+    name: "Gryffindor",
+    logo: "/images/ocx5_images/elements/ticket_house/ocx_logo_ss5_house_gri_alt1.svg",
+  },
+  B: {
+    code: "HUF",
+    name: "Hufflepuff",
+    logo: "/images/ocx5_images/elements/ticket_house/ocx_logo_ss5_house_huf_alt1.svg",
+  },
+  A: {
+    code: "SLY",
+    name: "Slytherin",
+    logo: "/images/ocx5_images/elements/ticket_house/ocx_logo_ss5_house_sly_alt1.svg",
+  },
+  C: {
+    code: "RAV",
+    name: "Ravenclaw",
+    logo: "/images/ocx5_images/elements/ticket_house/ocx_logo_ss5_house_rav_alt1.svg",
+  },
+};
 
 // OCX5 uses 4 ticket types from API -> 4 zones in seatmap.
 const OCX5_SEAT_LAYOUT_CONFIG: typeof SEAT_LAYOUT_CONFIG = {
@@ -155,6 +182,10 @@ export default function TicketOCX5Page() {
   const [lang, setLang] = useState<"vi" | "en">("vi");
   const [error, setError] = useState<string | null>(null);
   const [showNoTicketsError, setShowNoTicketsError] = useState(false);
+  const [showMaxTicketsError, setShowMaxTicketsError] = useState(false);
+  const [showSeatmapIntro, setShowSeatmapIntro] = useState(false);
+  const [seatmapIntroEntered, setSeatmapIntroEntered] = useState(false);
+  const [seatmapIntroText, setSeatmapIntroText] = useState("");
 
   const [selectedTickets, setSelectedTickets] = useState<
     (TicketType & { quantity: number; availableQty: number; seatSectionId?: string | null })[]
@@ -167,6 +198,76 @@ export default function TicketOCX5Page() {
   const [activeZoneId, setActiveZoneId] = useState<string | null>(null); // A/B/C/D
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingZone, setPendingZone] = useState<Zone | null>(null);
+  const [pendingMaxQty, setPendingMaxQty] = useState(10);
+  const [pendingInitialQty, setPendingInitialQty] = useState(0);
+
+  const MAX_TICKETS_PER_SESSION = 10;
+
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 640px)");
+    const onChange = () => setIsMobile(mq.matches);
+    onChange();
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+
+  // Intro seatmap modal: wait for page "ready" then show, auto-dismiss after 10s
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (loading || !user) return;
+
+    setShowSeatmapIntro(false);
+    setSeatmapIntroEntered(false);
+    setSeatmapIntroText("");
+
+    // Delay so UI can settle (avoid showing too fast)
+    const showDelay = window.setTimeout(() => {
+      setShowSeatmapIntro(true);
+      setSeatmapIntroEntered(false);
+      window.requestAnimationFrame(() => setSeatmapIntroEntered(true));
+    }, 700);
+
+    const autoClose = window.setTimeout(() => {
+      setShowSeatmapIntro(false);
+    }, 7000);
+
+    return () => {
+      window.clearTimeout(showDelay);
+      window.clearTimeout(autoClose);
+    };
+  }, [loading, user]);
+
+  const closeSeatmapIntro = () => {
+    setShowSeatmapIntro(false);
+  };
+
+  // Typing effect for intro text
+  useEffect(() => {
+    if (!showSeatmapIntro) return;
+    const full = "bảo bối, đây là sơ đồ chỗ ngồi\nmáy lạnh đã lắm em yên tâm nha";
+
+    // Respect reduced motion
+    const reduce =
+      typeof window !== "undefined"
+        ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        : false;
+    if (reduce) {
+      setSeatmapIntroText(full);
+      return;
+    }
+
+    setSeatmapIntroText("");
+    let i = 0;
+    const iv = window.setInterval(() => {
+      i += 1;
+      setSeatmapIntroText(full.slice(0, i));
+      if (i >= full.length) window.clearInterval(iv);
+    }, 45);
+
+    return () => window.clearInterval(iv);
+  }, [showSeatmapIntro]);
 
   // Redirect to login (same pattern as /ticket)
   useEffect(() => {
@@ -237,14 +338,21 @@ export default function TicketOCX5Page() {
           // Fallback to description parsing if you later add "Khu vực A/B/..." to description.
           const seatSectionId =
             mapOcx5TicketNameToZoneId(ticket.name) ?? extractSeatSectionId(ticket.description);
+          const computedLabel =
+            ticket.name?.toUpperCase().includes("GRY") ? "Vé đứng" : "Vé ngồi";
+          // Use seatmap zone color for a consistent concept palette
+          const zoneColor =
+            seatSectionId &&
+            (OCX5_SEAT_LAYOUT_CONFIG.SECTIONS.find((s) => s.id === seatSectionId)?.color ??
+              undefined);
           return {
             id: ticket.id, // keep REAL backend ticket id for checkout
             name: ticket.name,
             price: parseInt(ticket.price),
-            color: getRandomColor(),
+            color: zoneColor ?? getRandomColor(),
             quantity: 0,
             sold: ticket.sold_qty,
-            label: ticket.description,
+            label: computedLabel,
             status: ticket.status as "INACTIVE" | "ACTIVE" | "SOLD_OUT",
             availableQty: ticket.total_qty - ticket.sold_qty,
             seatSectionId,
@@ -277,16 +385,28 @@ export default function TicketOCX5Page() {
     0
   );
 
+  const totalTickets = selectedTickets.reduce((sum, t) => sum + t.quantity, 0);
+
   const handleQuantityChange = (ticketId: string, change: number) => {
     setShowNoTicketsError(false);
+    setShowMaxTicketsError(false);
     setSelectedTickets((prev) =>
       prev.map((ticket) => {
         if (ticket.id !== ticketId) return ticket;
-        const newQuantity = ticket.quantity + change;
-        if (newQuantity < 0) return ticket;
-        const maxLimit = Math.min(10, ticket.availableQty);
-        if (newQuantity > maxLimit) return ticket;
-        return { ...ticket, quantity: newQuantity };
+
+        const currentTotal = prev.reduce((s, t) => s + t.quantity, 0);
+        const nextQty = ticket.quantity + change;
+        if (nextQty < 0) return ticket;
+
+        const perTicketMax = Math.min(MAX_TICKETS_PER_SESSION, ticket.availableQty);
+        if (nextQty > perTicketMax) return ticket;
+
+        // Global cap across all ticket types
+        if (change > 0 && currentTotal >= MAX_TICKETS_PER_SESSION) {
+          setShowMaxTicketsError(true);
+          return ticket;
+        }
+        return { ...ticket, quantity: nextQty };
       })
     );
   };
@@ -303,49 +423,55 @@ export default function TicketOCX5Page() {
       return;
     }
 
-    // Click again to unselect + remove 1 ticket (same UX as ticket-seatmap)
-    if (highlightedZoneId === sectionId) {
-      setHighlightedZoneId(null);
-      setActiveZoneId(null);
-      setSelectedTickets((prevTickets) =>
-        prevTickets.map((t) => {
-          if (t.id === matchingTicket.id && t.quantity > 0) {
-            return { ...t, quantity: t.quantity - 1 };
-          }
-          return t;
-        })
-      );
-      return;
-    }
+    const houseMeta =
+      (HOUSE_BY_ZONE_ID as Record<string, (typeof HOUSE_BY_ZONE_ID)[Ocx5ZoneId]>)[sectionId] ??
+      null;
 
     const zone: Zone = {
       id: `zone-${sectionId}`,
-      name: `Khu vực ${sectionId}`,
+      // For OCX5: show House code in popups instead of A/B/C/D
+      name: houseMeta?.code ?? `Khu vực ${sectionId}`,
       color: sectionConfig.color,
       // Use backend ticket id so checkout works
       ticketTypeId: matchingTicket.id,
       capacity: matchingTicket.availableQty + matchingTicket.sold,
       sold: matchingTicket.sold,
-      description: matchingTicket.name,
+      description: houseMeta ? `${houseMeta.name} • ${matchingTicket.name}` : matchingTicket.name,
     };
+
+    // Prepare modal quantities with global cap (10 per session)
+    const currentQty = matchingTicket.quantity;
+    const otherTotal = selectedTickets.reduce((s, t) => s + (t.id === matchingTicket.id ? 0 : t.quantity), 0);
+    const maxAllowedByGlobal = Math.max(0, MAX_TICKETS_PER_SESSION - otherTotal);
+    const maxAllowed = Math.min(matchingTicket.availableQty, maxAllowedByGlobal);
+
     setHighlightedZoneId(sectionId);
     setPendingZone(zone);
+    setPendingInitialQty(currentQty);
+    setPendingMaxQty(maxAllowed);
     setIsModalOpen(true);
   };
 
-  const handleConfirmZone = () => {
+  const handleConfirmZone = (nextQty: number) => {
     if (pendingZone) {
       const sectionIdForPendingZone =
         selectedTickets.find((t) => t.id === pendingZone.ticketTypeId)?.seatSectionId ?? null;
 
-      setHighlightedZoneId(sectionIdForPendingZone);
-      setActiveZoneId(sectionIdForPendingZone);
+      setHighlightedZoneId(nextQty > 0 ? sectionIdForPendingZone : null);
+      setActiveZoneId(nextQty > 0 ? sectionIdForPendingZone : null);
+      setShowMaxTicketsError(false);
       setSelectedTickets((prevTickets) =>
         prevTickets.map((t) => {
           if (t.id === pendingZone.ticketTypeId) {
-            const maxLimit = Math.min(10, t.availableQty);
-            const nextQty = Math.min(maxLimit, t.quantity + 1);
-            return { ...t, quantity: nextQty };
+            const otherTotal = prevTickets.reduce(
+              (s, x) => s + (x.id === t.id ? 0 : x.quantity),
+              0
+            );
+            const maxAllowedByGlobal = Math.max(0, MAX_TICKETS_PER_SESSION - otherTotal);
+            const maxAllowed = Math.min(t.availableQty, maxAllowedByGlobal);
+            const clamped = Math.max(0, Math.min(nextQty, maxAllowed));
+            if (nextQty > maxAllowed) setShowMaxTicketsError(true);
+            return { ...t, quantity: clamped };
           }
           return t;
         })
@@ -419,20 +545,46 @@ export default function TicketOCX5Page() {
             </div>
           )}
 
+          {showMaxTicketsError && (
+            <div className="mb-6 bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 text-amber-300">
+              <p className="text-center">Mỗi người chỉ được mua tối đa 10 vé trong 1 phiên.</p>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Seatmap */}
-            <div className="lg:col-span-2 space-y-6 flex flex-col h-full">
-              <StageMapCard
-                selectedZoneId={highlightedZoneId}
-                onZoneSelect={handleZoneSelect}
-                tooltipBySectionId={tooltipBySectionId}
-                layoutConfig={OCX5_SEAT_LAYOUT_CONFIG}
-              />
+            <div className="lg:col-span-2 space-y-6 min-h-0">
+              {/* Mobile: keep seatmap shorter so users can scroll to the right column easily */}
+              <div
+                className={isMobile ? "h-[380px]" : "h-[520px] lg:h-[640px]"}
+                style={{ minHeight: 0 }}
+              >
+                <StageMapCard
+                  selectedZoneId={highlightedZoneId}
+                  onZoneSelect={handleZoneSelect}
+                  tooltipBySectionId={tooltipBySectionId}
+                  iconBySectionId={{
+                    A: HOUSE_BY_ZONE_ID.A.logo,
+                    B: HOUSE_BY_ZONE_ID.B.logo,
+                    C: HOUSE_BY_ZONE_ID.C.logo,
+                    D: HOUSE_BY_ZONE_ID.D.logo,
+                  }}
+                  layoutConfig={OCX5_SEAT_LAYOUT_CONFIG}
+                  // Mobile: start zoomed-out so the full map is easier to understand
+                  initialScale={isMobile ? 0.72 : 1}
+                />
+              </div>
             </div>
 
             {/* Right column */}
             <div className="lg:col-span-1">
-              <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+              <div
+                className="rounded-xl p-6 shadow-lg border border-white/10 lg:h-[640px] lg:overflow-y-auto"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(0,0,0,0.65) 0%, rgba(44,9,11,0.55) 60%, rgba(154,26,21,0.35) 100%)",
+                }}
+              >
                 <div className="space-y-6">
                   <EventInfoCard event={EVENT_INFO_OCX5} />
 
@@ -442,6 +594,7 @@ export default function TicketOCX5Page() {
                       tickets={selectedTickets}
                       onQuantityChange={handleQuantityChange}
                       selectedZoneId={activeZoneId}
+                      requireSeatmapSelection={false}
                     />
                   </div>
 
@@ -475,7 +628,58 @@ export default function TicketOCX5Page() {
         onClose={handleCloseModal}
         onConfirm={handleConfirmZone}
         zone={pendingZone}
+        initialQuantity={pendingInitialQty}
+        maxQuantity={pendingMaxQty}
       />
+
+      {/* Intro seatmap popup */}
+      {showSeatmapIntro && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+          <div
+            className="absolute inset-0 bg-black/70"
+            onClick={closeSeatmapIntro}
+          />
+          <div
+            className={`relative w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden ${
+              seatmapIntroEntered ? "opacity-100 scale-100" : "opacity-0 scale-95"
+            }`}
+            style={{
+              background:
+                "linear-gradient(180deg, rgb(0,0,0) 0%, rgb(44,9,11) 55%, rgb(60,10,12) 100%)",
+              transition: "opacity 240ms ease, transform 240ms ease",
+            }}
+          >
+            <div className="relative w-full aspect-[4/5]">
+              <Image
+                src="/images/ocx5_seatmap_alt2.jpg"
+                alt="OCX5 Seatmap"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+            <div className="p-5">
+              <p className="text-white text-center font-semibold">
+                {seatmapIntroText.split("\n").map((line, idx, arr) => (
+                  <span key={idx}>
+                    {line}
+                    {idx < arr.length - 1 ? <br /> : null}
+                  </span>
+                ))}
+                <span
+                  className="inline-block w-[10px] translate-y-[1px] ml-0.5"
+                  style={{
+                    opacity: seatmapIntroText.length % 2 ? 1 : 0.35,
+                    transition: "opacity 120ms linear",
+                  }}
+                >
+                  |
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -6,7 +6,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import OCX5HeroSectionFrame from "@/app/components/ocx5/OCX5HeroSectionFrame";
 import OCX5EventInfoSection from "@/app/components/ocx5/OCX5EventInfoSection";
 import OCX5LineupSection from "@/app/components/ocx5/OCX5LineupSection";
-import OCX5PricingSection from "@/app/components/ocx5/OCX5PricingSection";
 import OCX5CTASection from "@/app/components/ocx5/OCX5CTASection";
 
 // Global debug flag: turn on to show section markers & red frames
@@ -51,8 +50,7 @@ export default function OCX5Page() {
         {/* SECTION 3: LINE-UP */}
         <OCX5LineupSection debugLayout={DEBUG_LAYOUT} />
 
-        {/* SECTION 4: PRICING */}
-        <OCX5PricingSection debugLayout={DEBUG_LAYOUT} />
+        {/* SECTION 4: PRICING (temporarily disabled) */}
 
         {/* SECTION 5: CTA */}
         <OCX5CTASection debugLayout={DEBUG_LAYOUT} />

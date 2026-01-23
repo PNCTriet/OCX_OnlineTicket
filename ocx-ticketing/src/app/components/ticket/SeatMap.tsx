@@ -10,6 +10,11 @@ type SeatMapProps = {
   onZoneSelect: (zoneId: string) => void;
   tooltipBySectionId?: Record<string, string>;
   /**
+   * Optional: show a small icon (e.g. house logo) inside each zone.
+   * Keyed by sectionId (A/B/C/D).
+   */
+  iconBySectionId?: Record<string, string>;
+  /**
    * Optional: show a seatmap image as background to help users visualize zones.
    * Example: "/images/ocx5_seatmap_alt2.jpg"
    */
@@ -19,14 +24,22 @@ type SeatMapProps = {
    * Defaults to the shared SEAT_LAYOUT_CONFIG.
    */
   layoutConfig?: SeatLayoutConfig;
+  /**
+   * Optional: initial zoom level for the map.
+   * Useful to start "zoomed out" on mobile.
+   * @default 1
+   */
+  initialScale?: number;
 };
 
 export default function SeatMap({
   selectedZoneId,
   onZoneSelect,
   tooltipBySectionId,
+  iconBySectionId,
   backgroundImageHref,
   layoutConfig = SEAT_LAYOUT_CONFIG,
+  initialScale = 1,
 }: SeatMapProps) {
   // Calculate SVG dimensions based on layout config for proper viewBox
   const minX = Math.min(layoutConfig.STAGE.x, ...layoutConfig.SECTIONS.map(s => s.x));
@@ -38,9 +51,9 @@ export default function SeatMap({
   const viewBoxHeight = maxY - minY + 100; // Add some padding
 
   return (
-    <div className="w-full h-full min-h-[320px] md:min-h-0 bg-zinc-900 rounded-lg overflow-hidden flex items-center justify-center relative">
+    <div className="w-full h-full min-h-[220px] sm:min-h-[320px] md:min-h-0 bg-zinc-900 rounded-lg overflow-hidden flex items-center justify-center relative">
       <TransformWrapper
-        initialScale={1}
+        initialScale={initialScale}
         minScale={0.5}
         maxScale={5}
         limitToBounds={false}
@@ -123,6 +136,11 @@ export default function SeatMap({
                       ? `${ticketInfo.name} - ${ticketInfo.price.toLocaleString()}đ`
                       : `Khu vực ${section.label}`);
                   const isSelected = selectedZoneId === section.id;
+                  const iconHref = iconBySectionId?.[section.id];
+                  const iconSize = Math.max(
+                    36,
+                    Math.min(section.width, section.height) * 0.32
+                  );
                   return (
                     <React.Fragment key={section.id}>
                       <rect
@@ -141,13 +159,25 @@ export default function SeatMap({
                       >
                         <title>{tooltipText}</title>
                       </rect>
+                      {iconHref && (
+                        <image
+                          href={iconHref}
+                          x={section.x + section.width / 2 - iconSize / 2}
+                          y={section.y + section.height / 2 - iconSize / 2 - 14}
+                          width={iconSize}
+                          height={iconSize}
+                          preserveAspectRatio="xMidYMid meet"
+                          opacity={0.95}
+                          style={{ pointerEvents: "none" }}
+                        />
+                      )}
                       <text
                         x={section.x + section.width / 2}
-                        y={section.y + section.height / 2}
+                        y={section.y + section.height / 2 + (iconHref ? iconSize / 2 - 2 : 0)}
                         textAnchor="middle"
                         dominantBaseline="middle"
                         fill="white"
-                        fontSize="20"
+                        fontSize={iconHref ? "16" : "20"}
                         fontWeight="800"
                         fontFamily="Inter, sans-serif"
                         className="pointer-events-none" // Prevent text from blocking click

@@ -2,15 +2,15 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
-import SimpleHeader from "../../components/SimpleHeader";
 import { createClient } from "@/lib/supabase";
+import OCX5HeaderNav from "@/app/components/ocx5/OCX5HeaderNav";
+import StarsBackground from "@/app/components/ocx5/StarsBackground";
 
 function LoginContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { signInWithGoogle, user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [lang, setLang] = useState<"vi" | "en">("vi");
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const supabase = createClient();
@@ -72,26 +72,47 @@ function LoginContent() {
   // If user is already logged in, show loading
   if (user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="text-white text-xl">Đang chuyển hướng...</div>
+      <div className="min-h-screen relative">
+        <div
+          className="fixed inset-0 z-0"
+          style={{
+            background:
+              "linear-gradient(to bottom,rgb(0, 0, 0) 0%,rgb(39, 28, 28) 25%, #2c090b 50%, #9a1a15 75%, #d43922 100%)",
+          }}
+        />
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <div className="relative w-full h-full">
+            <StarsBackground />
+          </div>
+        </div>
+        <div className="relative z-10">
+          <OCX5HeaderNav showSectionNav={false} />
+          <div className="min-h-screen flex items-center justify-center px-4 pt-24 sm:pt-28 md:pt-32">
+            <div className="text-white text-xl">Đang chuyển hướng...</div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen relative">
+      {/* Background: match /ticketocx5 (no hero image) */}
       <div
         className="fixed inset-0 z-0"
         style={{
-          backgroundImage: "url(/images/hero_backround_ss3_alt1.svg)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          opacity: 0.8,
+          background:
+            "linear-gradient(to bottom,rgb(0, 0, 0) 0%,rgb(39, 28, 28) 25%, #2c090b 50%, #9a1a15 75%, #d43922 100%)",
         }}
       />
+      {/* Stars overlay */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="relative w-full h-full">
+          <StarsBackground />
+        </div>
+      </div>
       <div className="relative z-10">
-        <SimpleHeader lang={lang} setLang={setLang} />
+        <OCX5HeaderNav showSectionNav={false} />
         
         <main className="max-w-md mx-auto px-4 py-8 pt-24 sm:pt-28 md:pt-32">
           <div className="bg-zinc-900/30 rounded-xl p-8 shadow-lg backdrop-blur-sm">

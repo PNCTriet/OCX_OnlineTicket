@@ -177,8 +177,17 @@ export default function TicketPage() {
       <ZoneConfirmationModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        onConfirm={handleConfirmZone}
+        // ticket-seatmap: keep old UX (confirm adds 1)
+        onConfirm={(qty) => {
+          if (qty <= 0) {
+            handleCloseModal();
+            return;
+          }
+          handleConfirmZone();
+        }}
         zone={pendingZone}
+        initialQuantity={1}
+        maxQuantity={1}
       />
     </div>
   );

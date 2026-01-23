@@ -4,13 +4,11 @@ import { MouseEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
-import { Youtube, Facebook, Instagram, Twitter } from "lucide-react"; // Import icon
 
 const SECTIONS = [
   { id: "hero-section", label: "Hero" },
   { id: "event-info", label: "info" },
   { id: "lineup", label: "Line-up" },
-  { id: "pricing", label: "Pricing" },
   { id: "cta", label: "CTA" },
 ];
 
@@ -59,13 +57,7 @@ export default function OCX5HeaderNav({ showSectionNav = true }: OCX5HeaderNavPr
       {/* TẦNG 1: TOP BAR */}
       <div className="flex items-center justify-between px-4 sm:px-10 py-3 border-b border-white/10">
         
-        {/* NHÓM TRÁI: Social Icons (Bổ sung theo yêu cầu) */}
-        <div className="flex-1 hidden md:flex items-center gap-5 text-gray-400">
-          <Link href="#" className="hover:text-white transition-colors"><Youtube size={20} /></Link>
-          <Link href="#" className="hover:text-white transition-colors"><Facebook size={18} /></Link>
-          <Link href="#" className="hover:text-white transition-colors"><Instagram size={18} /></Link>
-          <Link href="#" className="hover:text-white transition-colors"><Twitter size={18} /></Link>
-        </div>
+        <div className="flex-1 hidden md:block" />
 
         {/* LOGO CHÍNH GIỮA */}
         <div className="flex-none">
@@ -89,16 +81,19 @@ export default function OCX5HeaderNav({ showSectionNav = true }: OCX5HeaderNavPr
           ) : (
             <div className="flex items-center gap-2 sm:gap-4">
               <Link
-                href="/login"
-                className="px-4 py-2 text-[11px] sm:text-[12px] font-bold text-white tracking-[1px] border border-white rounded-full hover:bg-white hover:text-black transition-all"
+                href="/ticketocx5"
+                className="px-4 py-2 text-[11px] sm:text-[12px] font-bold text-white tracking-[1px] border border-white/70 rounded-full hover:bg-white hover:text-black transition-all"
                 style={{ fontFamily: "WizardWorldSimplified, fantasy, serif" }}
               >
                 LOG IN
               </Link>
               <Link
-                href="/signup"
-                className="px-4 py-2 text-[11px] sm:text-[12px] font-bold text-white tracking-[1px] bg-[#4e46e5] rounded-full hover:bg-[#3f38c2] transition-all shadow-[0_0_15px_rgba(78,70,229,0.4)]"
-                style={{ fontFamily: "WizardWorldSimplified, fantasy, serif" }}
+                href="/ticketocx5"
+                className="px-4 py-2 text-[11px] sm:text-[12px] font-bold text-white tracking-[1px] rounded-full transition-all shadow-[0_0_15px_rgba(212,57,34,0.35)] hover:shadow-[0_0_28px_rgba(212,57,34,0.55)] hover:scale-[1.03] active:scale-95"
+                style={{
+                  fontFamily: "WizardWorldSimplified, fantasy, serif",
+                  background: "linear-gradient(180deg, #d43922 0%, #9a1a15 100%)",
+                }}
               >
                 SIGN UP
               </Link>

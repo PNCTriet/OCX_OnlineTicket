@@ -82,7 +82,12 @@ export default function OrderSummaryCard({
       <button
         onClick={onContinue}
         disabled={!hasTickets}
-        className="w-full py-3 px-4 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-3 px-4 text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_18px_rgba(212,57,34,0.35)] active:scale-95"
+        style={{
+          background: hasTickets
+            ? "linear-gradient(180deg, #d43922 0%, #9a1a15 100%)"
+            : "rgba(255,255,255,0.12)",
+        }}
       >
         Tiếp tục
       </button>

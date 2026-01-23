@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-const FAQS = [
+export const FAQS = [
     {
       "q": { "vi": "Tôi có thể mua bao nhiêu vé trong một lần? Mua nhiều có được giảm giá không?", "en": "How many tickets can I buy in one order? Do I get a discount for buying multiple tickets?" },
       "a": { "vi": "Bạn có thể mua tối đa 10 vé trong một đơn hàng. Giá vé giữ nguyên khi mua nhiều vé.", "en": "You can purchase up to 10 tickets in one order. Ticket prices remain the same when buying multiple tickets." }

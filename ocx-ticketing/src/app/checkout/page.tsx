@@ -1,7 +1,5 @@
 "use client";
 import React, { useState, useCallback, useEffect, Suspense, useMemo } from "react";
-import SimpleHeader from "../components/SimpleHeader";
-import Footer from "../components/Footer";
 import EventInfoCard from "../components/ticket/EventInfoCard";
 import { EVENT_INFO } from "../constants/ticket";
 import TicketSummaryTable from "../components/checkout/TicketSummaryTable";
@@ -9,6 +7,9 @@ import UserInfoForm from "../components/checkout/UserInfoForm";
 import CountdownTimer from "../components/checkout/CountdownTimer";
 import PolicyCheckbox from "../components/checkout/PolicyCheckbox";
 import PaymentModal from "../components/checkout/PaymentModal";
+import OCX5HeaderNav from "../components/ocx5/OCX5HeaderNav";
+import StarsBackground from "../components/ocx5/StarsBackground";
+import HorizonBridge from "../components/ocx5/HorizonBridge";
 
 type OrderInfo = {
   id: string;
@@ -434,7 +435,7 @@ function CheckoutContent() {
         message += "\nVui lòng quay lại trang chọn vé để cập nhật.";
         
         if (confirm(message + "\n\nBạn có muốn quay lại trang chọn vé không?")) {
-          router.push('/ticket');
+          router.push('/ticketocx5');
         }
         setIsProcessingPayment(false);
         return;
@@ -565,31 +566,36 @@ function CheckoutContent() {
   // Show error if no valid tickets
   if (!hasValidTickets) {
     // Use replace instead of push to avoid adding to history stack
-    router.replace('/ticket?noTickets=true');
+    router.replace('/ticketocx5?noTickets=true');
     return null; // Return null instead of loading state
   }
 
   return (
     <div className="min-h-screen relative">
+      {/* Background: match OCX5 ticket concept */}
       <div
         className="fixed inset-0 z-0"
         style={{
-          backgroundImage: "url(/images/hero_backround_ss3_alt1.svg)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          opacity: 0.8,
+          background:
+            "linear-gradient(to bottom,rgb(0, 0, 0) 0%,rgb(39, 28, 28) 25%, #2c090b 50%, #9a1a15 75%, #d43922 100%)",
         }}
       />
+      {/* Stars overlay */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="relative w-full h-full">
+          <StarsBackground />
+        </div>
+      </div>
+
       <div className="relative z-10">
-        {mounted && <SimpleHeader lang={"vi"} setLang={() => {}} />}
+        <OCX5HeaderNav showSectionNav={false} />
         
         {/* User Info Bar */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border-b border-white/10">
+        <div className="bg-black/25 border-b border-white/10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-[#c53e00] rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-[#d43922] rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-bold">
                     {user?.email?.charAt(0).toUpperCase()}
                   </span>
@@ -603,7 +609,7 @@ function CheckoutContent() {
               </div>
               <button
                 onClick={signOut}
-                className="text-zinc-400 hover:text-white text-sm transition-colors"
+                className="px-4 py-2 rounded-full bg-white/10 border border-white/15 text-white/80 hover:text-white hover:bg-white/15 transition-colors text-sm font-semibold"
               >
                 Đăng xuất
               </button>
@@ -645,7 +651,7 @@ function CheckoutContent() {
             />
             
             {/* Coupon Section */}
-            <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+            <div className="bg-black/25 border border-white/10 rounded-xl p-6 shadow-lg">
               <h3 className="text-xl font-bold text-white mb-4">Mã Giảm Giá</h3>
               <div className="space-y-4">
                 <div className="flex gap-3">
@@ -660,7 +666,11 @@ function CheckoutContent() {
                   <button
                     onClick={validateCoupon}
                     disabled={isValidatingCoupon || !couponCode.trim()}
-                    className="px-6 py-2 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-2 text-white rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_18px_rgba(212,57,34,0.35)] active:scale-95"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, #d43922 0%, #9a1a15 100%)",
+                    }}
                   >
                     {isValidatingCoupon ? "Đang kiểm tra..." : "Áp dụng"}
                   </button>
@@ -681,7 +691,7 @@ function CheckoutContent() {
                       </div>
                       <button
                         onClick={removeCoupon}
-                        className="text-red-400 hover:text-red-300 text-sm"
+                        className="px-3 py-1 rounded-full text-sm font-bold border border-[#d43922]/35 bg-[#d43922]/15 text-[#ffd3cc] hover:bg-[#d43922]/25 transition-colors"
                       >
                         Xóa
                       </button>
@@ -692,7 +702,7 @@ function CheckoutContent() {
             </div>
             
             {/* Policy and Payment Button at bottom for mobile */}
-            <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+            <div className="bg-black/25 border border-white/10 rounded-xl p-6 shadow-lg">
               <PolicyCheckbox
                 agreedToPolicies={agreedToPolicies}
                 onAgreementChange={setAgreedToPolicies}
@@ -700,7 +710,11 @@ function CheckoutContent() {
               <button
                 onClick={handlePayment}
                 disabled={!agreedToPolicies || isProcessingPayment}
-                className="w-full py-3 px-4 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full py-3 px-4 text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center hover:shadow-[0_0_18px_rgba(212,57,34,0.35)] active:scale-95"
+                style={{
+                  background:
+                    "linear-gradient(180deg, #d43922 0%, #9a1a15 100%)",
+                }}
               >
                 {isProcessingPayment ? (
                   <>
@@ -730,7 +744,7 @@ function CheckoutContent() {
                 finalAmount={finalAmount}
                 appliedCoupon={appliedCoupon}
               />
-              <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+              <div className="bg-black/25 border border-white/10 rounded-xl p-6 shadow-lg">
                 <PolicyCheckbox
                   agreedToPolicies={agreedToPolicies}
                   onAgreementChange={setAgreedToPolicies}
@@ -738,7 +752,11 @@ function CheckoutContent() {
                 <button
                   onClick={handlePayment}
                   disabled={!agreedToPolicies}
-                  className="w-full py-3 px-4 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 px-4 text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_18px_rgba(212,57,34,0.35)] active:scale-95"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, #d43922 0%, #9a1a15 100%)",
+                  }}
                 >
                   Thanh toán
                 </button>
@@ -758,7 +776,7 @@ function CheckoutContent() {
               />
               
               {/* Coupon Section for Desktop */}
-              <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+              <div className="bg-black/25 border border-white/10 rounded-xl p-6 shadow-lg">
                 <h3 className="text-xl font-bold text-white mb-4">Mã Giảm Giá</h3>
                 <div className="space-y-4">
                   <div className="flex gap-3">
@@ -773,7 +791,11 @@ function CheckoutContent() {
                     <button
                       onClick={validateCoupon}
                       disabled={isValidatingCoupon || !couponCode.trim()}
-                      className="px-6 py-2 bg-[#c53e00] text-white rounded-lg font-medium hover:bg-[#b33800] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-6 py-2 text-white rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_18px_rgba(212,57,34,0.35)] active:scale-95"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, #d43922 0%, #9a1a15 100%)",
+                      }}
                     >
                       {isValidatingCoupon ? "Đang kiểm tra..." : "Áp dụng"}
                     </button>
@@ -794,7 +816,7 @@ function CheckoutContent() {
                         </div>
                         <button
                           onClick={removeCoupon}
-                          className="text-red-400 hover:text-red-300 text-sm"
+                          className="px-3 py-1 rounded-full text-sm font-bold border border-[#d43922]/35 bg-[#d43922]/15 text-[#ffd3cc] hover:bg-[#d43922]/25 transition-colors"
                         >
                           Xóa
                         </button>
@@ -806,7 +828,15 @@ function CheckoutContent() {
             </div>
           </div>
         </main>
-        <Footer />
+        <div className="relative w-full">
+          <HorizonBridge
+            baseName="imgi_56_horizons_train"
+            imageAlt="OCX5 Checkout Horizon"
+            parallaxSpeed={0}
+            position="flow"
+            imageClassName="block h-auto w-full md:w-full max-w-none transform origin-bottom md:scale-110"
+          />
+        </div>
       </div>
 
       {mounted && isPaymentModalOpen && orderInfo && (
