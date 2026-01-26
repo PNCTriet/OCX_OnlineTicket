@@ -11,20 +11,25 @@ const getBaseUrl = () => {
 };
 
 export const metadata: Metadata = {
-  title: "OCX5 - Magical Concert Experience | Ớt Cay Xè 5",
+  title: "Ớt Cay Xè 5 — Học Viện Âm Nhạc & Phép Thuật | 18.04.2026",
   description:
-    "Experience the magic of OCX5 - A fantasy-inspired concert event. Discover lineup, pricing, and secure your tickets for this enchanting musical journey.",
+    "🔥 HỌC VIỆN ÂM NHẠC & PHÉP THUẬT ỚT CAY XÈ công bố ngày tựu trường! Nhạc cực căng, vibe cực bén, năng lượng cực cháy. Vé tàu tốc hành chỉ dành cho ai nhanh tay nhất. Thời gian: 18/04/2026. Địa điểm: Sài Gòn. Standing 569.000₫ • Seating 589.000₫. Liên hệ: otconcert@gmail.com",
   keywords: [
+    "Ớt Cay Xè",
+    "Otcayxe",
     "OCX5",
-    "OCX",
-    "Concert",
-    "Magical Event",
-    "Fantasy Concert",
-    "Music Event",
-    "Lineup",
-    "Ticket",
-    "Mua vé",
-    "Sự kiện âm nhạc",
+    "Ớt Cay Xè 5",
+    "indie music",
+    "music show",
+    "indiemusic",
+    "concert",
+    "show âm nhạc",
+    "Sài Gòn",
+    "mua vé",
+    "vé concert",
+    "standing",
+    "seating",
+    "otconcert@gmail.com",
   ],
   authors: [{ name: "OCX Team" }],
   robots: "index, follow",
@@ -32,27 +37,27 @@ export const metadata: Metadata = {
   openGraph: {
     url: `${baseUrl}/OCX5`,
     type: "website",
-    title: "OCX5 - Magical Concert Experience",
+    title: "🔥 Học Viện Âm Nhạc & Phép Thuật Ớt Cay Xè — OCX5 | 18.04.2026",
     description:
-      "Experience the magic of OCX5 - A fantasy-inspired concert event. Discover lineup, pricing, and secure your tickets.",
+      "Năm học mới tại Trường phép thuật Ớt Cay Xè chính thức bắt đầu. Nhạc cực căng, vibe cực bén. Vé tàu tốc hành chỉ dành cho ai nhanh tay nhất. 18/04/2026 • Sài Gòn • Standing 569.000₫ • Seating 589.000₫.",
     images: [
       {
-        url: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png",
+        url: "https://www.otcayxe.com/images/client_logo_ss5_thumb.png",
         width: 1200,
         height: 630,
-        alt: "OCX5 Magical Concert",
+        alt: "Ớt Cay Xè 5 (OCX5) — Official",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "OCX5 - Magical Concert Experience",
+    title: "Ớt Cay Xè 5 (OCX5) — Official Ticket | 18.04.2026",
     description:
-      "Experience the magic of OCX5 - A fantasy-inspired concert event.",
+      "🔥 HỌC VIỆN ÂM NHẠC & PHÉP THUẬT Ớt Cay Xè. 18/04/2026 • Sài Gòn • Standing 569.000₫ • Seating 589.000₫. Follow Ớt Cay Xè để cập nhật thêm thông tin!",
     images: [
       {
-        url: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png",
-        alt: "OCX5 Magical Concert",
+        url: "https://www.otcayxe.com/images/client_logo_ss5_thumb.png",
+        alt: "Ớt Cay Xè 5 (OCX5) — Official",
       },
     ],
     site: "@ocx_ticket",
@@ -62,7 +67,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.ico",
-    apple: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png",
+    apple: "https://www.otcayxe.com/images/client_logo_ss5_thumb.png",
   },
 };
 

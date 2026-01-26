@@ -31,7 +31,7 @@ export default function PaymentSuccessModal({ isOpen, onClose }: PaymentSuccessM
       const timer3 = setTimeout(() => {
         // console.log("Redirecting to home page");
         onClose();
-        router.push("/");
+        router.push("/OCX5");
       }, 10000); // Tăng thời gian hiển thị lên 20 giây
 
       return () => {

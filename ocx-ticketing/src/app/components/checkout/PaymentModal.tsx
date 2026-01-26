@@ -119,7 +119,7 @@ export default function PaymentModal({
               setTimeout(() => setShowMessage(true), 800);
               setTimeout(() => {
                 onClose();
-                router.push("/");
+                router.push("/OCX5");
               }, 10000);
             }, 1000); // Delay 1 giây để hiển thị trạng thái "Đang xử lý"
           }

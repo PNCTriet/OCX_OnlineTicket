@@ -8,22 +8,22 @@ const HOUSE_BY_SECTION_ID: Record<
 > = {
   D: {
     code: "GRY",
-    name: "Gryffindor",
+    name: "[ VÉ ĐỨNG ]",
     logo: "/images/ocx5_images/elements/ticket_house/ocx_logo_ss5_house_gri_alt1.svg",
   },
   B: {
     code: "HUF",
-    name: "Hufflepuff",
+    name: "[ VÉ NGỒI ]",
     logo: "/images/ocx5_images/elements/ticket_house/ocx_logo_ss5_house_huf_alt1.svg",
   },
   A: {
     code: "SLY",
-    name: "Slytherin",
+    name: "[ VÉ NGỒI ]",
     logo: "/images/ocx5_images/elements/ticket_house/ocx_logo_ss5_house_sly_alt1.svg",
   },
   C: {
     code: "RAV",
-    name: "Ravenclaw",
+    name: "[ VÉ NGỒI ]",
     logo: "/images/ocx5_images/elements/ticket_house/ocx_logo_ss5_house_rav_alt1.svg",
   },
 };
@@ -45,15 +45,22 @@ export default function ZoneConfirmationModal({
   initialQuantity,
   maxQuantity,
 }: ZoneConfirmationModalProps) {
-  if (!isOpen || !zone) return null;
+  // Hooks must be called unconditionally (avoid early returns before hooks).
+  const [qty, setQty] = useState<number>(initialQuantity);
 
-  const sectionId = zone.id.startsWith("zone-") ? zone.id.replace("zone-", "") : zone.id;
-  const house = HOUSE_BY_SECTION_ID[sectionId];
-  const [qty, setQty] = useState(initialQuantity);
+  const sectionId = zone?.id
+    ? zone.id.startsWith("zone-")
+      ? zone.id.replace("zone-", "")
+      : zone.id
+    : "";
+  const house = sectionId ? HOUSE_BY_SECTION_ID[sectionId] : undefined;
 
   useEffect(() => {
+    if (!isOpen || !zone) return;
     setQty(initialQuantity);
-  }, [initialQuantity, zone?.id, isOpen]);
+  }, [initialQuantity, zone?.id, isOpen, zone]);
+
+  if (!isOpen || !zone) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">

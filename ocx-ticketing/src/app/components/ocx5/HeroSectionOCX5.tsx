@@ -151,10 +151,25 @@ export default function HeroSectionOCX5({
 
     // Detect mobile device
     const checkMobile = () => {
-      const isMobile = 
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-        (window.innerWidth <= 768) ||
-        ('ontouchstart' in window);
+      // NOTE:
+      // - `'ontouchstart' in window` is true on some desktop browsers/devices (Trackpad, emulation),
+      //   which incorrectly disables hover interaction. Use media queries instead.
+      const uaMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
+      const smallScreen = window.innerWidth <= 768;
+      const canHover =
+        typeof window.matchMedia === "function"
+          ? window.matchMedia("(hover: hover)").matches
+          : true;
+      const finePointer =
+        typeof window.matchMedia === "function"
+          ? window.matchMedia("(pointer: fine)").matches
+          : true;
+      const desktopLike = canHover && finePointer && !smallScreen;
+
+      const isMobile = uaMobile || !desktopLike;
       isMobileDevice.current = isMobile;
       return isMobile;
     };
@@ -323,7 +338,7 @@ export default function HeroSectionOCX5({
           alt="OCX Hero Logo"
           width={4500}
           height={4500}
-          className="w-full max-w-[80vw] h-auto transition-all duration-300"
+          className="w-full max-w-[80vw] md:max-w-[60vw] h-auto transition-all duration-300"
           style={{
             filter: isHovering
               ? "brightness(1.1) drop-shadow(0 0 30px rgba(255,255,255,0.3))"

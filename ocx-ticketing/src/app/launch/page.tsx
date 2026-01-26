@@ -24,7 +24,7 @@ export default function LaunchPage() {
       // Set launch cookie (expires in 1 day)
       Cookies.set('launch', '1', { expires: 1 });
       // Redirect to home page
-      router.push('/');
+      router.push("/OCX5");
     }
   }, [router]);
 
@@ -48,7 +48,7 @@ export default function LaunchPage() {
           onComplete={() => {
             // When countdown completes, set cookie and redirect
             Cookies.set('launch', '1', { expires: 1 });
-            router.push('/');
+            router.push("/OCX5");
           }}
         />
       </div>

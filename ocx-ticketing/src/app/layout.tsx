@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import Head from "next/head";
 
 const baseUrl = "https://www.otcayxe.com";
 const geistSans = Geist({
@@ -52,7 +51,7 @@ export const metadata: Metadata = {
     description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
     images: [
       {
-        url: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png",
+        url: "https://www.otcayxe.com/images/client_logo_ss5_thumb.png",
         width: 800,
         height: 600,
         alt: "OCX Online Ticket Logo",
@@ -66,7 +65,7 @@ export const metadata: Metadata = {
     description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
     images: [
       {
-        url: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png",
+        url: "https://www.otcayxe.com/images/client_logo_ss5_thumb.png",
         alt: "OCX Online Ticket Logo",
       },
     ],
@@ -79,7 +78,7 @@ export const metadata: Metadata = {
 
   icons: {
     icon: "/favicon.ico",
-    apple: "https://www.otcayxe.com/images/client_logo_ss4_thumb.png",
+    apple: "https://www.otcayxe.com/images/client_logo_ss5_thumb.png",
   },
 };
 
@@ -90,9 +89,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <Head>
+      <head>
         <meta property="fb:app_id" content="1241434124376586" />
-      </Head>
+        {/* Preload OCX font to avoid 1st-paint "wrong font" flash (FOUT) */}
+        <link
+          rel="preload"
+          href="/fonts/WizardWorldSimplified.ttf"
+          as="font"
+          type="font/ttf"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className="antialiased">
         <AuthProvider>{children}</AuthProvider>
         <SpeedInsights />

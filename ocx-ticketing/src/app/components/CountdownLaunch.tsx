@@ -82,12 +82,12 @@ export default function CountdownLaunch({ targetDate, onComplete }: CountdownLau
       } else {
         // Default redirect to home page after 3 seconds
         const redirectTimer = setTimeout(() => {
-          router.push('/');
+          router.push("/OCX5");
         }, 3000);
         
         // Fallback redirect after 5 seconds in case the first one fails
         const fallbackTimer = setTimeout(() => {
-          window.location.href = '/';
+          window.location.href = "/OCX5";
         }, 5000);
         
         return () => {
@@ -103,7 +103,7 @@ export default function CountdownLaunch({ targetDate, onComplete }: CountdownLau
       <div 
         className="fixed inset-0 z-50 flex items-center justify-center bg-black cursor-pointer"
         onClick={() => {
-          router.push('/');
+          router.push("/OCX5");
         }}
       >
         <div className="absolute inset-0 z-0">
@@ -143,7 +143,7 @@ export default function CountdownLaunch({ targetDate, onComplete }: CountdownLau
           {/* Logo */}
           <div className="mb-8">
             <div className="flex justify-center mb-6">
-              <Link href="/">
+              <Link href="/OCX5">
                 <Image
                   src="/images/client_logo_ss4.svg"
                   alt="Logo"

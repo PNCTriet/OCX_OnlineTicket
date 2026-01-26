@@ -9,7 +9,7 @@ export default function NotFound() {
         <h1 className="text-4xl font-bold text-white">404 - Không tìm thấy trang</h1>
         <p className="text-zinc-400">Trang bạn đang tìm kiếm không tồn tại.</p>
         <Link 
-          href="/"
+          href="/OCX5"
           className="inline-block bg-[#c53e00] text-white px-6 py-3 rounded-lg hover:bg-[#b33800] transition-colors"
         >
           Về trang chủ

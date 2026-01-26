@@ -54,7 +54,8 @@ html {
   src: url('/fonts/WizardWorldSimplified.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  /* Avoid 1st-paint fallback flash (FOUT) on OCX pages */
+  font-display: block;
 }
 
 @tailwind base;

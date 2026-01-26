@@ -158,7 +158,7 @@ export default function CheckinPage() {
 
         if (!extractedRole || String(extractedRole).toUpperCase() === "USER") {
           window.alert("Bạn không có quyền truy cập trang check-in.");
-          router.replace("/");
+          router.replace("/OCX5");
           return;
         }
 

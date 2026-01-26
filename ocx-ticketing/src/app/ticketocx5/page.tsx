@@ -52,9 +52,9 @@ const EVENT_INFO_OCX5: EventInfo = {
   id: "ocx-5",
   name: "Ớt Cay Xè",
   time: "15:00",
-  location: "Hồ Chí Minh",
-  avatar: "/images/client_logo_ss3.jpg",
-  date: "18/04/2026",
+  location: "Nơi nào đó tại Hồ Chí Minh",
+  avatar: "/images/client_logo_ss5_alt1.jpg",
+  date: "T7 - 18/04/2026",
 };
 
 function extractSeatSectionId(text: string | undefined | null): string | null {
@@ -72,22 +72,22 @@ const HOUSE_BY_ZONE_ID: Record<
 > = {
   D: {
     code: "GRY",
-    name: "Gryffindor",
+    name: "Nhà Gry [ VÉ ĐỨNG ]",
     logo: "/images/ocx5_images/elements/ticket_house/ocx_logo_ss5_house_gri_alt1.svg",
   },
   B: {
     code: "HUF",
-    name: "Hufflepuff",
+    name: "Nhà Huf [ VÉ NGỒI ]",
     logo: "/images/ocx5_images/elements/ticket_house/ocx_logo_ss5_house_huf_alt1.svg",
   },
   A: {
     code: "SLY",
-    name: "Slytherin",
+    name: "Nhà Sly [ VÉ NGỒI ]",
     logo: "/images/ocx5_images/elements/ticket_house/ocx_logo_ss5_house_sly_alt1.svg",
   },
   C: {
     code: "RAV",
-    name: "Ravenclaw",
+    name: "Nhà Rav [ VÉ NGỒI ]",
     logo: "/images/ocx5_images/elements/ticket_house/ocx_logo_ss5_house_rav_alt1.svg",
   },
 };
@@ -527,12 +527,13 @@ export default function TicketOCX5Page() {
         </div>
       </div>
 
-      <div className="relative z-10">
+      {/* Foreground content: use flex-col so Horizon always sits flush to viewport bottom */}
+      <div className="relative z-10 min-h-screen flex flex-col">
         {/* Header: same component as OCX5 landing */}
         <OCX5HeaderNav showSectionNav={false} />
 
         {/* Allow page scroll (same pattern as /ticket-seatmap) */}
-        <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-8 pt-24 sm:pt-28 md:pt-32">
+        <main className="max-w-7xl mx-auto w-full flex-1 px-2 sm:px-4 lg:px-6 py-8 pt-24 sm:pt-28 md:pt-32">
           {error && (
             <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-500">
               <p className="text-center">{error}</p>
@@ -611,7 +612,7 @@ export default function TicketOCX5Page() {
         </main>
 
         {/* Footer Horizon (no Footer component) */}
-        <div className="relative w-full">
+        <div className="relative w-full mt-auto">
           <HorizonBridge
             baseName="imgi_56_horizons_train"
             imageAlt="OCX5 Ticket Horizon"

@@ -6,10 +6,10 @@ import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 
 const SECTIONS = [
-  { id: "hero-section", label: "Hero" },
-  { id: "event-info", label: "info" },
+  { id: "hero-section", label: "info" },
+  { id: "event-info", label: "ticket" },
   { id: "lineup", label: "Line-up" },
-  { id: "cta", label: "CTA" },
+  { id: "cta", label: "FAQs" },
 ];
 
 type OCX5HeaderNavProps = {
@@ -61,7 +61,7 @@ export default function OCX5HeaderNav({ showSectionNav = true }: OCX5HeaderNavPr
 
         {/* LOGO CHÍNH GIỮA */}
         <div className="flex-none">
-          <Link href="/">
+          <Link href="/OCX5">
             <Image
               src="/images/ocx5_images/elements/ocx_logo_ss5_shorten_alt1.png" 
               alt="OCX Logo"

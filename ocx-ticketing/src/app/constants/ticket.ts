@@ -105,9 +105,9 @@ export const EVENT_INFO: EventInfo = {
   id: "ocx-4",
   name: "Ớt Cay Xè 5",
   time: "15:00",
-  location: "Hồ Chí Minh",
-  avatar: "/images/ocx4_event_avatar.jpg",
-  date: "18/04/2026",
+  location: "Nơi nào đó tại Hồ Chí Minh",
+  avatar: "/images/client_logo_ss5_alt1.jpg",
+  date: "T7 - 18/04/2026",
 };
 
 // New layout configuration for the seat map

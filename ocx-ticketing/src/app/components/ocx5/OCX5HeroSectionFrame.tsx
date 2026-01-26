@@ -22,6 +22,7 @@ export default function OCX5HeroSectionFrame({
 }: OCX5HeroSectionFrameProps) {
   const debugBorderClass = debugLayout ? "border-2 border-red-500" : "";
   const contentRef = useRef<HTMLDivElement>(null);
+  const horizonRef = useRef<HTMLDivElement>(null);
   const [paddingTop, setPaddingTop] = useState(140);
   const [paddingBottom, setPaddingBottom] = useState(250);
 
@@ -30,18 +31,20 @@ export default function OCX5HeroSectionFrame({
     const calculatePadding = () => {
       if (typeof window === "undefined") return;
 
-      // Lấy chiều cao header (fixed)
+      // Lấy vị trí mép dưới header THỰC TẾ (bao gồm transform khi ẩn/hiện)
+      // Khi header ẩn (translateY -100%), rect.bottom thường <= 0
       const header = document.querySelector("header");
-      const headerHeight = header ? header.offsetHeight : 140;
+      const headerBottom = header
+        ? Math.max(0, (header as HTMLElement).getBoundingClientRect().bottom)
+        : 0;
 
-      // Lấy chiều cao footer (HorizonBridge) - ước tính dựa trên viewport
-      // HorizonBridge thường có chiều cao ~20-30% viewport height
       const viewportHeight = window.innerHeight;
-      const estimatedFooterHeight = viewportHeight * 0.25; // ~25% viewport
+      const horizonHeight =
+        horizonRef.current?.getBoundingClientRect().height ?? viewportHeight * 0.25;
 
       // Tính toán để logo cách đều header và footer với khoảng cách nhỏ hơn
       // Logo sẽ nằm chính giữa khoảng trống còn lại
-      const totalUsedHeight = headerHeight + estimatedFooterHeight;
+      const totalUsedHeight = headerBottom + horizonHeight;
       const availableSpace = viewportHeight - totalUsedHeight;
       
       // Giảm khoảng cách: chỉ dùng một phần nhỏ của availableSpace
@@ -49,22 +52,44 @@ export default function OCX5HeroSectionFrame({
       const spacingRatio = 0.35; // 35% của availableSpace
       const equalSpacing = availableSpace * spacingRatio;
 
-      // Padding-top: headerHeight + equalSpacing (để logo cách header bằng equalSpacing)
+      // Padding-top: headerBottom + equalSpacing (để logo cách mép dưới header bằng equalSpacing)
       // Padding-bottom: footerHeight + equalSpacing (để logo cách footer bằng equalSpacing)
-      const calculatedTop = headerHeight + equalSpacing;
-      const calculatedBottom = estimatedFooterHeight + equalSpacing;
+      const calculatedTop = headerBottom + equalSpacing;
+      const calculatedBottom = horizonHeight + equalSpacing;
 
       // Đảm bảo padding tối thiểu nhưng nhỏ hơn
       const minSpacing = 40; // Giảm từ 80 xuống 40
       const maxSpacing = 80; // Giới hạn tối đa để không quá lớn
       
-      setPaddingTop(Math.min(Math.max(calculatedTop, headerHeight + minSpacing), headerHeight + maxSpacing));
-      setPaddingBottom(Math.min(Math.max(calculatedBottom, estimatedFooterHeight + minSpacing), estimatedFooterHeight + maxSpacing));
+      setPaddingTop(
+        Math.min(
+          Math.max(calculatedTop, headerBottom + minSpacing),
+          headerBottom + maxSpacing
+        )
+      );
+      setPaddingBottom(
+        Math.min(
+          Math.max(calculatedBottom, horizonHeight + minSpacing),
+          horizonHeight + maxSpacing
+        )
+      );
     };
 
     calculatePadding();
+
+    // Recalc khi resize và khi scroll (vì header ẩn/hiện theo scroll)
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(calculatePadding);
+    };
     window.addEventListener("resize", calculatePadding);
-    return () => window.removeEventListener("resize", calculatePadding);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("resize", calculatePadding);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   return (
@@ -121,7 +146,7 @@ export default function OCX5HeroSectionFrame({
       </div>
 
       {/* Horizon Bridge - Visual connection to next section, anchored to bottom */}
-      <div className="absolute bottom-0 left-0 right-0">
+      <div ref={horizonRef} className="absolute bottom-0 left-0 right-0">
         <HorizonBridge
           baseName="imgi_52_horizons_village"
           imageAlt="Magical Village Horizon"

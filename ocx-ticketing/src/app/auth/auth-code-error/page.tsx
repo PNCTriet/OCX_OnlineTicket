@@ -42,7 +42,7 @@ function AuthCodeErrorContent() {
               </button>
               
               <button
-                onClick={() => router.push('/')}
+                onClick={() => router.push("/OCX5")}
                 className="w-full bg-zinc-700 text-white py-3 px-4 rounded-lg font-medium hover:bg-zinc-600 transition-colors"
               >
                 Về trang chủ
