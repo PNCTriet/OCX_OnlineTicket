@@ -95,7 +95,7 @@ export default function OCX5HeroSectionFrame({
   return (
     <section
       id="hero-section"
-      className={`relative overflow-hidden bg-gradient-to-b from-black to-red-900 ${debugBorderClass}`}
+      className={`ocx5HeroFrame relative overflow-hidden bg-gradient-to-b from-black to-red-900 ${debugBorderClass}`}
       style={{
         // Hero background image
         backgroundImage:
@@ -103,7 +103,7 @@ export default function OCX5HeroSectionFrame({
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        // Đảm bảo section nằm trong viewport
+        // Fallback; mobile-safe units are applied via scoped CSS below.
         height: "100vh",
         maxHeight: "100vh",
       }}
@@ -153,6 +153,26 @@ export default function OCX5HeroSectionFrame({
           parallaxSpeed={0.6}
         />
       </div>
+
+      {/* Mobile viewport fix: avoid iOS/Chrome address-bar 100vh overflow causing tiny scroll */}
+      <style jsx>{`
+        .ocx5HeroFrame {
+          height: 100vh;
+          max-height: 100vh;
+        }
+        @supports (height: 100svh) {
+          .ocx5HeroFrame {
+            height: 100svh;
+            max-height: 100svh;
+          }
+        }
+        @supports (height: 100dvh) {
+          .ocx5HeroFrame {
+            height: 100dvh;
+            max-height: 100dvh;
+          }
+        }
+      `}</style>
     </section>
   );
 }

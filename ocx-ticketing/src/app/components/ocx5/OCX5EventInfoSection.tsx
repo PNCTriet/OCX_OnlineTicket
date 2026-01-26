@@ -195,8 +195,8 @@ export default function OCX5EventInfoSection({
         </div>
 
         {/* RIGHT SIDE CTA */}
-        <div className="w-full lg:w-2/5 text-center lg:text-left space-y-8 sm:space-y-8 mt-10 sm:mt-12 lg:mt-0 lg:self-start">
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold uppercase leading-tight">
+        <div className="w-full lg:w-2/5 text-center lg:text-left space-y-10 sm:space-y-8 mt-10 sm:mt-12 lg:mt-0 lg:self-start">
+          <h2 className="mt-3 sm:mt-0 text-2xl sm:text-4xl md:text-6xl font-bold uppercase leading-tight">
             What's your <br /> OCX House?
           </h2>
 
