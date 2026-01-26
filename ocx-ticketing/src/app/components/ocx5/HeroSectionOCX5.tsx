@@ -327,7 +327,7 @@ export default function HeroSectionOCX5({
       {/* Interactive 3D Logo */}
       <div
         ref={logoRef}
-        className="relative"
+        className="relative mx-auto"
         style={{
           transformStyle: "preserve-3d",
           willChange: "transform",
@@ -338,7 +338,7 @@ export default function HeroSectionOCX5({
           alt="OCX Hero Logo"
           width={4500}
           height={4500}
-          className="w-full max-w-[80vw] md:max-w-[60vw] h-auto transition-all duration-300"
+          className="w-auto h-auto object-contain transition-all duration-300 max-w-[70vw] max-h-[58svh] md:max-h-[54vh]"
           style={{
             filter: isHovering
               ? "brightness(1.1) drop-shadow(0 0 30px rgba(255,255,255,0.3))"
