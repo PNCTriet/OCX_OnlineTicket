@@ -275,7 +275,7 @@ export default function TicketOCX5Page() {
 
   // Typing effect for trade popup message (chat style)
   const TRADE_MESSAGE_FULL =
-    "Hay tin anh Dũng Day 2 ở SG, lòng nôn nao nhưng phận dev nghèo làm show indie không cho phép bảnh ao ước, bảo bối nào sẵn lòng nào trade vé thì bấm cái nút bên dưới bảnh alo liền ( có vé bảnh xoá liền không síp biết )";
+    "Hay tin anh Dũng Day 2 ở SG, lòng nôn nao nhưng phận dev nghèo làm show indie không cho phép bảnh ao ước, bảo bối nào chốt cái deal trade vé với bảnh thì bấm cái nút bên dưới bảnh alo liền !";
   useEffect(() => {
     if (!showTradePopup) {
       setTradeMessageText("");
