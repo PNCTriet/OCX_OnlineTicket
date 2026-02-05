@@ -775,9 +775,9 @@ export default function TicketOCX5Page() {
               />
             </div>
             <div className="p-4 space-y-4">
-              {/* Tin nhắn kiểu chat bubble + chạy chữ */}
-              <div className="flex justify-start">
-                <div className="relative max-w-[90%] rounded-2xl rounded-bl-sm bg-slate-700/90 px-4 py-3 shadow-md">
+              {/* Tin nhắn kiểu chat bubble (bên phải, không mũi nhọn) + chạy chữ */}
+              <div className="flex justify-end">
+                <div className="relative max-w-[90%] rounded-2xl bg-slate-700/90 px-4 py-3 shadow-md">
                   <p className="text-white/95 text-sm leading-relaxed">
                     {tradeMessageText}
                     <span
@@ -785,28 +785,29 @@ export default function TicketOCX5Page() {
                       aria-hidden
                     />
                   </p>
-                  {/* Đuôi bubble (tail) */}
-                  <div
-                    className="absolute -left-1 bottom-2 w-2 h-2 rotate-0 skew-x-0 bg-slate-700/90"
-                    style={{
-                      clipPath: "polygon(0 0, 100% 100%, 0 100%)",
-                    }}
-                    aria-hidden
-                  />
                 </div>
               </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowTradePopup(false);
-                    setShowTradeSuccessNotif(true);
-                  }}
-                  className="rounded-lg py-2.5 px-5 text-white bg-white/15 border border-white/30 hover:bg-white/25 transition-colors font-medium"
-                >
-                  Đổi liền
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (user?.email) {
+                    try {
+                      await fetch("/api/log-trade", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: user.email }),
+                      });
+                    } catch {
+                      // bỏ qua lỗi log
+                    }
+                  }
+                  setShowTradePopup(false);
+                  setShowTradeSuccessNotif(true);
+                }}
+                className="w-full rounded-lg py-2.5 px-5 text-white bg-white/15 border border-white/30 hover:bg-white/25 transition-colors font-medium"
+              >
+                Đổi liền
+              </button>
             </div>
           </div>
         </div>
