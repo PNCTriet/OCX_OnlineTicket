@@ -186,6 +186,10 @@ export default function TicketOCX5Page() {
   const [showSeatmapIntro, setShowSeatmapIntro] = useState(false);
   const [seatmapIntroEntered, setSeatmapIntroEntered] = useState(false);
   const [seatmapIntroText, setSeatmapIntroText] = useState("");
+  // For-fun trade option: 3 GRY → 1 XOAY TÍT MÙ (Hoàng Dũng)
+  const [showTradePopup, setShowTradePopup] = useState(false);
+  const [showTradeSuccessNotif, setShowTradeSuccessNotif] = useState(false);
+  const [tradeMessageText, setTradeMessageText] = useState("");
 
   const [selectedTickets, setSelectedTickets] = useState<
     (TicketType & { quantity: number; availableQty: number; seatSectionId?: string | null })[]
@@ -268,6 +272,62 @@ export default function TicketOCX5Page() {
 
     return () => window.clearInterval(iv);
   }, [showSeatmapIntro]);
+
+  // Typing effect for trade popup message (chat style)
+  const TRADE_MESSAGE_FULL =
+    "Hay tin anh Dũng Day 2 ở SG, lòng nôn nao nhưng phận dev nghèo làm show indie không cho phép bảnh ao ước, bảo bối nào sẵn lòng nào trade vé thì bấm cái nút bên dưới bảnh alo liền ( có vé bảnh xoá liền không síp biết )";
+  useEffect(() => {
+    if (!showTradePopup) {
+      setTradeMessageText("");
+      return;
+    }
+    const reduce =
+      typeof window !== "undefined"
+        ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        : false;
+    if (reduce) {
+      setTradeMessageText(TRADE_MESSAGE_FULL);
+      return;
+    }
+    setTradeMessageText("");
+    let i = 0;
+    const iv = setInterval(() => {
+      i += 1;
+      setTradeMessageText(TRADE_MESSAGE_FULL.slice(0, i));
+      if (i >= TRADE_MESSAGE_FULL.length) clearInterval(iv);
+    }, 35);
+    return () => clearInterval(iv);
+  }, [showTradePopup]);
+
+  // Auto-hide trade success notif + trigger confetti (pháo hoa)
+  useEffect(() => {
+    if (!showTradeSuccessNotif) return;
+    const fireConfetti = async () => {
+      try {
+        const confetti = (await import("canvas-confetti")).default;
+        const count = 200;
+        const defaults = { origin: { y: 0.7 }, zIndex: 100 };
+        const fire = (particleRatio: number, opts: { spread?: number; startVelocity?: number }) => {
+          confetti({
+            ...defaults,
+            ...opts,
+            particleCount: Math.floor(count * particleRatio),
+          });
+        };
+        fire(0.25, { spread: 26, startVelocity: 55 });
+        fire(0.2, { spread: 60 });
+        fire(0.35, { spread: 100, startVelocity: 45 });
+        fire(0.2, { spread: 120, startVelocity: 25 });
+        setTimeout(() => fire(0.15, { spread: 80 }), 200);
+        setTimeout(() => fire(0.1, { spread: 90 }), 400);
+      } catch {
+        // ignore if confetti fails
+      }
+    };
+    fireConfetti();
+    const t = setTimeout(() => setShowTradeSuccessNotif(false), 3500);
+    return () => clearTimeout(t);
+  }, [showTradeSuccessNotif]);
 
   // Redirect to login (same pattern as /ticket)
   useEffect(() => {
@@ -589,6 +649,18 @@ export default function TicketOCX5Page() {
                 <div className="space-y-6">
                   <EventInfoCard event={EVENT_INFO_OCX5} />
 
+                  {/* For-fun trade option: 3 GRY đổi 1 vé XOAY TÍT MÙ (Hoàng Dũng) – có thể gỡ khi không dùng */}
+                  <button
+                    type="button"
+                    onClick={() => setShowTradePopup(true)}
+                    className="w-full rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-left hover:bg-amber-500/20 transition-colors"
+                  >
+                    <span className="text-amber-200 font-semibold block">"Bảo bối bảnh nói nghe nè !!"</span>
+                    <span className="text-sm text-white/80 mt-1 block">
+                      3 GRY đổi 1 XOAY TÍT MÙ
+                    </span>
+                  </button>
+
                   {/* Ticket list scrolls inside this box so seatmap doesn't make the page too tall */}
                   <div className="h-[320px] sm:h-[360px] overflow-hidden">
                     <TicketSelectionCard
@@ -679,6 +751,71 @@ export default function TicketOCX5Page() {
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Trade vé popup (for fun): 3 GRY → 1 XOAY TÍT MÙ Hoàng Dũng */}
+      {showTradePopup && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4 py-6 overflow-y-auto">
+          <div
+            className="absolute inset-0 bg-black/75"
+            onClick={() => setShowTradePopup(false)}
+            aria-hidden
+          />
+          <div
+            className="relative w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden bg-black/95"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative w-full aspect-[9/16] max-h-[50vh] bg-black">
+              <Image
+                src="/images/xoaytron_post_ss5_alt1.png"
+                alt="XOAY TRÒN Hoàng Dũng Day 2 - Seatmap"
+                fill
+                className="object-contain"
+              />
+            </div>
+            <div className="p-4 space-y-4">
+              {/* Tin nhắn kiểu chat bubble + chạy chữ */}
+              <div className="flex justify-start">
+                <div className="relative max-w-[90%] rounded-2xl rounded-bl-sm bg-slate-700/90 px-4 py-3 shadow-md">
+                  <p className="text-white/95 text-sm leading-relaxed">
+                    {tradeMessageText}
+                    <span
+                      className="trade-message-cursor inline-block w-[2px] min-h-[1em] ml-0.5 align-middle bg-white/90"
+                      aria-hidden
+                    />
+                  </p>
+                  {/* Đuôi bubble (tail) */}
+                  <div
+                    className="absolute -left-1 bottom-2 w-2 h-2 rotate-0 skew-x-0 bg-slate-700/90"
+                    style={{
+                      clipPath: "polygon(0 0, 100% 100%, 0 100%)",
+                    }}
+                    aria-hidden
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowTradePopup(false);
+                    setShowTradeSuccessNotif(true);
+                  }}
+                  className="rounded-lg py-2.5 px-5 text-white bg-white/15 border border-white/30 hover:bg-white/25 transition-colors font-medium"
+                >
+                  Đổi liền
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success notif sau "Đổi liền" — pháo hoa + toast scale-in (CSS) */}
+      {showTradeSuccessNotif && (
+        <div className="trade-success-toast fixed bottom-8 left-1/2 -translate-x-1/2 z-[70] px-6 py-3.5 rounded-2xl bg-emerald-600/95 text-white font-semibold shadow-2xl ring-2 ring-emerald-400/40 backdrop-blur-sm">
+          đợi bảnh nha !!!
         </div>
       )}
     </div>

@@ -16,6 +16,7 @@
     "@tabler/icons-react": "^3.35.0",
     "@types/js-cookie": "^3.0.6",
     "@vercel/speed-insights": "^1.2.0",
+    "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.24.9",
     "gsap": "^3.13.0",
     "js-cookie": "^3.0.5",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
