@@ -650,16 +650,7 @@ export default function TicketOCX5Page() {
                   <EventInfoCard event={EVENT_INFO_OCX5} />
 
                   {/* For-fun trade option: 3 GRY đổi 1 vé XOAY TÍT MÙ (Hoàng Dũng) – có thể gỡ khi không dùng */}
-                  <button
-                    type="button"
-                    onClick={() => setShowTradePopup(true)}
-                    className="w-full rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-left hover:bg-amber-500/20 transition-colors"
-                  >
-                    <span className="text-amber-200 font-semibold block">"Bảo bối bảnh nói nghe nè !!"</span>
-                    <span className="text-sm text-white/80 mt-1 block">
-                      3 GRY đổi 1 XOAY TÍT MÙ
-                    </span>
-                  </button>
+                  
 
                   {/* Ticket list scrolls inside this box so seatmap doesn't make the page too tall */}
                   <div className="h-[320px] sm:h-[360px] overflow-hidden">
