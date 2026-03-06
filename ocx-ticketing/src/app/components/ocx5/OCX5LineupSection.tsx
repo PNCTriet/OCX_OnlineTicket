@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import HorizonBridge from "@/app/components/ocx5/HorizonBridge";
 import StarsBackground from "@/app/components/ocx5/StarsBackground";
 import gsap from "gsap";
@@ -9,7 +9,6 @@ import Link from "next/link";
 
 export default function OCX5LineupSection({ debugLayout }: { debugLayout: boolean }) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
-  const [isMdUp, setIsMdUp] = useState(false);
 
   const items = useMemo(
     () => [
@@ -49,21 +48,21 @@ export default function OCX5LineupSection({ debugLayout }: { debugLayout: boolea
         id: 8,
         image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_tung_alt1.png",
       },
+      {
+        id: 9,
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
+      },
+      {
+        id: 10,
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
+      },
+      {
+        id: 11,
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
+      },
     ],
     []
   );
-
-  // Show 9 items on md+ (3 columns), but only 8 items below md (2 columns).
-  // useEffect(() => {
-  //   if (typeof window === "undefined") return;
-  //   const mq = window.matchMedia("(min-width: 768px)"); // tailwind `md`
-  //   const onChange = () => setIsMdUp(mq.matches);
-  //   onChange();
-  //   mq.addEventListener?.("change", onChange);
-  //   return () => mq.removeEventListener?.("change", onChange);
-  // }, []);
-
-  const visibleItems = useMemo(() => (isMdUp ? items : items.slice(0, 8)), [isMdUp, items]);
 
   const ticketCards = useMemo(
     () => [
@@ -209,7 +208,7 @@ export default function OCX5LineupSection({ debugLayout }: { debugLayout: boolea
 
         {/* Grid Layout: mobile 2 cols, desktop 3 cols */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-[10px] w-full mx-auto place-items-center">
-          {visibleItems.map((item, idx) => (
+          {items.map((item, idx) => (
             <div
               key={item.id}
               ref={(el) => {
