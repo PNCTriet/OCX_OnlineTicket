@@ -54,14 +54,14 @@ export default function OCX5LineupSection({ debugLayout }: { debugLayout: boolea
   );
 
   // Show 9 items on md+ (3 columns), but only 8 items below md (2 columns).
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mq = window.matchMedia("(min-width: 768px)"); // tailwind `md`
-    const onChange = () => setIsMdUp(mq.matches);
-    onChange();
-    mq.addEventListener?.("change", onChange);
-    return () => mq.removeEventListener?.("change", onChange);
-  }, []);
+  // useEffect(() => {
+  //   if (typeof window === "undefined") return;
+  //   const mq = window.matchMedia("(min-width: 768px)"); // tailwind `md`
+  //   const onChange = () => setIsMdUp(mq.matches);
+  //   onChange();
+  //   mq.addEventListener?.("change", onChange);
+  //   return () => mq.removeEventListener?.("change", onChange);
+  // }, []);
 
   const visibleItems = useMemo(() => (isMdUp ? items : items.slice(0, 8)), [isMdUp, items]);
 
