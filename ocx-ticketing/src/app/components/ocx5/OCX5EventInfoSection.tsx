@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import HorizonBridge from "@/app/components/ocx5/HorizonBridge";
@@ -14,7 +14,6 @@ const houses = [
   {
     id: "gryffindor",
     name: "Gryffindor",
-    percent: 26,
     color: "bg-[#BD3935]",
     border: "border-[#ae0001]",
     borderColor: "#ae0001",
@@ -23,7 +22,6 @@ const houses = [
   {
     id: "ravenclaw",
     name: "Ravenclaw",
-    percent: 27,
     color: "bg-[#035DAF]",
     border: "border-[#222f5b]",
     borderColor: "#222f5b",
@@ -32,7 +30,6 @@ const houses = [
   {
     id: "hufflepuff",
     name: "Hufflepuff",
-    percent: 25,
     color: "bg-[#FFB10E]",
     border: "border-[#f0c75e]",
     borderColor: "#f0c75e",
@@ -41,7 +38,6 @@ const houses = [
   {
     id: "slytherin",
     name: "Slytherin",
-    percent: 22,
     color: "bg-[#006F5B]",
     border: "border-[#2a623d]",
     borderColor: "#2a623d",
@@ -54,33 +50,6 @@ export default function OCX5EventInfoSection({
 }: OCX5EventInfoSectionProps) {
   const router = useRouter();
   const [hovered, setHovered] = useState<string | null>(null);
-  const [animatedValues, setAnimatedValues] = useState<number[]>(
-    houses.map(() => 0)
-  );
-
-  // % load up animation on first view
-  useEffect(() => {
-    const timers = houses.map((h, idx) => {
-      const duration = 800;
-      const stepTime = 20;
-      let current = 0;
-
-      return setInterval(() => {
-        current += h.percent / (duration / stepTime);
-        if (current >= h.percent) {
-          current = h.percent;
-          clearInterval(timers[idx]);
-        }
-        setAnimatedValues((prev) => {
-          const clone = [...prev];
-          clone[idx] = Math.round(current);
-          return clone;
-        });
-      }, stepTime);
-    });
-
-    return () => timers.forEach(clearInterval);
-  }, []);
 
   return (
     <section
@@ -180,15 +149,9 @@ export default function OCX5EventInfoSection({
 
                 {/* INFO */}
                 <div className="mt-4 text-center transition-all duration-300">
-                  {/* Title always visible */}
                   <h3 className="uppercase tracking-widest text-sm md:text-base">
                     {h.name}
                   </h3>
-
-                  {/* Percentage only visible when hovered OR none hovered */}
-                  {(!hovered || isHovered) && (
-                    <p className="text-3xl font-bold">{animatedValues[idx]}%</p>
-                  )}
                 </div>
               </div>
             );
