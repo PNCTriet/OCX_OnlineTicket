@@ -52,7 +52,7 @@ const EVENT_INFO_OCX5: EventInfo = {
   id: "ocx-5",
   name: "Ớt Cay Xè",
   time: "15:00",
-  location: "Nơi nào đó tại Hồ Chí Minh",
+  location: "Sân Patin Việt Nam Roller Rink",
   avatar: "/images/client_logo_ss5_alt1.jpg",
   date: "T7 - 18/04/2026",
 };

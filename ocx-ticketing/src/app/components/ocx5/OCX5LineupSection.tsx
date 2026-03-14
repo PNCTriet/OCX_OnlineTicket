@@ -50,11 +50,11 @@ export default function OCX5LineupSection({ debugLayout }: { debugLayout: boolea
       },
       {
         id: 9,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_middle_alt1.png",
       },
       {
         id: 10,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_thotrauma_alt1.png",
       },
       {
         id: 11,

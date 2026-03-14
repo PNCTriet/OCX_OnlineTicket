@@ -8,7 +8,7 @@ export const LAUNCH_CONFIG = {
     name: "Ớt Cay Xè mùa 4",
     description: "Sự kiện âm nhạc indie đỉnh VKL",
     date: "27/09/2025 - 15:00",
-    location: "??, Nơi nào đó tại Hồ Chí Minh",
+    location: "Sân Patin Việt Nam Roller Rink",
     organizer: "Ớt Cay Xè Organization"
   },
   

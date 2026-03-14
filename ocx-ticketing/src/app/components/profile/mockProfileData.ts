@@ -10,7 +10,7 @@ export const MOCK_TICKETS: ProfileTicket[] = [
     eventName: "Ớt Cay Xè 5 — Học Viện Âm Nhạc & Phép Thuật",
     date: "18/04/2026",
     time: "15:00",
-    venue: "Nơi nào đó tại Hồ Chí Minh",
+    venue: "Sân Patin Việt Nam Roller Rink",
     status: "upcoming",
     disabled: false,
     transferable: true,
