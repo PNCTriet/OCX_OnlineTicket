@@ -57,6 +57,10 @@ const EVENT_INFO_OCX5: EventInfo = {
   date: "T7 - 18/04/2026",
 };
 
+// Google Map embed – Sân Patin Việt Nam Roller Rink (15-17 Cộng Hòa, P.4, Tân Bình, HCM)
+const VENUE_MAP_EMBED_SRC =
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4005.8995479482346!2d106.65554027509525!3d10.800006558758154!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317529300fb09909%3A0x22971093be7a67ef!2sS%C3%A2n%20Patin%20Vietnam%20Roller%20Rink%20%26%20Academy!5e1!3m2!1sen!2sus!4v1773502644229!5m2!1sen!2sus";
+
 function extractSeatSectionId(text: string | undefined | null): string | null {
   if (!text) return null;
   const m = text.match(/khu\s*v[ựu]c\s*([A-E])/i);
@@ -648,6 +652,24 @@ export default function TicketOCX5Page() {
               >
                 <div className="space-y-6">
                   <EventInfoCard event={EVENT_INFO_OCX5} />
+
+                  {/* Google Map – Sân Patin Việt Nam Roller Rink */}
+                  <div className="rounded-lg overflow-hidden border border-white/10 bg-black/30">
+                    <p className="text-zinc-400 text-xs px-3 py-1.5">Vị trí</p>
+                    <div className="relative w-full aspect-video">
+                      <iframe
+                        title="Bản đồ Sân Patin Việt Nam Roller Rink"
+                        src={VENUE_MAP_EMBED_SRC}
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        className="absolute inset-0 w-full h-full"
+                      />
+                    </div>
+                  </div>
 
                   {/* For-fun trade option: 3 GRY đổi 1 vé XOAY TÍT MÙ (Hoàng Dũng) – có thể gỡ khi không dùng */}
                   
