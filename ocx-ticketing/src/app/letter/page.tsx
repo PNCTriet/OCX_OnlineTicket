@@ -8,6 +8,8 @@ import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
 import StarsBackground from "@/app/components/ocx5/StarsBackground";
 import FloatingLightningElements from "@/app/components/ocx5/FloatingLightningElements";
+import HorizonBridge from "@/app/components/ocx5/HorizonBridge";
+import OCX5Footer from "@/app/components/ocx5/OCX5Footer";
 
 const OCX5_GRADIENT =
   "linear-gradient(to bottom,rgb(0, 0, 0) 0%,rgb(39, 28, 28) 25%, #2c090b 50%, #9a1a15 75%, #d43922 100%)";
@@ -41,7 +43,7 @@ function invitationByHouse(recipient: string, houseName: string): string {
 
 Trò ${recipient} thân mến,
 
-Nhà trường vui mừng thông báo trò đã trúng tuyển vào Nhà ${houseName}.
+Nhà trường vui mừng thông báo trò đã được xếp vào Nhà ${houseName}.
 Trò được triệu hồi tham dự buổi khai giảng — Ớt Cay Xè, một đêm âm nhạc đầy phép màu, tại thánh địa Roller Rink, 
 Thứ Bảy ngày 18 tháng 04 năm 2026, lúc 15:00.
 
@@ -196,7 +198,7 @@ export default function LetterPage() {
   if (loading || !user || ticketsLoading || !assignedHouse) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center bg-black"
+        className="h-screen max-h-[100dvh] overflow-hidden flex items-center justify-center bg-black"
         style={{ background: OCX5_GRADIENT }}
       >
         <div className="text-white text-xl text-center px-4" style={{ fontFamily: "KK7HarryPotter, fantasy, serif" }}>
@@ -208,7 +210,7 @@ export default function LetterPage() {
 
   return (
     <div
-      className="relative min-h-screen w-full overflow-x-hidden text-white"
+      className="relative h-screen max-h-[100dvh] w-full overflow-hidden flex flex-col text-white"
       style={{
         background: OCX5_GRADIENT,
         fontFamily: "KK7HarryPotter, WizardWorldSimplified, fantasy, serif",
@@ -216,8 +218,8 @@ export default function LetterPage() {
     >
       <StarsBackground />
 
-      {/* Hiệu ứng sấm chớp như OCX5LineupSection */}
-      <div ref={letterSectionRef} className="relative z-10 min-h-screen flex items-center justify-center px-3 py-0">
+      {/* Nội dung lá thư — flex-1 để còn chỗ cho footer, lock scroll 1 màn */}
+      <div ref={letterSectionRef} className="relative z-10 flex-1 min-h-0 flex items-center justify-center px-3 py-0 overflow-hidden">
         <FloatingLightningElements
           containerRef={letterSectionRef}
           count={6}
@@ -225,13 +227,11 @@ export default function LetterPage() {
           wrapperStyle={{ filter: "brightness(1.1) drop-shadow(0 0 10px rgba(255,190,120,0.25))" }}
         />
 
-        {/* Lá thư to hết cỡ chiều dọc màn hình, giữ nguyên tỉ lệ */}
+        {/* Lá thư fit trong vùng còn lại (trên footer), giữ tỉ lệ */}
         <div
           ref={letterRef}
-          className="relative w-full max-w-[min(420px,92vw)] flex-shrink-0"
+          className="relative h-full max-h-full w-full max-w-[min(420px,92vw)] flex-shrink-0"
           style={{
-            height: "100vh",
-            minHeight: "100dvh",
             filter: "drop-shadow(0 25px 60px rgba(0,0,0,0.55))",
           }}
         >
@@ -283,6 +283,17 @@ export default function LetterPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Footer giống OCX5: Horizon + OCX5Footer */}
+      <div className="relative flex-shrink-0 w-full">
+        <HorizonBridge
+          baseName="imgi_62_horizons_bridge"
+          imageAlt="Magical Bridge Horizon"
+          parallaxSpeed={0}
+          position="flow"
+          imageClassName="block h-auto w-full max-w-none transform origin-bottom md:scale-110"
+        />
       </div>
     </div>
   );
