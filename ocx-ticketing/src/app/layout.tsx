@@ -91,10 +91,17 @@ export default function RootLayout({
     <html lang="vi" className={`${geistSans.variable} ${geistMono.variable}`}>
       <head>
         <meta property="fb:app_id" content="1241434124376586" />
-        {/* Preload OCX font to avoid 1st-paint "wrong font" flash (FOUT) */}
+        {/* Preload OCX fonts to avoid 1st-paint "wrong font" flash (FOUT) */}
         <link
           rel="preload"
           href="/fonts/WizardWorldSimplified.ttf"
+          as="font"
+          type="font/ttf"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/KK7-Harry-Potter.ttf"
           as="font"
           type="font/ttf"
           crossOrigin="anonymous"

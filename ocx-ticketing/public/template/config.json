@@ -1,0 +1,245 @@
+{
+    "logo": {
+      "alt": "Ớt Cay Xè Logo",
+      "url": "https://www.otcayxe.com/images/ocx5_images/elements/ocx_logo_ss5_horizon_alt2.png",
+      "maxWidth": "300px"
+    },
+    "name": "ot-cay-xe-5",
+    "type": "email",
+    "email": {
+      "sender": {
+        "name": "Ớt Cay Xè",
+        "email": "noreply@otcayxe.com",
+        "domain": "otcayxe.com"
+      },
+      "subjects": {
+        "ticket": "[{eventName}] - Vé điện tử",
+        "confirmation": "[{eventName}] - Đặt vé thành công"
+      }
+    },
+    "colors": {
+      "text": {
+        "mobile": "black",
+        "primary": "white",
+        "secondary": "rgba(255,255,255,0.9)"
+      },
+      "primary": "#000000",
+      "success": "#4ade80",
+      "warning": "#fbbf24",
+      "secondary": "#1a1a1a",
+      "background": {
+        "border": "rgba(255,255,255,0.1)",
+        "container": "rgba(255,255,255,0.08)"
+      }
+    },
+    "layout": {
+      "infoRows": {
+        "mobile": {
+          "alignItems": "flex-start",
+          "flexDirection": "column"
+        },
+        "display": "flex",
+        "padding": "6px 0",
+        "borderBottom": "1px solid rgba(255,255,255,0.1)",
+        "justifyContent": "space-between"
+      },
+      "sections": {
+        "border": "1px solid rgba(255,255,255,0.1)",
+        "padding": "16px",
+        "spacing": "24px",
+        "borderRadius": "12px"
+      },
+      "container": {
+        "padding": "48px 24px 24px 24px",
+        "maxWidth": "600px",
+        "borderRadius": "16px"
+      }
+    },
+    "content": {
+      "ticket": {
+        "title": "Vé tham dự sự kiện",
+        "sections": [
+          {
+            "title": "Thông tin đơn hàng",
+            "fields": [
+              "orderNumber",
+              "customerName",
+              "email"
+            ]
+          },
+          {
+            "title": "Chi tiết vé",
+            "fields": [
+              "ticketType",
+              "quantity",
+              "qrCode"
+            ]
+          },
+          {
+            "title": "Thông tin sự kiện",
+            "fields": [
+              "eventName",
+              "eventTime",
+              "eventDate",
+              "venue"
+            ]
+          }
+        ],
+        "subtitle": "Đây là vé điện tử của bạn. Tất cả thông tin cần thiết đã được tổng hợp bên dưới để bạn tiện theo dõi. Hẹn gặp bạn tại Ớt Cay Xè 5!"
+      },
+      "confirmation": {
+        "title": "Đặt vé thành công",
+        "sections": [
+          {
+            "title": "Thông tin đơn hàng",
+            "fields": [
+              "orderNumber",
+              "customerName",
+              "email",
+              "totalAmount"
+            ]
+          },
+          {
+            "title": "Chi tiết vé đã đặt",
+            "fields": [
+              "ticketType",
+              "quantity"
+            ]
+          },
+          {
+            "title": "Thông tin sự kiện",
+            "fields": [
+              "eventName",
+              "eventTime",
+              "eventDate",
+              "venue"
+            ]
+          },
+          {
+            "title": "Thông tin thanh toán",
+            "fields": [
+              "paymentStatus",
+              "ticketStatus"
+            ]
+          }
+        ],
+        "subtitle": "Cảm ơn bạn đã đặt vé thành công! Hệ thống đã ghi nhận đơn hàng của bạn và sẽ gửi vé điện tử trong thời gian sớm nhất. Dưới đây là thông tin chi tiết đơn hàng của bạn."
+      }
+    },
+    "support": {
+      "title": "Thông tin hỗ trợ",
+      "fields": [
+        {
+          "type": "email",
+          "label": "Mail to:",
+          "default": "otconcert@gmail.com",
+          "fallback": "otconcert@gmail.com"
+        },
+        {
+          "type": "phone",
+          "label": "SĐT:",
+          "suffix": "( Trưởng BTC )",
+          "default": "0934782703",
+          "fallback": "0934782703"
+        },
+        {
+          "type": "website",
+          "label": "Website:",
+          "default": "https://www.otcayxe.com",
+          "fallback": "https://www.otcayxe.com"
+        }
+      ]
+    },
+    "version": "1.0",
+    "branding": {
+      "name": "Ớt Cay Xè",
+      "styles": {
+        "display": "inline-block",
+        "whiteSpace": "nowrap"
+      },
+      "tagline": "Cảm ơn bạn đã đồng hành cùng Ớt Cay Xè!",
+      "cssClass": "brand-text"
+    },
+    "metadata": {
+      "author": "Ớt Cay Xè Team",
+      "created": "2026-03-09",
+      "version": "1.0",
+      "compatibility": {
+        "browsers": [
+          "Chrome",
+          "Firefox",
+          "Safari",
+          "Edge"
+        ],
+        "emailClients": [
+          "Gmail",
+          "Outlook",
+          "Apple Mail",
+          "Thunderbird"
+        ]
+      }
+    },
+    "background": {
+      "color": "black",
+      "image": "https://www.otcayxe.com/images/hero_background_ss4_mobile.jpg",
+      "gradient": "linear-gradient(to bottom, rgb(0, 0, 0) 0%, rgb(20, 20, 20) 50%, rgb(0, 0, 0) 100%)"
+    },
+    "pdfTicketBackgroundsFolder": "ocx5",
+    "pdfTicketBackgrounds": {
+      "GRY": "GRY.png",
+      "SLY": "SLY.png",
+      "HUF": "HUF.png",
+      "RAV": "RAV.png"
+    },
+    "pdf": {
+      "textColor": "#ffffff",
+      "positions": {
+        "qr_code": { "x": 254, "y": 106, "scale": 0.5, "enabled": true },
+        "time": { "x": 80, "y": 275, "size": 25, "lineOffset": 15, "enabled": false },
+        "date": { "dayX": 195, "dayY": 282, "monthX": 195, "monthY": 260, "daySize": 35, "monthSize": 14, "enabled": false },
+        "ticket_type": { "x": 275, "y": 355, "size": 18, "enabled": true },
+        "customer_name": { "x": 100, "y": 200, "size": 13, "enabled": true }
+      }
+    },
+    "responsive": {
+      "breakpoints": {
+        "small": "360px",
+        "mobile": "600px",
+        "tablet": "480px"
+      },
+      "mobileStyles": {
+        "textColor": "black",
+        "headingColor": "#000000",
+        "successColor": "#4ade80",
+        "warningColor": "#fbbf24"
+      }
+    },
+    "typography": {
+      "body": {
+        "mobile": {
+          "fontSize": "14px"
+        },
+        "fontSize": "16px",
+        "lineHeight": "1.6"
+      },
+      "headings": {
+        "h2": {
+          "fontSize": "30px",
+          "fontWeight": "900",
+          "responsive": {
+            "360px": "18px",
+            "480px": "20px",
+            "600px": "24px"
+          },
+          "textTransform": "uppercase"
+        },
+        "h3": {
+          "color": "#000000",
+          "fontSize": "16px",
+          "fontWeight": "bold"
+        }
+      },
+      "fontFamily": "Segoe UI, sans-serif"
+    },
+    "description": "Ớt Cay Xè 5 Concert Email Template - OCX5 Black Theme"
+  }

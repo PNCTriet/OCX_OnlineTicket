@@ -57,6 +57,42 @@ html {
   animation: tradeSuccessIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
+/* Letter page: reveal từ trên xuống + mờ dần */
+@keyframes letterRevealDown {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes letterFadeIn {
+  from { opacity: 0.25; filter: blur(14px); }
+  to { opacity: 1; filter: blur(0); }
+}
+.letter-reveal-wrapper {
+  clip-path: inset(0 0 100% 0);
+}
+.letter-reveal-wrapper--active {
+  animation: letterRevealDown 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.8s forwards;
+}
+.letter-reveal-text {
+  opacity: 0.25;
+  filter: blur(14px);
+}
+.letter-reveal-text--active {
+  animation: letterFadeIn 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.9s forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .letter-reveal-wrapper,
+  .letter-reveal-wrapper--active {
+    clip-path: inset(0 0 0 0);
+    animation: none;
+  }
+  .letter-reveal-text,
+  .letter-reveal-text--active {
+    opacity: 1;
+    filter: none;
+    animation: none;
+  }
+}
+
 @font-face {
   font-family: 'BDStreetSignSans';
   src: url('/fonts/BDStreetSignSans-AlmostRaised.otf') format('opentype');
@@ -80,6 +116,14 @@ html {
   font-style: normal;
   /* Avoid 1st-paint fallback flash (FOUT) on OCX pages */
   font-display: block;
+}
+
+@font-face {
+  font-family: 'KK7HarryPotter';
+  src: url('/fonts/KK7-Harry-Potter.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 @tailwind base;

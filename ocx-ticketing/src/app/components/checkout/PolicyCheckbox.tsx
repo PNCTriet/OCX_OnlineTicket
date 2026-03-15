@@ -15,7 +15,18 @@ export default function PolicyCheckbox({ agreedToPolicies, onAgreementChange }: 
           checked={agreedToPolicies}
           onChange={(e) => onAgreementChange(e.target.checked)}
         />
-        <span>Tôi đồng ý với các chính sách của Ban tổ chức</span>
+        <span>
+          Tôi đồng ý với{" "}
+          <a
+            href="https://docs.google.com/document/u/0/d/1DAxkBCzqJTuX5Q9ROy1r5hYWMLvHpoj7AfCXG6PNF6o/mobilebasic"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-[#c53e00] focus:outline-none focus:ring-2 focus:ring-[#c53e00] focus:ring-offset-1 focus:ring-offset-transparent rounded"
+            onClick={(e) => e.stopPropagation()}
+          >
+            các chính sách của Ban tổ chức
+          </a>
+        </span>
       </label>
     </div>
   );
