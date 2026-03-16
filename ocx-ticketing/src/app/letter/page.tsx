@@ -284,17 +284,6 @@ export default function LetterPage() {
           </div>
         </div>
       </div>
-
-      {/* Footer giống OCX5: Horizon + OCX5Footer */}
-      <div className="relative flex-shrink-0 w-full">
-        <HorizonBridge
-          baseName="imgi_62_horizons_bridge"
-          imageAlt="Magical Bridge Horizon"
-          parallaxSpeed={0}
-          position="flow"
-          imageClassName="block h-auto w-full max-w-none transform origin-bottom md:scale-110"
-        />
-      </div>
     </div>
   );
 }
