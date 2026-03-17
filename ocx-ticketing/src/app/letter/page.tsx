@@ -131,7 +131,7 @@ function invitationBTC(recipient: string, group: string | null): string {
   const groupLabel = group && group.trim().length > 0 ? group : "";
   return `HỌC VIỆN ÂM NHẠC ỚT CAY XÈ
 
-Gửi đến Phù thủy ${recipient}, Giáo viên tổ ${groupLabel}
+Gửi đến Phù thủy ${recipient}, thuộc tổ ${groupLabel}
 
 Học viện trân trọng thông báo rằng bạn đã chính thức được triệu tập vào Hội Đồng Phù Thủy, tham dự buổi khai giảng của Học viện Ớt Cay Xè, tại thánh địa Roller Rink, Thứ Bảy, ngày 18 tháng 04 năm 2026, lúc 15:00.
 
@@ -579,13 +579,40 @@ export default function LetterPage() {
         }`}
       >
         <div
-          className="bg-zinc-900 border border-white/10 rounded-2xl p-5 max-w-sm w-full text-center space-y-4 font-sans"
+          className="bg-zinc-900 border border-white/10 rounded-2xl p-5 max-w-md w-full space-y-4 font-sans"
         >
-          <h3 className="text-lg font-semibold">Mở camera để nhận thư mời ma thuật?</h3>
-          <p className="text-sm text-zinc-300">
-            Trang này dùng camera để nhận diện cử chỉ tay: khi dơ tay chữ sẽ biến mất, khi nắm tay chữ sẽ hiện dần ra.
-          </p>
-          <div className="flex gap-3 justify-center mt-2">
+          <h3 className="text-lg font-semibold text-center">Mở camera để nhận thư mời ma thuật?</h3>
+
+          <div className="grid gap-4 md:grid-cols-[1.1fr,1fr] items-center">
+            <div className="space-y-2 text-sm text-zinc-200">
+              <p className="font-medium text-zinc-100">Cách điều khiển lá thư:</p>
+              <ul className="list-disc list-inside space-y-1 text-zinc-300">
+                <li>
+                  <span className="font-semibold">Bước 1 - Mở tay:</span> đưa bàn tay mở ra trước camera để hệ
+                  thống nhận diện.
+                </li>
+                <li>
+                  <span className="font-semibold">Bước 2 - Nắm chặt tay:</span> nắm chặt tay lại để lá thư hiện ra
+                  bằng phép thuật.
+                </li>
+              </ul>
+            </div>
+
+            <div className="flex justify-center">
+              <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-xl overflow-hidden border border-cyan-500/40 bg-black/40">
+                <Image
+                  src="/images/ocx5_images/letter/instruction.png"
+                  alt="Hướng dẫn: bước 1 mở tay, bước 2 nắm chặt tay"
+                  fill
+                  className="object-contain"
+                  sizes="160px"
+                  priority={false}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-3 justify-center pt-1">
             <button
               type="button"
               className="px-4 py-2 rounded-full bg-zinc-700 text-sm hover:bg-zinc-600"
