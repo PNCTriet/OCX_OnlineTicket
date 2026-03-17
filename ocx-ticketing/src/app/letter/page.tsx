@@ -44,6 +44,73 @@ const HOUSE_LOGO_BY_NAME: Record<string, string> = {
   Slytherin: "/images/ocx5_images/letter/logo_sly.png",
 };
 
+const BTC_EMAILS = new Set<string>([
+  "baongocforworks@gmail.com",
+  "dinhhoanggialinh2603@gmail.com",
+  "buithihuonggiang1802@gmail.com",
+  "hao08072006@gmail.com",
+  "ngohphuong3062@gmail.com",
+  "maikhanh030405@gmail.com",
+  "han.work142@gmail.com",
+  "nhthule13082004@gmail.com",
+  "nphanngochan0511@gmail.com",
+  "nguyenhuy.rin@gmail.com",
+  "dongnnh2112.work@gmail.com",
+  "nguyenvinhanthy@gmail.com",
+  "nguyenngocanhvu2809@gmail.com",
+  "nhatthy3178@gmail.com",
+  "nguyenngocnhubang.work@gmail.com",
+  "nhienpham0906@gmail.com",
+  "phanquynh0128@gmail.com",
+  "quynhhanh0511@gmail.com",
+  "lesontung280705@gmail.com",
+  "nhan.work2302@gmail.com",
+  "thanhthuy4917@gmail.com",
+  "tranngocthuylinh06@gmail.com",
+  "tngan2020@gmail.com",
+  "otistrisstruongss@gmail.com",
+  "trietcrt.pnc@gmail.com",
+  "nhidinhthn19@gmail.com",
+  "tdhaiyen.work@gmail.com",
+]);
+
+const BTC_GROUP_BY_EMAIL: Record<string, string> = {
+  "baongocforworks@gmail.com": "",
+  "dinhhoanggialinh2603@gmail.com": "Sponsor",
+  "buithihuonggiang1802@gmail.com": "",
+  "hao08072006@gmail.com": "",
+  "ngohphuong3062@gmail.com": "",
+  "maikhanh030405@gmail.com": "Media",
+  "han.work142@gmail.com": "Media",
+  "nhthule13082004@gmail.com": "Media",
+  "nphanngochan0511@gmail.com": "Media",
+  "nguyenhuy.rin@gmail.com": "Sân khấu",
+  "dongnnh2112.work@gmail.com": "",
+  "nguyenvinhanthy@gmail.com": "Media",
+  "nguyenngocanhvu2809@gmail.com": "Sân khấu",
+  "nhatthy3178@gmail.com": "",
+  "nguyenngocnhubang.work@gmail.com": "Media",
+  "nhienpham0906@gmail.com": "Sponsor",
+  "phanquynh0128@gmail.com": "Media",
+  "quynhhanh0511@gmail.com": "",
+  "lesontung280705@gmail.com": "Sân khấu",
+  "nhan.work2302@gmail.com": "Media",
+  "thanhthuy4917@gmail.com": "Sân khấu",
+  "tranngocthuylinh06@gmail.com": "Media",
+  "tngan2020@gmail.com": "Website",
+  "otistrisstruongss@gmail.com": "",
+  "trietcrt.pnc@gmail.com": "",
+  "nhidinhthn19@gmail.com": "",
+  "tdhaiyen.work@gmail.com": "Sân khấu",
+};
+
+const HOUSE_LETTER_BY_NAME: Record<string, string> = {
+  Gryffindor: "/images/ocx5_images/letter/GRY_letter.png",
+  Hufflepuff: "/images/ocx5_images/letter/HUF_letter.png",
+  Ravenclaw: "/images/ocx5_images/letter/RAV_letter.png",
+  Slytherin: "/images/ocx5_images/letter/SLY_letter.png",
+};
+
 // Thư mời nhập học kiểu Harry Potter — theo nhà
 function invitationByHouse(recipient: string, houseName: string): string {
   return `HỌC VIỆN ÂM NHẠC ỚT CAY XÈ
@@ -58,6 +125,19 @@ Hẹn gặp trò tại sự kiện và chúc trò một năm học mới thành 
 
 Expecto Patronum,
 Ban Tuyển Sinh — Ớt Cay Xè`;
+}
+
+function invitationBTC(recipient: string, group: string | null): string {
+  const groupLabel = group && group.trim().length > 0 ? group : "BTC";
+  return `HỌC VIỆN ÂM NHẠC ỚT CAY XÈ
+
+Gửi đến Phù thủy ${recipient}, Giáo viên tổ ${groupLabel} hắc ám
+
+Học viện trân trọng thông báo rằng bạn đã chính thức được triệu tập vào Hội Đồng Phù Thủy, tham dự buổi khai giảng của Học viện Ớt Cay Xè, tại thánh địa Roller Rink, Thứ Bảy, ngày 18 tháng 04 năm 2026, lúc 15:00.
+
+Tại đây, nhiệm vụ của các phù thủy sẽ bắt đầu: cùng nhau chuẩn bị và biến đêm nhạc Ớt Cay Xè trở thành một sự kiện huyền diệu nhất của năm.
+
+Hẹn gặp các phù thủy tại Học viện.`;
 }
 
 export default function LetterPage() {
@@ -89,6 +169,10 @@ export default function LetterPage() {
     user?.email ||
     "Khách";
 
+  const isBTC = !!(user?.email && BTC_EMAILS.has(user.email.toLowerCase()));
+  const btcGroup =
+    (user?.email && BTC_GROUP_BY_EMAIL[user.email.toLowerCase()]) || null;
+
   useEffect(() => {
     if (!user && !loading) {
       router.replace("/auth/login?redirectTo=/letter");
@@ -96,13 +180,23 @@ export default function LetterPage() {
     }
 
     if (user && !loading) {
-      setShowCameraPrompt(true);
+      if (isBTC) {
+        setShowCameraPrompt(false);
+        setShowText(true);
+      } else {
+        setShowCameraPrompt(true);
+      }
     }
-  }, [user, loading, router]);
+  }, [user, loading, isBTC, router]);
 
   // Gọi API /orders/me/tickets — có vé thì lấy nhà sớm nhất, không vé thì về trang chủ
   useEffect(() => {
     if (!user) return;
+    if (isBTC) {
+      // BTC không cần fetch vé
+      setTicketsLoading(false);
+      return;
+    }
 
     let cancelled = false;
     setTicketsLoading(true);
@@ -179,17 +273,22 @@ export default function LetterPage() {
     return () => {
       cancelled = true;
     };
-  }, [user, router]);
+  }, [user, isBTC, router]);
 
-  // Nội dung thư — set ngay khi có user; house fallback Gryffindor nếu chưa map được
+  // Nội dung thư — set ngay khi có user; BTC dùng thư riêng, còn lại theo house (fallback Gryffindor)
   useEffect(() => {
     if (!user) return;
-    const effectiveHouse = assignedHouse ?? "Gryffindor";
-    const text = invitationByHouse(recipientName, effectiveHouse);
+    let text: string;
+    if (isBTC) {
+      text = invitationBTC(recipientName, btcGroup);
+    } else {
+      const effectiveHouse = assignedHouse ?? "Gryffindor";
+      text = invitationByHouse(recipientName, effectiveHouse);
+    }
     setFullText(text);
-    // reset visible text khi đổi house
-    setVisibleCount(text.length);
-  }, [user, assignedHouse]); // eslint-disable-line react-hooks/exhaustive-deps -- recipientName từ closure
+    // reset visible text khi đổi nội dung
+    setVisibleCount(0);
+  }, [user, assignedHouse, isBTC]); // eslint-disable-line react-hooks/exhaustive-deps -- recipientName từ closure
 
   // Hiệu ứng chữ gõ từng ký tự trước đây tạm tắt — fade in/out điều khiển qua CSS + showText
   useEffect(() => {
@@ -385,6 +484,11 @@ export default function LetterPage() {
     );
   }
 
+  const effectiveHouse = assignedHouse ?? "Gryffindor";
+  const letterBackgroundSrc =
+    (effectiveHouse && HOUSE_LETTER_BY_NAME[effectiveHouse]) ||
+    "/images/ocx5_images/letter/letter.png";
+
   return (
     <div
       className="relative h-screen max-h-[100dvh] w-full overflow-hidden flex flex-col text-white"
@@ -418,7 +522,7 @@ export default function LetterPage() {
           }}
         >
           <Image
-            src="/images/ocx5_images/letter/letter.png"
+            src={letterBackgroundSrc}
             alt=""
             fill
             className="object-contain object-center select-none pointer-events-none"
@@ -487,7 +591,10 @@ export default function LetterPage() {
               <button
                 type="button"
                 className="px-4 py-2 rounded-full bg-zinc-700 text-sm hover:bg-zinc-600"
-                onClick={() => setShowCameraPrompt(false)}
+                onClick={() => {
+                  setShowCameraPrompt(false);
+                  setShowText(true);
+                }}
               >
                 Để sau
               </button>
