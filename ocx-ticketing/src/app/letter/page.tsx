@@ -75,32 +75,32 @@ const BTC_EMAILS = new Set<string>([
 ]);
 
 const BTC_GROUP_BY_EMAIL: Record<string, string> = {
-  "baongocforworks@gmail.com": "",
+  "baongocforworks@gmail.com": "BTC",
   "dinhhoanggialinh2603@gmail.com": "Sponsor",
-  "buithihuonggiang1802@gmail.com": "",
-  "hao08072006@gmail.com": "",
-  "ngohphuong3062@gmail.com": "",
+  "buithihuonggiang1802@gmail.com": "BTC",
+  "hao08072006@gmail.com": "BTC",
+  "ngohphuong3062@gmail.com": "BTC",
   "maikhanh030405@gmail.com": "Media",
   "han.work142@gmail.com": "Media",
   "nhthule13082004@gmail.com": "Media",
   "nphanngochan0511@gmail.com": "Media",
   "nguyenhuy.rin@gmail.com": "Sân khấu",
-  "dongnnh2112.work@gmail.com": "",
+  "dongnnh2112.work@gmail.com": "BTC",
   "nguyenvinhanthy@gmail.com": "Media",
   "nguyenngocanhvu2809@gmail.com": "Sân khấu",
-  "nhatthy3178@gmail.com": "",
+  "nhatthy3178@gmail.com": "BTC",
   "nguyenngocnhubang.work@gmail.com": "Media",
   "nhienpham0906@gmail.com": "Sponsor",
   "phanquynh0128@gmail.com": "Media",
-  "quynhhanh0511@gmail.com": "",
+  "quynhhanh0511@gmail.com": "BTC",
   "lesontung280705@gmail.com": "Sân khấu",
   "nhan.work2302@gmail.com": "Media",
   "thanhthuy4917@gmail.com": "Sân khấu",
   "tranngocthuylinh06@gmail.com": "Media",
   "tngan2020@gmail.com": "Website",
-  "otistrisstruongss@gmail.com": "",
-  "trietcrt.pnc@gmail.com": "",
-  "nhidinhthn19@gmail.com": "",
+  "otistrisstruongss@gmail.com": "BTC",
+  "trietcrt.pnc@gmail.com": "BTC",
+  "nhidinhthn19@gmail.com": "BTC",
   "tdhaiyen.work@gmail.com": "Sân khấu",
 };
 
@@ -131,7 +131,7 @@ function invitationBTC(recipient: string, group: string | null): string {
   const groupLabel = group && group.trim().length > 0 ? group : "";
   return `HỌC VIỆN ÂM NHẠC ỚT CAY XÈ
 
-Gửi đến Phù thủy ${recipient}, Giáo viên tổ ${groupLabel} hắc ám
+Gửi đến Phù thủy ${recipient}, Giáo viên tổ ${groupLabel}
 
 Học viện trân trọng thông báo rằng bạn đã chính thức được triệu tập vào Hội Đồng Phù Thủy, tham dự buổi khai giảng của Học viện Ớt Cay Xè, tại thánh địa Roller Rink, Thứ Bảy, ngày 18 tháng 04 năm 2026, lúc 15:00.
 
@@ -344,8 +344,7 @@ export default function LetterPage() {
         hands.onResults((results: any) => {
           const landmarks = results.multiHandLandmarks?.[0];
           if (!landmarks) {
-            // Không thấy tay: luôn ẩn chữ
-            setShowText(false);
+            // Không thấy tay: tạm thời giữ nguyên trạng thái chữ
             return;
           }
 
@@ -362,13 +361,11 @@ export default function LetterPage() {
           const thumbExtended = landmarks[4].y < landmarks[2].y;
           if (thumbExtended) extended += 1;
 
-          if (extended >= 4) {
-            // Dơ tay (nhiều ngón duỗi) → ẩn chữ
-            setShowText(false);
-          } else if (extended <= 1) {
+          if (extended <= 1) {
             // Nắm tay (rất ít ngón duỗi) → hiện chữ
             setShowText(true);
           }
+          // Trường hợp thả tay (nhiều ngón duỗi) không còn làm ẩn chữ nữa
         });
 
         const camera = new Camera(videoRef.current, {
@@ -575,36 +572,40 @@ export default function LetterPage() {
         </div>
       </div>
 
-      {/* Popup xin quyền mở camera */}
-      {showCameraPrompt && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 px-4">
-          <div className="bg-zinc-900 border border-white/10 rounded-2xl p-5 max-w-sm w-full text-center space-y-4">
-            <h3 className="text-lg font-semibold">Mở camera để nhận thư mời ma thuật?</h3>
-            <p className="text-sm text-zinc-300">
-              Trang này dùng camera để nhận diện cử chỉ tay: khi dơ tay chữ sẽ biến mất, khi nắm tay chữ sẽ hiện dần ra.
-            </p>
-            <div className="flex gap-3 justify-center mt-2">
-              <button
-                type="button"
-                className="px-4 py-2 rounded-full bg-zinc-700 text-sm hover:bg-zinc-600"
-                onClick={() => {
-                  setShowCameraPrompt(false);
-                  setShowText(true);
-                }}
-              >
-                Để sau
-              </button>
-              <button
-                type="button"
-                className="px-4 py-2 rounded-full bg-[#d43922] text-sm font-semibold hover:bg-[#b9321d]"
-                onClick={startCamera}
-              >
-                Cho phép camera
-              </button>
-            </div>
+      {/* Popup xin quyền mở camera — dùng typo thông thường + fade out chậm 2s */}
+      <div
+        className={`fixed inset-0 z-[120] flex items-center justify-center bg-black/70 px-4 transition-opacity duration-[2000ms] ${
+          showCameraPrompt ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div
+          className="bg-zinc-900 border border-white/10 rounded-2xl p-5 max-w-sm w-full text-center space-y-4 font-sans"
+        >
+          <h3 className="text-lg font-semibold">Mở camera để nhận thư mời ma thuật?</h3>
+          <p className="text-sm text-zinc-300">
+            Trang này dùng camera để nhận diện cử chỉ tay: khi dơ tay chữ sẽ biến mất, khi nắm tay chữ sẽ hiện dần ra.
+          </p>
+          <div className="flex gap-3 justify-center mt-2">
+            <button
+              type="button"
+              className="px-4 py-2 rounded-full bg-zinc-700 text-sm hover:bg-zinc-600"
+              onClick={() => {
+                setShowCameraPrompt(false);
+                setShowText(true);
+              }}
+            >
+              Để sau
+            </button>
+            <button
+              type="button"
+              className="px-4 py-2 rounded-full bg-[#d43922] text-sm font-semibold hover:bg-[#b9321d]"
+              onClick={startCamera}
+            >
+              Cho phép camera
+            </button>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Ô camera nhỏ — luôn mount video, dùng CSS để show/hide để đảm bảo ref luôn sẵn sàng */}
       <div
