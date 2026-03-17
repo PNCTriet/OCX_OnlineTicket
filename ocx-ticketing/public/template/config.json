@@ -19,14 +19,14 @@
     },
     "colors": {
       "text": {
-        "mobile": "black",
+        "mobile": "white",
         "primary": "white",
         "secondary": "rgba(255,255,255,0.9)"
       },
-      "primary": "#000000",
+      "primary": "#d43922",
       "success": "#4ade80",
       "warning": "#fbbf24",
-      "secondary": "#1a1a1a",
+      "secondary": "#9a1a15",
       "background": {
         "border": "rgba(255,255,255,0.1)",
         "container": "rgba(255,255,255,0.08)"
@@ -180,9 +180,9 @@
       }
     },
     "background": {
-      "color": "black",
+      "color": "#000000",
       "image": "https://www.otcayxe.com/images/hero_background_ss4_mobile.jpg",
-      "gradient": "linear-gradient(to bottom, rgb(0, 0, 0) 0%, rgb(20, 20, 20) 50%, rgb(0, 0, 0) 100%)"
+      "gradient": "linear-gradient(to bottom,rgb(0, 0, 0) 0%,rgb(39, 28, 28) 25%, #2c090b 50%, #9a1a15 75%, #d43922 100%)"
     },
     "pdfTicketBackgroundsFolder": "ocx5",
     "pdfTicketBackgrounds": {
@@ -208,8 +208,8 @@
         "tablet": "480px"
       },
       "mobileStyles": {
-        "textColor": "black",
-        "headingColor": "#000000",
+        "textColor": "white",
+        "headingColor": "#ffffff",
         "successColor": "#4ade80",
         "warningColor": "#fbbf24"
       }
@@ -234,7 +234,7 @@
           "textTransform": "uppercase"
         },
         "h3": {
-          "color": "#000000",
+          "color": "#ffffff",
           "fontSize": "16px",
           "fontWeight": "bold"
         }
