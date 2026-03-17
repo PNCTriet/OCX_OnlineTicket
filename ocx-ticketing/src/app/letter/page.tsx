@@ -128,7 +128,7 @@ Ban Tuyển Sinh — Ớt Cay Xè`;
 }
 
 function invitationBTC(recipient: string, group: string | null): string {
-  const groupLabel = group && group.trim().length > 0 ? group : "BTC";
+  const groupLabel = group && group.trim().length > 0 ? group : "";
   return `HỌC VIỆN ÂM NHẠC ỚT CAY XÈ
 
 Gửi đến Phù thủy ${recipient}, Giáo viên tổ ${groupLabel} hắc ám
@@ -180,14 +180,10 @@ export default function LetterPage() {
     }
 
     if (user && !loading) {
-      if (isBTC) {
-        setShowCameraPrompt(false);
-        setShowText(true);
-      } else {
-        setShowCameraPrompt(true);
-      }
+      // Cả BTC và user thường đều thấy popup, có thể bật camera hoặc "Để sau"
+      setShowCameraPrompt(true);
     }
-  }, [user, loading, isBTC, router]);
+  }, [user, loading, router]);
 
   // Gọi API /orders/me/tickets — có vé thì lấy nhà sớm nhất, không vé thì về trang chủ
   useEffect(() => {
