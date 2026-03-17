@@ -396,7 +396,10 @@ export default function LetterPage() {
       <StarsBackground />
 
       {/* Nội dung lá thư — flex-1 để còn chỗ cho footer, lock scroll 1 màn */}
-      <div ref={letterSectionRef} className="relative z-10 flex-1 min-h-0 flex items-center justify-center px-3 py-0 overflow-hidden">
+      <div
+        ref={letterSectionRef}
+        className="relative z-10 flex-1 min-h-0 flex items-center justify-center px-3 py-2 overflow-hidden w-full"
+      >
         <FloatingLightningElements
           containerRef={letterSectionRef}
           count={6}
@@ -407,8 +410,10 @@ export default function LetterPage() {
         {/* Lá thư fit trong vùng còn lại (trên footer), giữ tỉ lệ */}
         <div
           ref={letterRef}
-          className="relative h-full max-h-full w-full max-w-[min(420px,92vw)] flex-shrink-0"
+          className="relative w-full"
           style={{
+            width: "min(420px, 92vw, calc((100dvh - 80px) * 1414 / 2000))",
+            aspectRatio: "1414 / 2000",
             filter: "drop-shadow(0 25px 60px rgba(0,0,0,0.55))",
           }}
         >
@@ -423,14 +428,18 @@ export default function LetterPage() {
           />
           {/* Vùng nội dung gọn trong lá thư (giữa hai mép cuộn), overflow-visible để logo bay không bị cắt */}
           <div
-            className="absolute inset-0 flex flex-col items-center overflow-visible p-[11%] pt-[20%] pb-[22%] sm:p-[12%] sm:pt-[18%] sm:pb-[24%]"
+            className="absolute inset-0 flex flex-col items-center"
+            style={{
+              paddingTop: "20%",
+              paddingBottom: "18%",
+              paddingLeft: "12%",
+              paddingRight: "12%",
+              overflow: "visible",
+            }}
             aria-label="Nội dung thư mời"
           >
             {/* Logo — khoảng cách dưới logo đủ rộng để không đè lên đoạn thư */}
-            <div
-              ref={logoRef}
-              className="flex-shrink-0 w-full flex justify-center mt-[100px] mb-2 sm:mb-4"
-            >
+            <div ref={logoRef} className="flex-shrink-0 w-full flex justify-center mb-[4%]">
               <div
                 className="relative"
                 style={{
@@ -449,7 +458,7 @@ export default function LetterPage() {
             </div>
             {/* Đoạn thư — fade in/out theo chiều dọc, điều khiển bằng showText */}
             <div
-              className={`flex-1 min-h-0 w-full flex flex-col justify-center overflow-hidden -translate-y-[24px] letter-reveal-wrapper ${
+              className={`flex-1 w-full flex flex-col justify-center overflow-hidden letter-reveal-wrapper ${
                 showText ? "letter-reveal-wrapper--active" : ""
               }`}
             >
