@@ -140,10 +140,10 @@ export default function PaymentModal({
   if (!isOpen || !orderInfo) return null;
 
   // Tạo link QR VietQR với giá cuối cùng sau giảm
-  const paymentAmount = finalAmount || orderInfo.total_amount;
+  const paymentAmount = finalAmount ?? orderInfo.total_amount;
   // const qrUrl = `https://img.vietqr.io/image/VPB-214244527-compact.png?amount=${paymentAmount}&addInfo=OCX${orderInfo.id}&accountName=PHAM NG CAO TRIET`;
   //const qrUrl = `https://img.vietqr.io/image/VPB-0934782703-compact.png?amount=${paymentAmount}&addInfo=OCX${orderInfo.id}&accountName=LE THI NGOC HAN`;
-  const qrUrl = `https://img.vietqr.io/image/VPB-0966512476-compact.png?amount=${orderInfo.total_amount}&addInfo=OCX${orderInfo.id}&accountName=TRUONG HOANG NHI`;
+  const qrUrl = `https://img.vietqr.io/image/VPB-0966512476-compact.png?amount=${paymentAmount}&addInfo=OCX${orderInfo.id}&accountName=TRUONG HOANG NHI`;
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
