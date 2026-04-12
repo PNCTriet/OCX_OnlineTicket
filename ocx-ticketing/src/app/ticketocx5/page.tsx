@@ -156,6 +156,18 @@ const OCX5_SEAT_LAYOUT_CONFIG: typeof SEAT_LAYOUT_CONFIG = {
   ],
 };
 
+function normalizeOcx5TicketStatus(
+  raw: string | undefined | null
+): "ACTIVE" | "INACTIVE" | "SOLD_OUT" {
+  const u = String(raw ?? "")
+    .trim()
+    .toUpperCase();
+  if (u === "ACTIVE") return "ACTIVE";
+  if (u === "SOLD_OUT" || u === "SOULD_OUT") return "SOLD_OUT";
+  if (u === "INACTIVE") return "INACTIVE";
+  return "INACTIVE";
+}
+
 function mapOcx5TicketNameToZoneId(name: string | undefined | null): Ocx5ZoneId | null {
   if (!name) return null;
   const n = name.trim().toUpperCase();
@@ -187,6 +199,7 @@ export default function TicketOCX5Page() {
   const [error, setError] = useState<string | null>(null);
   const [showNoTicketsError, setShowNoTicketsError] = useState(false);
   const [showMaxTicketsError, setShowMaxTicketsError] = useState(false);
+  const [zoneUnavailableMessage, setZoneUnavailableMessage] = useState<string | null>(null);
   const [showSeatmapIntro, setShowSeatmapIntro] = useState(false);
   const [seatmapIntroEntered, setSeatmapIntroEntered] = useState(false);
   const [seatmapIntroText, setSeatmapIntroText] = useState("");
@@ -404,6 +417,12 @@ export default function TicketOCX5Page() {
             mapOcx5TicketNameToZoneId(ticket.name) ?? extractSeatSectionId(ticket.description);
           const computedLabel =
             ticket.name?.toUpperCase().includes("GRY") ? "Vé đứng" : "Vé ngồi";
+          const status = normalizeOcx5TicketStatus(ticket.status);
+          // Status wins over remaining inventory: only ACTIVE is sellable.
+          const availableQty =
+            status === "ACTIVE"
+              ? Math.max(0, ticket.total_qty - ticket.sold_qty)
+              : 0;
           // Use seatmap zone color for a consistent concept palette
           const zoneColor =
             seatSectionId &&
@@ -417,8 +436,8 @@ export default function TicketOCX5Page() {
             quantity: 0,
             sold: ticket.sold_qty,
             label: computedLabel,
-            status: ticket.status as "INACTIVE" | "ACTIVE" | "SOLD_OUT",
-            availableQty: ticket.total_qty - ticket.sold_qty,
+            status,
+            availableQty,
             seatSectionId,
           };
         });
@@ -484,8 +503,22 @@ export default function TicketOCX5Page() {
     if (!matchingTicket) {
       setHighlightedZoneId(sectionId);
       setActiveZoneId(null);
+      setZoneUnavailableMessage(null);
       return;
     }
+
+    // Status (ACTIVE / INACTIVE / SOLD_OUT) must take priority over remaining qty.
+    if (matchingTicket.status !== "ACTIVE") {
+      setHighlightedZoneId(sectionId);
+      setActiveZoneId(null);
+      setZoneUnavailableMessage(
+        matchingTicket.status === "SOLD_OUT"
+          ? "Khu vực này đã hết vé."
+          : "Khu vực này hiện không mở bán."
+      );
+      return;
+    }
+    setZoneUnavailableMessage(null);
 
     const houseMeta =
       (HOUSE_BY_ZONE_ID as Record<string, (typeof HOUSE_BY_ZONE_ID)[Ocx5ZoneId]>)[sectionId] ??
@@ -613,6 +646,12 @@ export default function TicketOCX5Page() {
           {showMaxTicketsError && (
             <div className="mb-6 bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 text-amber-300">
               <p className="text-center">Mỗi người chỉ được mua tối đa 10 vé trong 1 phiên.</p>
+            </div>
+          )}
+
+          {zoneUnavailableMessage && (
+            <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+              <p className="text-center">{zoneUnavailableMessage}</p>
             </div>
           )}
 
