@@ -156,6 +156,17 @@ const OCX5_SEAT_LAYOUT_CONFIG: typeof SEAT_LAYOUT_CONFIG = {
   ],
 };
 
+/**
+ * Khóa cứng trên trang OCX5: HUF (zone B) và RAV (zone C).
+ * Ưu tiên hơn trạng thái trên database — xóa id khỏi Set khi cần mở bán lại.
+ */
+const OCX5_HARDCODED_LOCKED_ZONE_IDS = new Set<Ocx5ZoneId>(["B", "C"]);
+
+function isOcx5HardcodedLockedZone(zoneId: string | null | undefined): boolean {
+  if (!zoneId) return false;
+  return OCX5_HARDCODED_LOCKED_ZONE_IDS.has(zoneId as Ocx5ZoneId);
+}
+
 function normalizeOcx5TicketStatus(
   raw: string | undefined | null
 ): "ACTIVE" | "INACTIVE" | "SOLD_OUT" {
@@ -417,7 +428,9 @@ export default function TicketOCX5Page() {
             mapOcx5TicketNameToZoneId(ticket.name) ?? extractSeatSectionId(ticket.description);
           const computedLabel =
             ticket.name?.toUpperCase().includes("GRY") ? "Vé đứng" : "Vé ngồi";
-          const status = normalizeOcx5TicketStatus(ticket.status);
+          const statusFromApi = normalizeOcx5TicketStatus(ticket.status);
+          const hardcodedLocked = isOcx5HardcodedLockedZone(seatSectionId);
+          const status = hardcodedLocked ? ("INACTIVE" as const) : statusFromApi;
           // Status wins over remaining inventory: only ACTIVE is sellable.
           const availableQty =
             status === "ACTIVE"
@@ -497,6 +510,15 @@ export default function TicketOCX5Page() {
   const handleZoneSelect = (sectionId: string) => {
     const sectionConfig = OCX5_SEAT_LAYOUT_CONFIG.SECTIONS.find((s) => s.id === sectionId);
     if (!sectionConfig) return;
+
+    if (isOcx5HardcodedLockedZone(sectionId)) {
+      setHighlightedZoneId(sectionId);
+      setActiveZoneId(null);
+      setZoneUnavailableMessage(
+        "Hạng vé HUF và RAV đã hết."
+      );
+      return;
+    }
 
     const matchingTicket = selectedTickets.find((t) => t.seatSectionId === sectionId);
     // Allow selecting zone even if mapping isn't ready (visual aid only).
