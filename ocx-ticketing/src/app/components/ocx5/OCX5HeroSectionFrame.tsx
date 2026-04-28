@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import HeroSectionOCX5 from "@/app/components/ocx5/HeroSectionOCX5";
 import HorizonBridge from "@/app/components/ocx5/HorizonBridge";
 import StarsBackground from "@/app/components/ocx5/StarsBackground";
@@ -20,6 +21,7 @@ export default function OCX5HeroSectionFrame({
   debugLayout,
   enableLogoInteraction = true,
 }: OCX5HeroSectionFrameProps) {
+  const router = useRouter();
   const debugBorderClass = debugLayout ? "border-2 border-red-500" : "";
   const contentRef = useRef<HTMLDivElement>(null);
   const horizonRef = useRef<HTMLDivElement>(null);
@@ -134,7 +136,7 @@ export default function OCX5HeroSectionFrame({
       */}
       <div
         ref={contentRef}
-        className="relative z-50 flex items-center justify-center"
+        className="relative z-50 flex flex-col items-center justify-center gap-6 sm:gap-8"
         style={{
           height: "100%",
           paddingTop: `${paddingTop}px`,
@@ -143,6 +145,17 @@ export default function OCX5HeroSectionFrame({
         }}
       >
         <HeroSectionOCX5 enableInteraction={enableLogoInteraction} />
+        <button
+          type="button"
+          onClick={() => router.push("/ticket")}
+          className="group relative inline-flex items-center justify-center px-8 sm:px-10 py-3 sm:py-4 bg-[#d43922] rounded-full font-bold overflow-hidden transition-all duration-200 hover:scale-[1.02] active:scale-95 shadow-lg shadow-[0_0_15px_rgba(212,57,34,0.35)] hover:shadow-[0_0_28px_rgba(212,57,34,0.55)]"
+          style={{ fontFamily: "WizardWorldSimplified, fantasy, serif" }}
+        >
+          <span className="relative z-10 uppercase tracking-[0.2em] text-sm sm:text-base">
+            Get Tickets Now
+          </span>
+          <span className="pointer-events-none absolute inset-0 -translate-x-[120%] bg-white/20 skew-x-[-20deg] transition-transform duration-500 group-hover:translate-x-[120%]" />
+        </button>
       </div>
 
       {/* Horizon Bridge - Visual connection to next section, anchored to bottom */}

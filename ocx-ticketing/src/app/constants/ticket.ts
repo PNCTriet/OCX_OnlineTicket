@@ -103,11 +103,11 @@ export const ZONES: Zone[] = [
 
 export const EVENT_INFO: EventInfo = {
   id: "ocx-4",
-  name: "Ớt Cay Xè 5",
+  name: "Ớt Cay Xè Hà Nội",
   time: "15:00",
-  location: "Sân Patin Việt Nam Roller Rink",
+  location: "Thủ Đô Hà Nội",
   avatar: "/images/client_logo_ss5_alt1.jpg",
-  date: "T7 - 18/04/2026",
+  date: "07/2026",
 };
 
 // New layout configuration for the seat map

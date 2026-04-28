@@ -14,51 +14,39 @@ export default function OCX5LineupSection({ debugLayout }: { debugLayout: boolea
     () => [
       {
         id: 0,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_bmktcr_alt1.png",
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
       },
       {
         id: 1,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_lybuc_alt1.png",
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
       },
       {
         id: 2,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_thebre_alt1.png",
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
       },
       {
         id: 3,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_themeo_alt1.png",
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
       },
       {
         id: 4,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_maydays_alt1.png",
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
       },
       {
         id: 5,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_truanfu_alt1.png",
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
       },
       {
         id: 6,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_thang_alt1.png",
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
       },
       {
         id: 7,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_tflop_alt1.png",
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
       },
       {
         id: 8,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_tung_alt1.png",
-      },
-      {
-        id: 9,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_middle_alt1.png",
-      },
-      {
-        id: 10,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_thotrauma_alt1.png",
-      },
-      {
-        id: 11,
-        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_syncx_alt1.png",
+        image: "/images/ocx5_images/lineup/OCX5_lineup_main_artist1_blind_alt1.png",
       },
     ],
     []
@@ -221,7 +209,7 @@ export default function OCX5LineupSection({ debugLayout }: { debugLayout: boolea
               style={{ transformStyle: "preserve-3d" }}
             >
               <Link
-                href="/ticketocx5"
+                href="/ticket"
                 className="block relative"
                 aria-label="Go to tickets"
               >
@@ -250,7 +238,7 @@ export default function OCX5LineupSection({ debugLayout }: { debugLayout: boolea
               Tickets
             </h3>
             <Link
-              href="/ticketocx5"
+              href="/ticket"
               className="text-sm text-white/80 hover:text-white transition-colors underline underline-offset-4"
             >
               Open Seatmap
@@ -261,7 +249,7 @@ export default function OCX5LineupSection({ debugLayout }: { debugLayout: boolea
             {ticketCards.map((t) => (
               <Link
                 key={t.id}
-                href="/ticketocx5"
+                href="/ticket"
                 className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b ${t.tone} p-5 shadow-[0_25px_60px_-25px_rgba(0,0,0,0.9)] transition-transform hover:-translate-y-1 active:translate-y-0`}
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">

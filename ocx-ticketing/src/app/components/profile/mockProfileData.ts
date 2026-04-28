@@ -7,10 +7,10 @@ import type { ProfileTicket, ProfileBadge } from "./types";
 export const MOCK_TICKETS: ProfileTicket[] = [
   {
     id: "t1",
-    eventName: "Ớt Cay Xè 5 — Học Viện Âm Nhạc & Phép Thuật",
+    eventName: "Ớt Cay Xè Hà Nội — Học Viện Âm Nhạc & Phép Thuật",
     date: "18/04/2026",
     time: "15:00",
-    venue: "Sân Patin Việt Nam Roller Rink",
+    venue: "Thủ Đô Hà Nội",
     status: "upcoming",
     disabled: false,
     transferable: true,

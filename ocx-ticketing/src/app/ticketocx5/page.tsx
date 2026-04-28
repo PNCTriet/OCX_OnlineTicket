@@ -52,12 +52,12 @@ const EVENT_INFO_OCX5: EventInfo = {
   id: "ocx-5",
   name: "Ớt Cay Xè",
   time: "15:00",
-  location: "Sân Patin Việt Nam Roller Rink",
+  location: "Thủ Đô Hà Nội",
   avatar: "/images/client_logo_ss5_alt1.jpg",
-  date: "T7 - 18/04/2026",
+  date: "07/2026",
 };
 
-// Google Map embed – Sân Patin Việt Nam Roller Rink (15-17 Cộng Hòa, P.4, Tân Bình, HCM)
+// Google Map embed – Thủ Đô Hà Nội (15-17 Cộng Hòa, P.4, Tân Bình, HCM)
 const VENUE_MAP_EMBED_SRC =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4005.8995479482346!2d106.65554027509525!3d10.800006558758154!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317529300fb09909%3A0x22971093be7a67ef!2sS%C3%A2n%20Patin%20Vietnam%20Roller%20Rink%20%26%20Academy!5e1!3m2!1sen!2sus!4v1773502644229!5m2!1sen!2sus";
 
@@ -408,7 +408,7 @@ export default function TicketOCX5Page() {
       try {
         setError(null);
         const response = await fetch(
-          "https://api.otcayxe.com/tickets/event/cmhq77fnf00gvmq12v5h8klqn",
+          "https://api.otcayxe.com/tickets/event/cmoi4vq3m02jzo912nj53v59l",
           {
             method: "GET",
             headers: { accept: "*/*" },
@@ -714,12 +714,12 @@ export default function TicketOCX5Page() {
                 <div className="space-y-6">
                   <EventInfoCard event={EVENT_INFO_OCX5} />
 
-                  {/* Google Map – Sân Patin Việt Nam Roller Rink */}
+                  {/* Google Map – Thủ Đô Hà Nội */}
                   <div className="rounded-lg overflow-hidden border border-white/10 bg-black/30">
                     <p className="text-zinc-400 text-xs px-3 py-1.5">Vị trí</p>
                     <div className="relative w-full aspect-video">
                       <iframe
-                        title="Bản đồ Sân Patin Việt Nam Roller Rink"
+                        title="Bản đồ Thủ Đô Hà Nội"
                         src={VENUE_MAP_EMBED_SRC}
                         width="100%"
                         height="100%"

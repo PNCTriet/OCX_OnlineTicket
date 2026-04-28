@@ -45,7 +45,7 @@ export default function OCX5Page() {
         <OCX5HeroSectionFrame debugLayout={DEBUG_LAYOUT} />
 
         {/* SECTION 2: EVENT INFO */}
-        <OCX5EventInfoSection debugLayout={DEBUG_LAYOUT} />
+        {/* <OCX5EventInfoSection debugLayout={DEBUG_LAYOUT} /> */}
 
         {/* SECTION 3: LINE-UP */}
         <OCX5LineupSection debugLayout={DEBUG_LAYOUT} />

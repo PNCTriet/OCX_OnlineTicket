@@ -97,7 +97,7 @@ export default function TicketOption2Page() {
   const fetchTickets = async () => {
     try {
       setError(null);
-      const response = await fetch('https://api.otcayxe.com/tickets/event/cmhq77fnf00gvmq12v5h8klqn', {
+      const response = await fetch('https://api.otcayxe.com/tickets/event/cmoi4vq3m02jzo912nj53v59l', {
         method: 'GET',
         headers: {
           'accept': '*/*',
@@ -241,7 +241,7 @@ export default function TicketOption2Page() {
               </div>
               
               {/* Seatmap - Left column */}
-              <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+              {/* <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
                 <h3 className="text-xl font-bold text-white mb-4 text-center">Sơ đồ chỗ ngồi</h3>
                 <div className="relative w-full flex justify-center">
                   <div className="w-[90%] aspect-square relative">
@@ -253,7 +253,7 @@ export default function TicketOption2Page() {
                     />
                   </div>
                 </div>
-              </div>
+              </div> */}
               
               <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
                 <h2 className="text-2xl font-bold text-white mb-4">Chọn Vé</h2>

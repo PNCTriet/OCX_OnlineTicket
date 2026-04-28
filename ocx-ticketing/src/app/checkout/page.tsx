@@ -301,7 +301,7 @@ function CheckoutContent() {
           order_amount: totalAmount,
           user_id: user?.id,
           organization_id: "cmf4pxbbh00m4l912i7m4pcs7",
-          event_id: "cmhq77fnf00gvmq12v5h8klqn",
+          event_id: "cmoi4vq3m02jzo912nj53v59l",
           ticket_ids: selectedTicketIds,
         }),
       });
@@ -442,7 +442,7 @@ function CheckoutContent() {
       }
 
       // Chuẩn bị dữ liệu order
-      const event_id = "cmhq77fnf00gvmq12v5h8klqn";
+      const event_id = "cmoi4vq3m02jzo912nj53v59l";
       const organization_id = "cmf4pxbbh00m4l912i7m4pcs7"; 
       const items = selectedTickets
         .filter(t => t.quantity > 0)

@@ -81,7 +81,7 @@ export default function CheckinPage() {
     notes?: string;
   }
 
-  const [selectedEventId] = useState<string>("cmhq77fnf00gvmq12v5h8klqn");
+  const [selectedEventId] = useState<string>("cmoi4vq3m02jzo912nj53v59l");
   const [ticketMap, setTicketMap] = useState<Map<string, TicketData>>(new Map());
   const [lastTicketData, setLastTicketData] = useState<TicketData | null>(null);
   const [lastCheckinInfo, setLastCheckinInfo] = useState<{ verifiedBy?: string; checkinTime?: string } | null>(null);

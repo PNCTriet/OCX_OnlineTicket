@@ -170,14 +170,14 @@ export default function OCX5HeaderNav({ showSectionNav = true }: OCX5HeaderNavPr
           ) : (
             <div className="flex items-center gap-2 sm:gap-4">
               <Link
-                href="/ticketocx5"
+                href="/ticket"
                 className="px-4 py-2 text-[11px] sm:text-[12px] font-bold text-white tracking-[1px] border border-white/70 rounded-full hover:bg-white hover:text-black transition-all"
                 style={{ fontFamily: "WizardWorldSimplified, fantasy, serif" }}
               >
                 LOG IN
               </Link>
               <Link
-                href="/ticketocx5"
+                href="/ticket"
                 className="px-4 py-2 text-[11px] sm:text-[12px] font-bold text-white tracking-[1px] rounded-full transition-all shadow-[0_0_15px_rgba(212,57,34,0.35)] hover:shadow-[0_0_28px_rgba(212,57,34,0.55)] hover:scale-[1.03] active:scale-95"
                 style={{
                   fontFamily: "WizardWorldSimplified, fantasy, serif",

@@ -334,7 +334,7 @@ export default function HeroSectionOCX5({
         }}
       >
         <Image
-          src="/images/ocx5_images/elements/ocx_logo_ss5_horizon_alt3.png"
+          src="/images/ocx5_images/elements/ocx_logo_ss5_horizon_alt4.png"
           alt="OCX Hero Logo"
           width={4500}
           height={4500}
