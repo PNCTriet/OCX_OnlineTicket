@@ -5,6 +5,9 @@
 
 export type TicketStatusTab = "upcoming" | "used" | "expired";
 
+/** Khớp `PROFILE_BADGE_ICON_MAP` — icon Lucide */
+export type ProfileBadgeIconKey = "ticket" | "bird" | "home" | "flame" | "medal";
+
 export interface ProfileTicket {
   id: string;
   eventName: string;
@@ -23,8 +26,7 @@ export interface ProfileBadge {
   name: string;
   description: string;
   iconUrl?: string;
-  /** Icon name or emoji fallback */
-  iconLabel?: string;
+  iconKey?: ProfileBadgeIconKey;
   unlocked: boolean;
   /** Optional for future rarity tiers */
   rarity?: "common" | "rare" | "epic" | "legendary";

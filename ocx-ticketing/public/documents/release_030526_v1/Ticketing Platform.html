@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Onyx — Ticketing Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   ONYX DESIGN LANGUAGE — TOKENS
+   ========================================================= */
+:root {
+  /* Colors */
+  --primary: #FF6B1A;
+  --primary-hover: #FF7A33;
+  --primary-pressed: #E85D14;
+  --primary-soft: #FF6B1A1F;
+  --primary-ring: #FF6B1A66;
+  --on-primary: #0A0A0A;
+
+  --canvas: #0A0A0A;
+  --surface-0: #0F0F0F;
+  --surface-1: #141414;
+  --surface-2: #1A1A1A;
+  --surface-3: #212121;
+  --surface-overlay: #0A0A0AE6;
+
+  --ink: #FAFAFA;
+  --ink-strong: #FFFFFF;
+  --ink-muted: #A1A1A1;
+  --ink-subtle: #737373;
+  --ink-disabled: #525252;
+
+  --hairline: #262626;
+  --hairline-strong: #333333;
+  --hairline-focus: #FF6B1A;
+
+  --success: #34D399;
+  --success-soft: #34D39914;
+  --warning: #FBBF24;
+  --warning-soft: #FBBF2414;
+  --danger: #F87171;
+  --danger-soft: #F8717114;
+  --info: #60A5FA;
+  --info-soft: #60A5FA14;
+
+  --seat-available: #262626;
+  --seat-available-border: #404040;
+  --seat-selected: #FF6B1A;
+  --seat-reserved: #3F3F3F;
+  --seat-sold: #1A1A1A;
+  --seat-sold-border: #262626;
+  --seat-vip: #FBBF24;
+  --seat-vip-soft: #FBBF2414;
+
+  /* Email (light) */
+  --email-canvas: #FFFFFF;
+  --email-surface: #FAFAFA;
+  --email-ink: #0A0A0A;
+  --email-ink-muted: #525252;
+  --email-hairline: #E5E5E5;
+  --email-primary: #E85D14;
+
+  /* Radii */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-pill: 9999px;
+
+  /* Spacing */
+  --s-xxs: 2px;
+  --s-xs: 4px;
+  --s-sm: 8px;
+  --s-md: 12px;
+  --s-lg: 16px;
+  --s-xl: 24px;
+  --s-xxl: 32px;
+  --s-xxxl: 48px;
+  --s-section: 80px;
+  --s-section-lg: 120px;
+
+  --font-sans: "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --ease-std: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--canvas); color: var(--ink); font-family: var(--font-sans); font-size: 15px; line-height: 1.55; letter-spacing: -0.1px; -webkit-font-smoothing: antialiased; }
+body { font-variant-numeric: tabular-nums; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+img { max-width: 100%; display: block; }
+ul { list-style: none; }
+:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--canvas), 0 0 0 4px var(--primary-ring); }
+
+/* =========================================================
+   TYPOGRAPHY
+   ========================================================= */
+.t-display-xl { font-size: 56px; font-weight: 600; line-height: 1.05; letter-spacing: -1.4px; }
+.t-display-lg { font-size: 40px; font-weight: 600; line-height: 1.1;  letter-spacing: -1.0px; }
+.t-display-md { font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -0.7px; }
+.t-heading-lg { font-size: 24px; font-weight: 600; line-height: 1.25; letter-spacing: -0.4px; }
+.t-heading-md { font-size: 20px; font-weight: 600; line-height: 1.3;  letter-spacing: -0.3px; }
+.t-heading-sm { font-size: 16px; font-weight: 600; line-height: 1.4;  letter-spacing: -0.2px; }
+.t-body-lg    { font-size: 17px; font-weight: 400; line-height: 1.6;  letter-spacing: -0.2px; }
+.t-body       { font-size: 15px; font-weight: 400; line-height: 1.55; }
+.t-body-strong{ font-size: 15px; font-weight: 500; line-height: 1.55; }
+.t-caption    { font-size: 13px; font-weight: 400; line-height: 1.45; }
+.t-caption-strong { font-size: 13px; font-weight: 500; line-height: 1.45; }
+.t-label      { font-size: 12px; font-weight: 500; line-height: 1.3; letter-spacing: 0.2px; text-transform: uppercase; }
+.t-micro      { font-size: 11px; font-weight: 400; line-height: 1.3; letter-spacing: 0.1px; }
+.t-mono       { font-family: var(--font-mono); font-size: 13px; font-weight: 400; }
+.t-mono-strong{ font-family: var(--font-mono); font-size: 13px; font-weight: 500; }
+.t-numeric-display { font-family: var(--font-mono); font-size: 32px; font-weight: 500; line-height: 1; letter-spacing: -0.5px; }
+
+.muted { color: var(--ink-muted); }
+.subtle { color: var(--ink-subtle); }
+.strong { color: var(--ink-strong); }
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 16px; border-radius: var(--r-md); font-size: 14px; font-weight: 500; line-height: 1; letter-spacing: -0.1px; transition: background 150ms var(--ease-std), color 150ms var(--ease-std), border-color 150ms var(--ease-std); white-space: nowrap; }
+.btn-primary { background: var(--primary); color: var(--on-primary); }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary:active { background: var(--primary-pressed); }
+.btn-lg { height: 48px; padding: 0 24px; font-size: 15px; }
+.btn-secondary { background: var(--surface-2); color: var(--ink); border: 1px solid var(--hairline); }
+.btn-secondary:hover { background: var(--surface-3); }
+.btn-ghost { background: transparent; color: var(--ink-muted); }
+.btn-ghost:hover { color: var(--ink); }
+.btn-danger { background: var(--danger-soft); color: var(--danger); border: 1px solid var(--danger-soft); }
+.btn-icon { width: 36px; height: 36px; padding: 0; background: var(--surface-2); border: 1px solid var(--hairline); color: var(--ink-muted); border-radius: var(--r-md); }
+.btn-icon:hover { color: var(--ink); background: var(--surface-3); }
+
+.link-inline { color: var(--primary); }
+.link-inline:hover { text-decoration: underline; }
+.link-muted { color: var(--ink-muted); }
+.link-muted:hover { color: var(--ink); }
+
+/* =========================================================
+   FORM CONTROLS
+   ========================================================= */
+.input, .select, textarea.input {
+  width: 100%; height: 40px; padding: 10px 12px;
+  background: var(--surface-1); color: var(--ink);
+  border: 1px solid var(--hairline); border-radius: var(--r-md);
+  font: 400 15px/1.55 var(--font-sans); letter-spacing: -0.1px;
+  transition: border-color 150ms var(--ease-std);
+}
+textarea.input { height: auto; min-height: 96px; resize: vertical; }
+.input::placeholder, textarea.input::placeholder { color: var(--ink-subtle); }
+.input:focus, .select:focus, textarea.input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px var(--canvas), 0 0 0 4px var(--primary-ring); }
+.input.error { border-color: var(--danger); }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 13px; font-weight: 500; color: var(--ink-muted); }
+.field .help { font-size: 13px; color: var(--ink-subtle); }
+.field .err { font-size: 13px; color: var(--danger); }
+
+.select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23A1A1A1' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+.checkbox { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.checkbox input { appearance: none; width: 18px; height: 18px; background: var(--surface-2); border: 1px solid var(--hairline-strong); border-radius: var(--r-xs); display: inline-grid; place-content: center; cursor: pointer; }
+.checkbox input:checked { background: var(--primary); border-color: var(--primary); }
+.checkbox input:checked::after { content: ""; width: 10px; height: 6px; border-left: 2px solid var(--on-primary); border-bottom: 2px solid var(--on-primary); transform: rotate(-45deg) translate(1px, -1px); }
+
+/* =========================================================
+   CARDS, BADGES, NAV
+   ========================================================= */
+.card { background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg); padding: 24px; }
+.card-elevated { background: var(--surface-2); border: 1px solid var(--hairline); border-radius: var(--r-lg); padding: 24px; }
+
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: var(--r-pill); font-size: 12px; font-weight: 500; line-height: 1.3; letter-spacing: 0.2px; text-transform: uppercase; background: var(--surface-2); color: var(--ink-muted); border: 1px solid var(--hairline); }
+.badge-primary { background: var(--primary-soft); color: var(--primary); border-color: transparent; }
+.badge-success { background: var(--success-soft); color: var(--success); border-color: transparent; }
+.badge-warning { background: var(--warning-soft); color: var(--warning); border-color: transparent; }
+.badge-danger { background: var(--danger-soft); color: var(--danger); border-color: transparent; }
+.badge-info { background: var(--info-soft); color: var(--info); border-color: transparent; }
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+.container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 80px 0; }
+.divider { height: 1px; background: var(--hairline); }
+
+/* =========================================================
+   TOP NAV
+   ========================================================= */
+.nav-top {
+  position: sticky; top: 0; z-index: 50;
+  height: 56px;
+  background: var(--surface-overlay);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border-bottom: 1px solid var(--hairline);
+}
+.nav-top-inner { display: flex; align-items: center; height: 100%; gap: 24px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; letter-spacing: -0.2px; }
+.brand-mark { width: 24px; height: 24px; border-radius: var(--r-sm); background: var(--primary); display: grid; place-items: center; color: var(--on-primary); font-weight: 600; font-family: var(--font-mono); font-size: 13px; }
+.nav-links { display: flex; gap: 4px; margin-left: 16px; }
+.nav-links a { padding: 8px 12px; border-radius: var(--r-md); color: var(--ink-muted); font-size: 14px; font-weight: 500; }
+.nav-links a:hover { color: var(--ink); }
+.nav-links a.active { background: var(--surface-2); color: var(--ink); }
+.nav-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.lang-toggle { display: inline-flex; padding: 2px; border: 1px solid var(--hairline); border-radius: var(--r-md); background: var(--surface-1); }
+.lang-toggle button { padding: 6px 10px; font-size: 12px; font-weight: 500; color: var(--ink-muted); border-radius: 6px; letter-spacing: 0.2px; text-transform: uppercase; }
+.lang-toggle button.active { background: var(--surface-3); color: var(--ink); }
+
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+}
+
+/* =========================================================
+   HERO (HOME)
+   ========================================================= */
+.home-hero {
+  position: relative;
+  padding: 96px 0 64px;
+  border-bottom: 1px solid var(--hairline);
+  overflow: hidden;
+}
+.home-hero::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(80% 60% at 50% 0%, rgba(255,107,26,0.10) 0%, transparent 60%),
+    linear-gradient(180deg, transparent 60%, var(--canvas) 100%);
+  pointer-events: none;
+}
+.home-hero .container { position: relative; }
+.eyebrow { color: var(--primary); font-size: 12px; font-weight: 500; letter-spacing: 0.2px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; }
+.eyebrow::before { content: ""; width: 16px; height: 1px; background: var(--primary); }
+.home-hero h1 { font-size: 56px; font-weight: 600; line-height: 1.05; letter-spacing: -1.4px; max-width: 880px; margin-top: 16px; }
+.home-hero p.lead { color: var(--ink-muted); font-size: 17px; line-height: 1.6; margin-top: 16px; max-width: 640px; letter-spacing: -0.2px; }
+
+.search-bar {
+  margin-top: 40px;
+  display: grid; grid-template-columns: 1.4fr 1fr 1fr auto; gap: 8px;
+  background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg);
+  padding: 8px;
+}
+.search-field { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; border-radius: var(--r-md); }
+.search-field:hover { background: var(--surface-2); }
+.search-field label { font-size: 11px; color: var(--ink-subtle); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 500; }
+.search-field .v { font-size: 15px; color: var(--ink); font-weight: 500; }
+.search-bar .btn { align-self: stretch; }
+@media (max-width: 900px) {
+  .search-bar { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .home-hero { padding: 64px 0 40px; }
+  .home-hero h1 { font-size: 40px; letter-spacing: -1.0px; }
+  .search-bar { grid-template-columns: 1fr; }
+}
+
+/* =========================================================
+   CATEGORIES
+   ========================================================= */
+.cat-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+.cat-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: var(--r-pill);
+  background: var(--surface-1); border: 1px solid var(--hairline);
+  font-size: 14px; color: var(--ink-muted); font-weight: 500;
+  cursor: pointer; transition: all 150ms var(--ease-std);
+}
+.cat-chip:hover { color: var(--ink); border-color: var(--hairline-strong); }
+.cat-chip.active { background: var(--primary-soft); color: var(--primary); border-color: transparent; }
+
+/* =========================================================
+   EVENT CARD GRID
+   ========================================================= */
+.section-head { display: flex; align-items: end; justify-content: space-between; margin-bottom: 32px; gap: 24px; flex-wrap: wrap; }
+.section-head h2 { font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -0.7px; }
+.section-head .sub { color: var(--ink-muted); font-size: 15px; margin-top: 4px; }
+
+.event-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+@media (max-width: 1024px) { .event-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px)  { .event-grid { grid-template-columns: 1fr; } }
+
+.card-event {
+  background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg);
+  overflow: hidden; cursor: pointer; transition: background 200ms var(--ease-std), border-color 200ms var(--ease-std);
+  display: flex; flex-direction: column;
+}
+.card-event:hover { background: var(--surface-2); border-color: var(--hairline-strong); }
+.card-event .thumb { aspect-ratio: 16/9; background: var(--surface-2); position: relative; overflow: hidden; }
+.card-event .thumb-art { position: absolute; inset: 0; }
+.card-event .thumb-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(10,10,10,0.7) 100%); }
+.card-event .thumb .top-tags { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; }
+.card-event .thumb .save { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; background: var(--surface-overlay); backdrop-filter: blur(8px); border: 1px solid var(--hairline); border-radius: var(--r-md); display: grid; place-items: center; color: var(--ink); }
+.card-event .body { padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.card-event .date { font-size: 12px; font-weight: 500; color: var(--primary); letter-spacing: 0.2px; text-transform: uppercase; }
+.card-event h3 { font-size: 20px; font-weight: 600; line-height: 1.3; letter-spacing: -0.3px; color: var(--ink-strong); }
+.card-event .venue { font-size: 13px; color: var(--ink-muted); display: flex; align-items: center; gap: 6px; }
+.card-event .meta { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 16px; border-top: 1px solid var(--hairline); }
+.card-event .price { font-size: 15px; font-weight: 500; }
+.card-event .price .from { color: var(--ink-subtle); font-size: 13px; font-weight: 400; margin-right: 4px; }
+
+/* Synthetic poster art (placeholders) */
+.poster { width: 100%; height: 100%; display: grid; place-items: center; color: var(--ink-strong); font-family: var(--font-sans); font-weight: 600; }
+.poster-1 { background: radial-gradient(120% 100% at 0% 0%, #FF6B1A 0%, #B33C00 40%, #2A0F00 100%); }
+.poster-2 { background: radial-gradient(120% 100% at 100% 0%, #1F2937 0%, #0A0A0A 60%), repeating-linear-gradient(45deg, transparent 0 14px, rgba(255,255,255,0.04) 14px 15px); }
+.poster-3 { background: linear-gradient(135deg, #2A1A4A 0%, #0A0A0A 70%); }
+.poster-4 { background: radial-gradient(120% 100% at 50% 100%, #8B2500 0%, #1A0E07 60%, #0A0A0A 100%); }
+.poster-5 { background: linear-gradient(180deg, #0F4C2A 0%, #0A0A0A 80%); }
+.poster-6 { background: linear-gradient(180deg, #4A2A0A 0%, #0A0A0A 80%); }
+.poster-7 { background: radial-gradient(80% 80% at 30% 30%, #FBBF24 0%, #4A2E00 40%, #0A0A0A 90%); }
+.poster-8 { background: linear-gradient(180deg, #1F1F1F 0%, #0A0A0A 100%), repeating-linear-gradient(0deg, transparent 0 19px, rgba(255,255,255,0.03) 19px 20px); }
+.poster-9 { background: radial-gradient(100% 80% at 50% 0%, #1E3A8A 0%, #0A0A0A 70%); }
+
+.poster .bigtype { font-size: 36px; line-height: 1.0; letter-spacing: -1.4px; text-align: center; padding: 0 16px; mix-blend-mode: screen; opacity: 0.95; }
+
+/* =========================================================
+   FEATURED RAIL
+   ========================================================= */
+.featured {
+  display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px;
+  background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg); overflow: hidden;
+}
+.featured .art { aspect-ratio: 16/9; min-height: 320px; position: relative; }
+.featured .art-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, var(--surface-1) 0%, transparent 60%); }
+.featured .body { padding: 40px; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
+.featured h3 { font-size: 40px; font-weight: 600; line-height: 1.1; letter-spacing: -1.0px; }
+.featured .info-row { display: flex; gap: 24px; color: var(--ink-muted); font-size: 14px; flex-wrap: wrap; }
+.featured .info-row > div { display: flex; align-items: center; gap: 6px; }
+@media (max-width: 900px) {
+  .featured { grid-template-columns: 1fr; }
+  .featured .body { padding: 24px; }
+  .featured h3 { font-size: 28px; letter-spacing: -0.7px; }
+}
+
+/* =========================================================
+   PAGE STAGE / "FRAMES"
+   ========================================================= */
+.page-stage { border-top: 1px solid var(--hairline); margin-top: 48px; padding: 48px 0; background: linear-gradient(180deg, var(--surface-0) 0%, var(--canvas) 100%); }
+.page-stage h2.lvl { font-size: 13px; font-weight: 500; color: var(--ink-subtle); letter-spacing: 0.2px; text-transform: uppercase; margin-bottom: 8px; }
+.page-stage h2.lvl span { color: var(--primary); }
+.page-stage .frame-title { font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -0.7px; margin-bottom: 32px; }
+.frame { border: 1px solid var(--hairline); border-radius: var(--r-lg); overflow: hidden; background: var(--canvas); }
+.frame .frame-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--surface-1); border-bottom: 1px solid var(--hairline); }
+.frame .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--surface-3); }
+.frame .frame-bar .url { margin-left: 12px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); }
+
+/* =========================================================
+   EVENT DETAIL
+   ========================================================= */
+.event-hero {
+  position: relative; padding: 96px 0 64px;
+  background: var(--canvas);
+  overflow: hidden;
+}
+.event-hero .bg { position: absolute; inset: 0; background:
+    radial-gradient(60% 80% at 80% 20%, #4A1500 0%, transparent 60%),
+    radial-gradient(60% 80% at 20% 80%, #2A0A20 0%, transparent 60%),
+    linear-gradient(180deg, transparent 0%, rgba(10,10,10,0.6) 60%, var(--canvas) 100%);
+}
+.event-hero .container { position: relative; }
+.event-hero .grid { display: grid; grid-template-columns: 1fr 480px; gap: 64px; align-items: end; }
+.event-hero h1 { font-size: 56px; font-weight: 600; line-height: 1.05; letter-spacing: -1.4px; color: var(--ink-strong); margin: 16px 0; }
+.event-hero .meta-row { display: flex; gap: 24px; color: var(--ink-muted); font-size: 15px; flex-wrap: wrap; margin-top: 16px; }
+.event-hero .meta-row > div { display: flex; align-items: center; gap: 8px; }
+.event-poster { aspect-ratio: 4/5; border-radius: var(--r-lg); border: 1px solid var(--hairline); overflow: hidden; }
+.countdown { display: inline-flex; gap: 16px; padding: 16px 24px; background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg); margin-top: 32px; align-items: end; }
+.countdown .unit { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 56px; }
+.countdown .num { font-family: var(--font-mono); font-size: 32px; font-weight: 500; line-height: 1; letter-spacing: -0.5px; color: var(--ink-strong); }
+.countdown .lbl { font-size: 11px; color: var(--ink-muted); letter-spacing: 0.2px; text-transform: uppercase; font-weight: 500; }
+.countdown .sep { font-family: var(--font-mono); font-size: 32px; color: var(--ink-subtle); padding-bottom: 18px; }
+
+@media (max-width: 1024px) {
+  .event-hero .grid { grid-template-columns: 1fr; }
+  .event-poster { max-width: 320px; }
+}
+@media (max-width: 640px) {
+  .event-hero { padding: 48px 0 32px; }
+  .event-hero h1 { font-size: 36px; letter-spacing: -1.0px; }
+  .countdown .unit { min-width: 44px; }
+  .countdown .num { font-size: 24px; }
+}
+
+.event-body { display: grid; grid-template-columns: 1fr 400px; gap: 48px; padding: 64px 0; }
+@media (max-width: 1024px) { .event-body { grid-template-columns: 1fr; gap: 32px; padding: 32px 0; } }
+
+.tab-bar { display: flex; gap: 24px; border-bottom: 1px solid var(--hairline); margin-bottom: 32px; }
+.tab-bar button { padding: 14px 0; font-size: 15px; font-weight: 500; color: var(--ink-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tab-bar button.active { color: var(--ink); border-bottom-color: var(--primary); }
+
+.prose { color: var(--ink); font-size: 17px; line-height: 1.6; max-width: 720px; }
+.prose p + p { margin-top: 16px; }
+.prose h3 { font-size: 24px; font-weight: 600; letter-spacing: -0.4px; line-height: 1.25; margin: 32px 0 12px; }
+.prose ul { padding-left: 24px; list-style: disc; color: var(--ink-muted); }
+
+.organizer-box { display: flex; align-items: center; gap: 16px; padding: 20px; border: 1px solid var(--hairline); border-radius: var(--r-lg); background: var(--surface-1); margin-top: 32px; }
+.organizer-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #FF6B1A, #6B1A00); display: grid; place-items: center; color: var(--on-primary); font-weight: 600; font-size: 20px; flex-shrink: 0; }
+
+/* Sidebar / ticket types */
+.ticket-stack { display: flex; flex-direction: column; gap: 12px; }
+.card-ticket {
+  display: grid; grid-template-columns: 1fr auto; gap: 8px 16px;
+  padding: 20px; background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg);
+  transition: all 150ms var(--ease-std);
+}
+.card-ticket:hover { border-color: var(--hairline-strong); }
+.card-ticket.selected { background: var(--primary-soft); border-color: var(--primary); }
+.card-ticket .name { font-size: 16px; font-weight: 600; letter-spacing: -0.2px; }
+.card-ticket .desc { font-size: 13px; color: var(--ink-muted); grid-column: 1; }
+.card-ticket .price { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; text-align: right; }
+.card-ticket .stepper { grid-column: 2; display: flex; align-items: center; gap: 8px; justify-content: end; }
+.stepper-btn { width: 28px; height: 28px; border-radius: var(--r-sm); background: var(--surface-2); border: 1px solid var(--hairline); color: var(--ink-muted); display: grid; place-items: center; }
+.stepper-btn:hover { color: var(--ink); }
+.stepper-num { font-family: var(--font-mono); font-size: 14px; font-weight: 500; min-width: 20px; text-align: center; }
+
+/* =========================================================
+   STICKY CHECKOUT BAR
+   ========================================================= */
+.sticky-bar {
+  position: sticky; bottom: 0; z-index: 40;
+  height: 80px; padding: 16px 24px;
+  background: var(--surface-overlay);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border-top: 1px solid var(--hairline);
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+}
+.sticky-bar .totals { display: flex; flex-direction: column; gap: 4px; }
+.sticky-bar .totals .qty { font-size: 12px; color: var(--ink-muted); letter-spacing: 0.2px; text-transform: uppercase; font-weight: 500; }
+.sticky-bar .totals .price { font-family: var(--font-mono); font-size: 32px; font-weight: 500; line-height: 1; letter-spacing: -0.5px; color: var(--ink-strong); }
+@media (max-width: 640px) {
+  .sticky-bar { height: auto; flex-direction: column; align-items: stretch; gap: 12px; padding: 16px; }
+  .sticky-bar .btn { width: 100%; }
+}
+
+/* =========================================================
+   ORGANIZER PAGE
+   ========================================================= */
+.org-header { padding: 64px 0 40px; border-bottom: 1px solid var(--hairline); }
+.org-header .row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.org-logo { width: 96px; height: 96px; border-radius: var(--r-lg); background: linear-gradient(135deg, #FF6B1A, #6B1A00); display: grid; place-items: center; color: var(--on-primary); font-weight: 600; font-size: 32px; letter-spacing: -1px; flex-shrink: 0; }
+.org-header h1 { font-size: 40px; font-weight: 600; letter-spacing: -1.0px; }
+.org-header .desc { color: var(--ink-muted); margin-top: 8px; max-width: 640px; }
+.org-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 32px; }
+.stat-card { padding: 20px 24px; border: 1px solid var(--hairline); border-radius: var(--r-lg); background: var(--surface-1); }
+.stat-card .lbl { font-size: 11px; color: var(--ink-muted); letter-spacing: 0.2px; text-transform: uppercase; font-weight: 500; }
+.stat-card .val { font-family: var(--font-mono); font-size: 32px; font-weight: 500; letter-spacing: -0.5px; color: var(--ink-strong); margin-top: 8px; }
+.stat-card .delta { color: var(--success); font-size: 13px; margin-top: 4px; }
+@media (max-width: 900px) { .org-stats { grid-template-columns: repeat(2, 1fr); } }
+
+/* =========================================================
+   CHECKOUT — SEATMAP
+   ========================================================= */
+.checkout-grid { display: grid; grid-template-columns: 1fr 400px; gap: 32px; padding: 48px 0; }
+@media (max-width: 1024px) { .checkout-grid { grid-template-columns: 1fr; } }
+
+.stage-label { text-align: center; padding: 12px; background: var(--surface-2); border: 1px solid var(--hairline); border-radius: var(--r-md); color: var(--ink-muted); font-size: 12px; font-weight: 500; letter-spacing: 0.2px; text-transform: uppercase; max-width: 480px; margin: 0 auto 32px; }
+
+.seatmap { padding: 32px; background: var(--surface-0); border: 1px solid var(--hairline); border-radius: var(--r-lg); }
+.seat-rows { display: flex; flex-direction: column; gap: 16px; align-items: center; }
+.seat-row { display: flex; align-items: center; gap: 4px; }
+.seat-row .row-letter { width: 20px; color: var(--ink-subtle); font-family: var(--font-mono); font-size: 11px; text-align: center; }
+.seat-row .aisle { width: 28px; }
+.seat {
+  width: 24px; height: 24px; border-radius: var(--r-xs);
+  background: var(--seat-available); border: 1px solid var(--seat-available-border);
+  cursor: pointer; transition: all 100ms var(--ease-std);
+}
+.seat:hover { border-color: var(--primary); }
+.seat.selected { background: var(--seat-selected); border-color: var(--seat-selected); }
+.seat.sold { background: var(--seat-sold); border-color: var(--seat-sold-border); cursor: not-allowed; }
+.seat.reserved { background: var(--seat-reserved); border-color: var(--seat-reserved); cursor: not-allowed; }
+.seat.vip { background: var(--seat-vip-soft); border-color: var(--seat-vip); }
+.seat.vip:hover { border-color: var(--seat-vip); box-shadow: 0 0 0 1px var(--seat-vip); }
+
+.seat-legend { display: flex; gap: 24px; margin-top: 24px; flex-wrap: wrap; justify-content: center; }
+.seat-legend .item { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-muted); }
+.seat-legend .swatch { width: 16px; height: 16px; border-radius: var(--r-xs); }
+
+.order-summary { background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg); padding: 24px; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 80px; }
+.order-summary h3 { font-size: 16px; font-weight: 600; }
+.summary-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.summary-row .l { color: var(--ink-muted); font-size: 14px; }
+.summary-row .r { font-family: var(--font-mono); font-size: 14px; font-weight: 500; }
+.summary-total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 16px; border-top: 1px solid var(--hairline); }
+.summary-total .lbl { font-size: 13px; color: var(--ink-muted); letter-spacing: 0.2px; text-transform: uppercase; font-weight: 500; }
+.summary-total .val { font-family: var(--font-mono); font-size: 32px; font-weight: 500; letter-spacing: -0.5px; color: var(--ink-strong); }
+
+/* Quantity selector (no-seatmap) */
+.qty-card { background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg); padding: 24px; }
+.qty-row { display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--hairline); }
+.qty-row:last-child { border-bottom: none; }
+.qty-row .name { font-weight: 600; }
+.qty-row .price { font-family: var(--font-mono); font-size: 16px; font-weight: 500; }
+
+/* Payment options */
+.pay-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.pay-option { padding: 16px; border: 1px solid var(--hairline); border-radius: var(--r-md); background: var(--surface-1); cursor: pointer; display: flex; flex-direction: column; gap: 8px; transition: all 150ms var(--ease-std); }
+.pay-option:hover { border-color: var(--hairline-strong); }
+.pay-option.selected { background: var(--primary-soft); border-color: var(--primary); }
+.pay-option .pay-logo { height: 24px; display: flex; align-items: center; }
+.pay-option .pay-name { font-size: 13px; font-weight: 500; }
+
+/* QR Modal */
+.modal-backdrop { background: rgba(0,0,0,0.7); padding: 32px; display: grid; place-items: center; border-radius: var(--r-lg); }
+.modal {
+  background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-xl); padding: 32px;
+  max-width: 480px; width: 100%; box-shadow: 0 24px 48px rgba(0,0,0,0.6);
+  display: flex; flex-direction: column; gap: 16px; align-items: center; text-align: center;
+}
+.qr-canvas {
+  width: 220px; height: 220px; background: var(--canvas);
+  padding: 12px; border-radius: var(--r-md); border: 1px solid var(--hairline);
+}
+.qr-mock { width: 100%; height: 100%; background:
+    conic-gradient(#FFF 0% 12%, #000 12% 25%, #FFF 25% 37%, #000 37% 50%, #FFF 50% 62%, #000 62% 75%, #FFF 75% 87%, #000 87% 100%);
+  background-size: 12px 12px;
+  /* Simulate QR dots */
+  background:
+    linear-gradient(white, white) no-repeat 0 0/100% 100%,
+    repeating-conic-gradient(#000 0 25%, transparent 0 50%) 0 0 / 12px 12px;
+}
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+.profile-grid { display: grid; grid-template-columns: 280px 1fr; gap: 32px; padding: 48px 0; }
+@media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } }
+.profile-side { display: flex; flex-direction: column; gap: 8px; }
+.profile-side .ava { width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(135deg, #FF6B1A, #6B1A00); display: grid; place-items: center; color: var(--on-primary); font-weight: 600; font-size: 36px; }
+.profile-nav { display: flex; flex-direction: column; gap: 4px; margin-top: 16px; }
+.profile-nav a { padding: 8px 12px; border-radius: var(--r-md); font-size: 14px; color: var(--ink-muted); }
+.profile-nav a.active { background: var(--surface-2); color: var(--ink); }
+
+.ticket-card {
+  display: grid; grid-template-columns: 1fr 96px; gap: 24px;
+  padding: 20px; background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg);
+  align-items: center;
+}
+.ticket-card .qr {
+  width: 96px; height: 96px; background: var(--canvas);
+  border-radius: var(--r-md); padding: 6px; border: 1px solid var(--hairline);
+}
+.qr-mini { width: 100%; height: 100%; background:
+  repeating-conic-gradient(#FAFAFA 0 25%, #0A0A0A 0 50%) 0 0 / 8px 8px;
+}
+.ticket-card .info { display: flex; flex-direction: column; gap: 8px; }
+.ticket-card .info h4 { font-size: 16px; font-weight: 600; letter-spacing: -0.2px; }
+.ticket-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--ink-muted); }
+.ticket-meta .code { font-family: var(--font-mono); }
+
+/* Order history table */
+.table { width: 100%; background: var(--surface-0); border: 1px solid var(--hairline); border-radius: var(--r-lg); overflow: hidden; border-collapse: collapse; }
+.table thead th { background: var(--surface-1); color: var(--ink-muted); font-size: 12px; font-weight: 500; letter-spacing: 0.2px; text-transform: uppercase; text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--hairline); }
+.table tbody td { padding: 14px 16px; border-bottom: 1px solid var(--hairline); font-size: 14px; }
+.table tbody tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background: var(--surface-1); }
+.table .num { font-family: var(--font-mono); }
+
+/* =========================================================
+   QUEUE PAGE
+   ========================================================= */
+.queue-stage { padding: 96px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 24px; max-width: 600px; margin: 0 auto; }
+.queue-spinner { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--hairline); border-top-color: var(--primary); animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.queue-pos { font-family: var(--font-mono); font-size: 56px; font-weight: 500; line-height: 1; letter-spacing: -0.5px; color: var(--ink-strong); }
+.queue-bar { width: 100%; height: 6px; background: var(--surface-2); border-radius: var(--r-pill); overflow: hidden; }
+.queue-bar .fill { width: 38%; height: 100%; background: var(--primary); border-radius: var(--r-pill); }
+
+/* =========================================================
+   SYSTEM PAGES
+   ========================================================= */
+.system-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; padding: 32px 0; }
+@media (max-width: 900px) { .system-grid { grid-template-columns: 1fr; } }
+.system-card { padding: 64px 32px; background: var(--surface-0); border: 1px solid var(--hairline); border-radius: var(--r-lg); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; min-height: 320px; justify-content: center; }
+.icon-circle { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; }
+.icon-circle.success { background: var(--success-soft); color: var(--success); }
+.icon-circle.danger { background: var(--danger-soft); color: var(--danger); }
+.icon-circle.warning { background: var(--warning-soft); color: var(--warning); }
+.icon-circle.muted { background: var(--surface-2); color: var(--ink-muted); }
+
+.code-404 { font-family: var(--font-mono); font-size: 96px; font-weight: 500; letter-spacing: -2px; color: var(--ink-strong); line-height: 1; }
+
+/* =========================================================
+   COMMUNITY / HELP
+   ========================================================= */
+.help-grid { display: grid; grid-template-columns: 240px 1fr; gap: 32px; padding: 48px 0; }
+@media (max-width: 900px) { .help-grid { grid-template-columns: 1fr; } }
+.help-side { display: flex; flex-direction: column; gap: 4px; }
+.help-side a { padding: 8px 12px; border-radius: var(--r-md); font-size: 14px; color: var(--ink-muted); }
+.help-side a.active { background: var(--surface-2); color: var(--ink); }
+.help-side h4 { font-size: 12px; color: var(--ink-subtle); letter-spacing: 0.2px; text-transform: uppercase; font-weight: 500; padding: 8px 12px; margin-top: 8px; }
+
+.faq-item { padding: 20px 0; border-bottom: 1px solid var(--hairline); }
+.faq-item:first-child { padding-top: 0; }
+.faq-item h4 { font-size: 16px; font-weight: 600; letter-spacing: -0.2px; display: flex; justify-content: space-between; cursor: pointer; }
+.faq-item p { color: var(--ink-muted); margin-top: 8px; font-size: 15px; line-height: 1.55; }
+
+.warn-card { display: flex; gap: 16px; padding: 20px; border: 1px solid var(--hairline); border-radius: var(--r-lg); background: var(--surface-1); }
+.warn-card.danger { border-color: rgba(248,113,113,0.2); background: var(--danger-soft); }
+.warn-card.warning { border-color: rgba(251,191,36,0.2); background: var(--warning-soft); }
+.warn-icon { width: 32px; height: 32px; border-radius: var(--r-md); display: grid; place-items: center; flex-shrink: 0; }
+
+/* =========================================================
+   AUTH
+   ========================================================= */
+.auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 48px 0; }
+@media (max-width: 900px) { .auth-grid { grid-template-columns: 1fr; } }
+.auth-card { background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg); padding: 32px; }
+.auth-card h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.4px; }
+.auth-card .sub { color: var(--ink-muted); font-size: 14px; margin-top: 4px; }
+.form-stack { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+.divider-or { display: flex; align-items: center; gap: 12px; color: var(--ink-subtle); font-size: 12px; text-transform: uppercase; letter-spacing: 0.2px; font-weight: 500; }
+.divider-or::before, .divider-or::after { content: ""; height: 1px; flex: 1; background: var(--hairline); }
+.social-btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border: 1px solid var(--hairline); background: var(--surface-2); border-radius: var(--r-md); font-size: 14px; font-weight: 500; }
+
+/* =========================================================
+   COMPONENTS DEMO ROW (modal/toast/dropdown/skeleton)
+   ========================================================= */
+.demo-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+@media (max-width: 1024px) { .demo-row { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px)  { .demo-row { grid-template-columns: 1fr; } }
+.demo-card { background: var(--surface-0); border: 1px solid var(--hairline); border-radius: var(--r-lg); padding: 24px; min-height: 260px; display: flex; flex-direction: column; gap: 16px; }
+.demo-card h4 { font-size: 13px; color: var(--ink-subtle); letter-spacing: 0.2px; text-transform: uppercase; font-weight: 500; }
+
+.toast { display: flex; align-items: start; gap: 12px; padding: 12px 16px; background: var(--surface-2); border: 1px solid var(--hairline); border-radius: var(--r-lg); box-shadow: 0 4px 16px rgba(0,0,0,0.4); max-width: 400px; }
+.toast .ic { flex-shrink: 0; width: 16px; height: 16px; margin-top: 2px; }
+
+.dropdown-mock { background: var(--surface-2); border: 1px solid var(--hairline); border-radius: var(--r-md); box-shadow: 0 4px 16px rgba(0,0,0,0.4); padding: 6px; max-width: 220px; }
+.dropdown-mock .item { padding: 8px 10px; border-radius: var(--r-sm); font-size: 14px; color: var(--ink-muted); display: flex; align-items: center; gap: 8px; }
+.dropdown-mock .item:hover, .dropdown-mock .item.active { background: var(--surface-3); color: var(--ink); }
+.dropdown-mock .sep { height: 1px; background: var(--hairline); margin: 4px 2px; }
+
+.skeleton { background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-3) 50%, var(--surface-2) 100%); background-size: 200% 100%; animation: shimmer 1.6s linear infinite; border-radius: var(--r-md); }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.skeleton-thumb { aspect-ratio: 16/9; border-radius: var(--r-md); }
+.skeleton-line { height: 12px; border-radius: var(--r-sm); }
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.footer { border-top: 1px solid var(--hairline); margin-top: 96px; padding: 48px 0 32px; background: var(--surface-0); }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; }
+@media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
+.footer h5 { font-size: 12px; font-weight: 500; color: var(--ink-muted); letter-spacing: 0.2px; text-transform: uppercase; margin-bottom: 16px; }
+.footer ul { display: flex; flex-direction: column; gap: 8px; }
+.footer a { color: var(--ink-muted); font-size: 14px; }
+.footer a:hover { color: var(--ink); }
+.footer-bot { display: flex; align-items: center; justify-content: space-between; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--hairline); color: var(--ink-subtle); font-size: 12px; flex-wrap: wrap; gap: 12px; }
+
+/* =========================================================
+   I18N — toggle bilingual labels
+   ========================================================= */
+body[data-lang="vi"] .en { display: none; }
+body[data-lang="en"] .vi { display: none; }
+
+/* utilities */
+.flex { display: flex; }
+.col { display: flex; flex-direction: column; }
+.gap-4 { gap: 4px; } .gap-8 { gap: 8px; } .gap-12 { gap: 12px; } .gap-16 { gap: 16px; } .gap-24 { gap: 24px; }
+.between { justify-content: space-between; }
+.center { justify-content: center; align-items: center; }
+.items-center { align-items: center; }
+.mt-8 { margin-top: 8px; } .mt-16 { margin-top: 16px; } .mt-24 { margin-top: 24px; } .mt-32 { margin-top: 32px; } .mt-48 { margin-top: 48px; }
+.mb-8 { margin-bottom: 8px; } .mb-16 { margin-bottom: 16px; } .mb-24 { margin-bottom: 24px; } .mb-32 { margin-bottom: 32px; }
+.full { width: 100%; }
+</style>
+</head>
+<body data-lang="en">
+
+<!-- =========================================================
+     TOP NAV — global nav for the public sales surface
+     ========================================================= -->
+<nav class="nav-top">
+  <div class="container nav-top-inner">
+    <a class="brand" href="#home">
+      <span class="brand-mark">O</span>
+      <span>Onyx</span>
+    </a>
+    <div class="nav-links">
+      <a href="#home" class="active"><span class="en">Browse</span><span class="vi">Khám phá</span></a>
+      <a href="#organizer"><span class="en">Organizers</span><span class="vi">Nhà tổ chức</span></a>
+      <a href="#help"><span class="en">Help</span><span class="vi">Trợ giúp</span></a>
+      <a href="#profile"><span class="en">My tickets</span><span class="vi">Vé của tôi</span></a>
+    </div>
+    <div class="nav-actions">
+      <div class="lang-toggle" id="langToggle">
+        <button data-lang="en" class="active">EN</button>
+        <button data-lang="vi">VI</button>
+      </div>
+      <a class="btn btn-secondary" href="#auth"><span class="en">Sign in</span><span class="vi">Đăng nhập</span></a>
+      <a class="btn btn-primary" href="#auth"><span class="en">Get started</span><span class="vi">Bắt đầu</span></a>
+    </div>
+  </div>
+</nav>
+
+<!-- =========================================================
+     HOME PAGE — hero, search, categories, featured, grid
+     ========================================================= -->
+<main id="home">
+  <section class="home-hero">
+    <div class="container">
+      <span class="eyebrow"><span class="en">Live · Music · Sport · Tech</span><span class="vi">Trực tiếp · Âm nhạc · Thể thao · Công nghệ</span></span>
+      <h1>
+        <span class="en">Tickets, without the friction.</span>
+        <span class="vi">Mua vé, không rườm rà.</span>
+      </h1>
+      <p class="lead">
+        <span class="en">Discover concerts, conferences and matches across Vietnam and beyond. Verified organizers, transparent pricing, instant delivery.</span>
+        <span class="vi">Khám phá concert, hội nghị và trận đấu trên khắp Việt Nam và quốc tế. Nhà tổ chức xác minh, giá minh bạch, vé giao tức thì.</span>
+      </p>
+
+      <div class="search-bar">
+        <div class="search-field">
+          <label><span class="en">Event or artist</span><span class="vi">Sự kiện hoặc nghệ sĩ</span></label>
+          <span class="v">SOOBIN — The Playah</span>
+        </div>
+        <div class="search-field">
+          <label><span class="en">City</span><span class="vi">Thành phố</span></label>
+          <span class="v">Ho Chi Minh City</span>
+        </div>
+        <div class="search-field">
+          <label><span class="en">When</span><span class="vi">Thời gian</span></label>
+          <span class="v"><span class="en">This weekend</span><span class="vi">Cuối tuần này</span></span>
+        </div>
+        <button class="btn btn-primary btn-lg"><span class="en">Search</span><span class="vi">Tìm</span></button>
+      </div>
+
+      <div class="cat-row">
+        <button class="cat-chip active"><span class="en">All</span><span class="vi">Tất cả</span></button>
+        <button class="cat-chip"><span class="en">Music</span><span class="vi">Âm nhạc</span></button>
+        <button class="cat-chip"><span class="en">Sport</span><span class="vi">Thể thao</span></button>
+        <button class="cat-chip"><span class="en">Tech</span><span class="vi">Công nghệ</span></button>
+        <button class="cat-chip"><span class="en">Comedy</span><span class="vi">Hài kịch</span></button>
+        <button class="cat-chip"><span class="en">Theatre</span><span class="vi">Sân khấu</span></button>
+        <button class="cat-chip"><span class="en">Festival</span><span class="vi">Lễ hội</span></button>
+        <button class="cat-chip"><span class="en">Workshop</span><span class="vi">Hội thảo</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2><span class="en">Featured this week</span><span class="vi">Nổi bật tuần này</span></h2>
+          <div class="sub"><span class="en">Hand-picked by our editors.</span><span class="vi">Tuyển chọn bởi biên tập viên.</span></div>
+        </div>
+        <a class="link-muted" href="#"><span class="en">View all →</span><span class="vi">Xem tất cả →</span></a>
+      </div>
+
+      <div class="featured">
+        <div class="art">
+          <div class="poster poster-1"><span class="bigtype">DEN VAU<br>NEXT GEN</span></div>
+          <div class="art-overlay"></div>
+        </div>
+        <div class="body">
+          <div class="flex gap-8">
+            <span class="badge badge-primary">On sale</span>
+            <span class="badge"><span class="en">Music · Hip-hop</span><span class="vi">Âm nhạc · Hip-hop</span></span>
+          </div>
+          <h3>Đen Vâu — Next Generation Tour</h3>
+          <div class="info-row">
+            <div>📅
+T7, 16/05 · 20:00
+</div>
+            <div>📍 SVĐ Mỹ Đình, Hà Nội</div>
+            <div>🎟️ <span class="en">From</span><span class="vi">Từ</span> <strong style="color:var(--ink-strong)">800,000₫</strong></div>
+          </div>
+          <p class="muted t-body" style="max-width:520px;">
+            <span class="en">A 90-minute set with a 20-piece live band, debuting four tracks from the upcoming album. VIP includes meet &amp; greet.</span>
+            <span class="vi">Đêm diễn 90 phút cùng band 20 thành viên, ra mắt 4 ca khúc từ album mới. Vé VIP bao gồm meet &amp; greet.</span>
+          </p>
+          <div class="flex gap-12 mt-16">
+            <a href="#event" class="btn btn-primary btn-lg"><span class="en">Buy ticket</span><span class="vi">Mua vé</span></a>
+            <a href="#event" class="btn btn-secondary btn-lg"><span class="en">Details</span><span class="vi">Chi tiết</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Event grid -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2><span class="en">Upcoming in Ho Chi Minh City</span><span class="vi">Sắp diễn ra tại TP. HCM</span></h2>
+          <div class="sub"><span class="en">42 events · sorted by date</span><span class="vi">42 sự kiện · theo ngày</span></div>
+        </div>
+        <div class="flex gap-8">
+          <select class="select" style="width:160px;height:36px;padding:6px 36px 6px 12px;font-size:13px;">
+            <option>Sort: Date</option>
+            <option>Sort: Price</option>
+            <option>Sort: Popular</option>
+          </select>
+          <button class="btn btn-secondary">Filters</button>
+        </div>
+      </div>
+
+      <div class="event-grid">
+        <!-- Card 1 -->
+        <a class="card-event" href="#event">
+          <div class="thumb">
+            <div class="thumb-art poster poster-1"><span class="bigtype">SOOBIN</span></div>
+            <div class="thumb-overlay"></div>
+            <div class="top-tags"><span class="badge badge-primary">Hot</span></div>
+            <button class="save" aria-label="Save">♡</button>
+          </div>
+          <div class="body">
+            <div class="date"><span class="en">SAT · MAY 09 · 8:00 PM</span><span class="vi">T7 · 09/05 · 20:00</span></div>
+            <h3>SOOBIN — The Playah Live</h3>
+            <div class="venue">📍 Phú Thọ Indoor, Q.11</div>
+            <div class="meta">
+              <div class="price"><span class="from"><span class="en">From</span><span class="vi">Từ</span></span>650,000₫</div>
+              <span class="badge"><span class="en">Standing</span><span class="vi">Đứng</span></span>
+            </div>
+          </div>
+        </a>
+        <!-- Card 2 -->
+        <a class="card-event" href="#event">
+          <div class="thumb">
+            <div class="thumb-art poster poster-3"><span class="bigtype">VIETNAM<br>JS DAY</span></div>
+            <div class="thumb-overlay"></div>
+            <div class="top-tags"><span class="badge">Tech</span></div>
+          </div>
+          <div class="body">
+            <div class="date">FRI · MAY 22 · 9:00 AM</div>
+            <h3>Vietnam JS Day 2026</h3>
+            <div class="venue">📍 GEM Center, District 1</div>
+            <div class="meta">
+              <div class="price"><span class="from"><span class="en">From</span><span class="vi">Từ</span></span>1,200,000₫</div>
+              <span class="badge badge-warning">Few left</span>
+            </div>
+          </div>
+        </a>
+        <!-- Card 3 -->
+        <a class="card-event" href="#event">
+          <div class="thumb">
+            <div class="thumb-art poster poster-5"><span class="bigtype">CÔNG<br>PHƯỢNG</span></div>
+            <div class="thumb-overlay"></div>
+            <div class="top-tags"><span class="badge">Sport</span></div>
+          </div>
+          <div class="body">
+            <div class="date"><span class="en">SUN · MAY 17 · 7:30 PM</span><span class="vi">CN · 17/05 · 19:30</span></div>
+            <h3>HAGL vs Hà Nội FC — V.League</h3>
+            <div class="venue">📍 Pleiku Stadium</div>
+            <div class="meta">
+              <div class="price"><span class="from"><span class="en">From</span><span class="vi">Từ</span></span>200,000₫</div>
+              <span class="badge badge-success">Available</span>
+            </div>
+          </div>
+        </a>
+        <!-- Card 4 -->
+        <a class="card-event" href="#event">
+          <div class="thumb">
+            <div class="thumb-art poster poster-7"><span class="bigtype">MỸ TÂM</span></div>
+            <div class="thumb-overlay"></div>
+            <div class="top-tags"><span class="badge badge-primary">Featured</span></div>
+          </div>
+          <div class="body">
+            <div class="date"><span class="en">SAT · JUN 06 · 8:00 PM</span><span class="vi">T7 · 06/06 · 20:00</span></div>
+            <h3>Mỹ Tâm — Tri Âm Concert</h3>
+            <div class="venue">📍 SECC, District 7</div>
+            <div class="meta">
+              <div class="price"><span class="from"><span class="en">From</span><span class="vi">Từ</span></span>1,500,000₫</div>
+              <span class="badge"><span class="en">Seated</span><span class="vi">Có chỗ</span></span>
+            </div>
+          </div>
+        </a>
+        <!-- Card 5 -->
+        <a class="card-event" href="#event">
+          <div class="thumb">
+            <div class="thumb-art poster poster-2"><span class="bigtype">DEVCON<br>2026</span></div>
+            <div class="thumb-overlay"></div>
+            <div class="top-tags"><span class="badge">Tech</span></div>
+          </div>
+          <div class="body">
+            <div class="date">THU · MAY 28 · 9:00 AM</div>
+            <h3>DevCon Saigon 2026</h3>
+            <div class="venue">📍 Reverie Saigon</div>
+            <div class="meta">
+              <div class="price"><span class="from"><span class="en">From</span><span class="vi">Từ</span></span>2,400,000₫</div>
+              <span class="badge"><span class="en">3 days</span><span class="vi">3 ngày</span></span>
+            </div>
+          </div>
+        </a>
+        <!-- Card 6 -->
+        <a class="card-event" href="#event">
+          <div class="thumb">
+            <div class="thumb-art poster poster-4"><span class="bigtype">HÀ ANH<br>TUẤN</span></div>
+            <div class="thumb-overlay"></div>
+            <div class="top-tags"><span class="badge">Music</span></div>
+          </div>
+          <div class="body">
+            <div class="date"><span class="en">FRI · JUN 19 · 8:00 PM</span><span class="vi">T6 · 19/06 · 20:00</span></div>
+            <h3>Hà Anh Tuấn — Romance</h3>
+            <div class="venue">📍 Hoa Bình Theater</div>
+            <div class="meta">
+              <div class="price"><span class="from"><span class="en">From</span><span class="vi">Từ</span></span>900,000₫</div>
+              <span class="badge badge-danger"><span class="en">Sold out</span><span class="vi">Hết vé</span></span>
+            </div>
+          </div>
+        </a>
+        <!-- Card 7 -->
+        <a class="card-event" href="#event">
+          <div class="thumb">
+            <div class="thumb-art poster poster-6"><span class="bigtype">SAIGON<br>JAZZ</span></div>
+            <div class="thumb-overlay"></div>
+            <div class="top-tags"><span class="badge">Festival</span></div>
+          </div>
+          <div class="body">
+            <div class="date"><span class="en">SAT · JUL 04 · 6:00 PM</span><span class="vi">T7 · 04/07 · 18:00</span></div>
+            <h3>Saigon Jazz Festival</h3>
+            <div class="venue">📍 Bến Bạch Đằng</div>
+            <div class="meta">
+              <div class="price"><span class="from"><span class="en">From</span><span class="vi">Từ</span></span>500,000₫</div>
+              <span class="badge"><span class="en">Outdoor</span><span class="vi">Ngoài trời</span></span>
+            </div>
+          </div>
+        </a>
+        <!-- Card 8 -->
+        <a class="card-event" href="#event">
+          <div class="thumb">
+            <div class="thumb-art poster poster-9"><span class="bigtype">UEFA<br>CUP</span></div>
+            <div class="thumb-overlay"></div>
+            <div class="top-tags"><span class="badge">Sport</span></div>
+          </div>
+          <div class="body">
+            <div class="date">WED · MAY 27 · 2:00 AM</div>
+            <h3>UEFA Champions League Final</h3>
+            <div class="venue">📍 Live screening — Hard Rock</div>
+            <div class="meta">
+              <div class="price"><span class="from"><span class="en">From</span><span class="vi">Từ</span></span>350,000₫</div>
+              <span class="badge badge-info">Late show</span>
+            </div>
+          </div>
+        </a>
+        <!-- Card 9 -->
+        <a class="card-event" href="#event">
+          <div class="thumb">
+            <div class="thumb-art poster poster-8"><span class="bigtype">STAND<br>UP VN</span></div>
+            <div class="thumb-overlay"></div>
+            <div class="top-tags"><span class="badge">Comedy</span></div>
+          </div>
+          <div class="body">
+            <div class="date"><span class="en">SUN · MAY 24 · 7:30 PM</span><span class="vi">CN · 24/05 · 19:30</span></div>
+            <h3>Stand-up Vietnam — Open Mic</h3>
+            <div class="venue">📍 Saigon Outcast</div>
+            <div class="meta">
+              <div class="price"><span class="from"><span class="en">From</span><span class="vi">Từ</span></span>180,000₫</div>
+              <span class="badge badge-success">Available</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       EVENT DETAIL PAGE
+       ========================================================= -->
+  <div class="page-stage" id="event">
+    <div class="container">
+      <h2 class="lvl"><span>02 ·</span> <span class="en">Event detail page</span><span class="vi">Trang chi tiết sự kiện</span></h2>
+      <h3 class="frame-title"><span class="en">Browse → Select tickets</span><span class="vi">Khám phá → Chọn vé</span></h3>
+    </div>
+
+    <section class="event-hero">
+      <div class="bg"></div>
+      <div class="container">
+        <div class="grid">
+          <div>
+            <div class="flex gap-8 mb-16">
+              <span class="badge badge-primary">On sale now</span>
+              <span class="badge">Music · Pop</span>
+              <span class="badge">18+</span>
+            </div>
+            <span class="t-label muted"><span class="en">Saturday, May 16, 2026 · 8:00 PM (ICT)</span><span class="vi">Thứ 7, 16/05/2026 · 20:00 (ICT)</span></span>
+            <h1>Đen Vâu<br>Next Generation Tour</h1>
+            <div class="meta-row">
+              <div>📍 SVĐ Mỹ Đình, Hà Nội</div>
+              <div>🕗 <span class="en">Doors 7:00 PM</span><span class="vi">Mở cửa 19:00</span></div>
+              <div>⏱️ <span class="en">~3 hrs</span><span class="vi">~3 tiếng</span></div>
+            </div>
+            <div class="countdown">
+              <div class="unit"><span class="num">14</span><span class="lbl"><span class="en">Days</span><span class="vi">Ngày</span></span></div>
+              <span class="sep">:</span>
+              <div class="unit"><span class="num">06</span><span class="lbl"><span class="en">Hours</span><span class="vi">Giờ</span></span></div>
+              <span class="sep">:</span>
+              <div class="unit"><span class="num">42</span><span class="lbl"><span class="en">Min</span><span class="vi">Phút</span></span></div>
+              <span class="sep">:</span>
+              <div class="unit"><span class="num">17</span><span class="lbl"><span class="en">Sec</span><span class="vi">Giây</span></span></div>
+            </div>
+          </div>
+          <div class="event-poster">
+            <div class="poster poster-1" style="height:100%;"><span class="bigtype">DEN VAU<br>NEXT GEN<br>2026</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="container event-body">
+      <div>
+        <div class="tab-bar">
+          <button class="active"><span class="en">About</span><span class="vi">Giới thiệu</span></button>
+          <button><span class="en">Lineup</span><span class="vi">Đội hình</span></button>
+          <button><span class="en">Venue</span><span class="vi">Địa điểm</span></button>
+          <button><span class="en">FAQ</span><span class="vi">Hỏi đáp</span></button>
+        </div>
+
+        <div class="prose">
+          <p><span class="en">Đen Vâu returns to the stage with a 22-city tour debuting his fifth studio album. The Hanoi night includes a 20-piece live band, a four-act narrative arc, and four new tracks performed live for the first time.</span>
+            <span class="vi">Đen Vâu trở lại sân khấu cùng tour 22 thành phố ra mắt album phòng thu thứ năm. Đêm Hà Nội có band sống 20 thành viên, kịch bản 4 hồi và 4 ca khúc mới biểu diễn lần đầu.</span></p>
+          <h3><span class="en">What's included</span><span class="vi">Bao gồm</span></h3>
+          <ul>
+            <li><span class="en">90-minute live performance with full band</span><span class="vi">Diễn live 90 phút cùng band đầy đủ</span></li>
+            <li><span class="en">Welcome drink (VIP only)</span><span class="vi">Đồ uống chào mừng (chỉ VIP)</span></li>
+            <li><span class="en">Digital ticket — present QR at gate</span><span class="vi">Vé điện tử — quét QR tại cổng</span></li>
+            <li><span class="en">Tour merchandise booth opens at 6:00 PM</span><span class="vi">Quầy merch mở từ 18:00</span></li>
+          </ul>
+          <h3><span class="en">Important info</span><span class="vi">Lưu ý</span></h3>
+          <p class="muted"><span class="en">Doors open at 7:00 PM. Latecomers will be admitted between songs only. No professional cameras. ID required for VIP zones.</span>
+            <span class="vi">Mở cửa lúc 19:00. Khách đến muộn chỉ được vào giữa các bài. Không mang máy ảnh chuyên nghiệp. Cần CMND/CCCD cho khu VIP.</span></p>
+        </div>
+
+        <div class="organizer-box">
+          <div class="organizer-avatar">SE</div>
+          <div style="flex:1;">
+            <div class="t-heading-sm"><span class="en">Sound &amp; Earth Productions</span><span class="vi">Sound &amp; Earth Productions</span></div>
+            <div class="muted t-caption"><span class="en">Verified organizer · 84 events · Member since 2019</span><span class="vi">Nhà tổ chức xác minh · 84 sự kiện · Từ 2019</span></div>
+          </div>
+          <a class="btn btn-secondary" href="#organizer"><span class="en">Follow</span><span class="vi">Theo dõi</span></a>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside>
+        <div class="card" style="padding:24px; display:flex; flex-direction:column; gap:16px;">
+          <div class="flex between">
+            <div>
+              <div class="t-label muted"><span class="en">Tickets from</span><span class="vi">Vé từ</span></div>
+              <div class="t-heading-lg" style="margin-top:4px;">800,000₫</div>
+            </div>
+            <span class="badge badge-success">On sale</span>
+          </div>
+          <div class="divider"></div>
+          <div class="t-label muted"><span class="en">Choose ticket type</span><span class="vi">Chọn loại vé</span></div>
+          <div class="ticket-stack">
+            <div class="card-ticket selected">
+              <div class="name">VIP Front</div>
+              <div class="price">2,500,000₫</div>
+              <div class="desc"><span class="en">Front 5 rows + meet &amp; greet</span><span class="vi">5 hàng đầu + meet &amp; greet</span></div>
+              <div class="stepper">
+                <button class="stepper-btn">−</button>
+                <span class="stepper-num">1</span>
+                <button class="stepper-btn">+</button>
+              </div>
+            </div>
+            <div class="card-ticket">
+              <div class="name">A Zone</div>
+              <div class="price">1,500,000₫</div>
+              <div class="desc"><span class="en">Reserved seating, mid-arena</span><span class="vi">Ghế cố định, giữa sân</span></div>
+              <div class="stepper">
+                <button class="stepper-btn">−</button>
+                <span class="stepper-num">0</span>
+                <button class="stepper-btn">+</button>
+              </div>
+            </div>
+            <div class="card-ticket">
+              <div class="name">B Zone</div>
+              <div class="price">1,000,000₫</div>
+              <div class="desc"><span class="en">Reserved seating, side</span><span class="vi">Ghế cố định, hai bên</span></div>
+              <div class="stepper">
+                <button class="stepper-btn">−</button>
+                <span class="stepper-num">0</span>
+                <button class="stepper-btn">+</button>
+              </div>
+            </div>
+            <div class="card-ticket">
+              <div class="name"><span class="en">Standing</span><span class="vi">Đứng</span></div>
+              <div class="price">800,000₫</div>
+              <div class="desc"><span class="en">General admission, no seat</span><span class="vi">Vé đứng, không có ghế</span></div>
+              <div class="stepper">
+                <button class="stepper-btn">−</button>
+                <span class="stepper-num">0</span>
+                <button class="stepper-btn">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <a class="btn btn-primary btn-lg" href="#checkout"><span class="en">Continue to checkout</span><span class="vi">Tiếp tục thanh toán</span></a>
+          <div class="t-caption subtle" style="text-align:center;"><span class="en">Secure checkout · Refundable until May 9</span><span class="vi">Thanh toán an toàn · Hoàn tiền trước 09/05</span></div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Sticky checkout bar -->
+    <div class="sticky-bar">
+      <div class="totals">
+        <span class="qty"><span class="en">1 ticket selected</span><span class="vi">Đã chọn 1 vé</span></span>
+        <span class="price">2,500,000₫</span>
+      </div>
+      <a class="btn btn-primary btn-lg" href="#checkout"><span class="en">Continue to checkout</span><span class="vi">Tiếp tục thanh toán</span></a>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       ORGANIZER PAGE
+       ========================================================= -->
+  <div class="page-stage" id="organizer">
+    <div class="container">
+      <h2 class="lvl"><span>03 ·</span> <span class="en">Organizer page</span><span class="vi">Trang nhà tổ chức</span></h2>
+      <h3 class="frame-title">Sound &amp; Earth Productions</h3>
+    </div>
+
+    <section class="container">
+      <div class="org-header">
+        <div class="row">
+          <div class="org-logo">SE</div>
+          <div style="flex:1; min-width:240px;">
+            <div class="flex gap-8" style="margin-bottom:8px;">
+              <span class="badge badge-primary">Verified</span>
+              <span class="badge"><span class="en">Music · Festival</span><span class="vi">Âm nhạc · Lễ hội</span></span>
+            </div>
+            <h1>Sound &amp; Earth Productions</h1>
+            <p class="desc">
+              <span class="en">Hanoi-based live music company producing tours, festivals and indie nights since 2019. We've sold over 480,000 tickets across 84 productions in 12 cities.</span>
+              <span class="vi">Công ty tổ chức nhạc sống tại Hà Nội, sản xuất tour, lễ hội và đêm nhạc indie từ 2019. Đã bán hơn 480.000 vé qua 84 sự kiện ở 12 thành phố.</span>
+            </p>
+          </div>
+          <div class="flex gap-8">
+            <button class="btn btn-secondary"><span class="en">Share</span><span class="vi">Chia sẻ</span></button>
+            <button class="btn btn-primary"><span class="en">Follow</span><span class="vi">Theo dõi</span></button>
+          </div>
+        </div>
+
+        <div class="org-stats">
+          <div class="stat-card">
+            <div class="lbl"><span class="en">Events produced</span><span class="vi">Sự kiện</span></div>
+            <div class="val">84</div>
+            <div class="delta">+12 <span class="muted">YoY</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="lbl"><span class="en">Tickets sold</span><span class="vi">Vé bán ra</span></div>
+            <div class="val">487K</div>
+            <div class="delta">+24%</div>
+          </div>
+          <div class="stat-card">
+            <div class="lbl"><span class="en">Average rating</span><span class="vi">Đánh giá TB</span></div>
+            <div class="val">4.8</div>
+            <div class="delta muted t-caption"><span class="en">2,140 reviews</span><span class="vi">2.140 đánh giá</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="lbl"><span class="en">Followers</span><span class="vi">Người theo dõi</span></div>
+            <div class="val">62K</div>
+            <div class="delta">+1.2K <span class="muted"><span class="en">this week</span><span class="vi">tuần này</span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top:48px;">
+        <h2><span class="en">Events by this organizer</span><span class="vi">Sự kiện của nhà tổ chức</span></h2>
+        <a class="link-muted">View all →</a>
+      </div>
+      <div class="event-grid">
+        <a class="card-event" href="#event">
+          <div class="thumb"><div class="thumb-art poster poster-1"><span class="bigtype">DEN VAU</span></div><div class="thumb-overlay"></div></div>
+          <div class="body">
+            <div class="date">SAT · MAY 16 · 8:00 PM</div>
+            <h3>Đen Vâu — Next Gen Tour</h3>
+            <div class="venue">📍 SVĐ Mỹ Đình</div>
+            <div class="meta"><div class="price"><span class="from">From</span>800,000₫</div><span class="badge badge-success">On sale</span></div>
+          </div>
+        </a>
+        <a class="card-event" href="#event">
+          <div class="thumb"><div class="thumb-art poster poster-6"><span class="bigtype">JAZZ NIGHT</span></div><div class="thumb-overlay"></div></div>
+          <div class="body">
+            <div class="date">SAT · JUL 04 · 6:00 PM</div>
+            <h3>Saigon Jazz Festival</h3>
+            <div class="venue">📍 Bến Bạch Đằng</div>
+            <div class="meta"><div class="price"><span class="from">From</span>500,000₫</div><span class="badge">Outdoor</span></div>
+          </div>
+        </a>
+        <a class="card-event" href="#event">
+          <div class="thumb"><div class="thumb-art poster poster-7"><span class="bigtype">MỸ TÂM</span></div><div class="thumb-overlay"></div></div>
+          <div class="body">
+            <div class="date">SAT · JUN 06 · 8:00 PM</div>
+            <h3>Mỹ Tâm — Tri Âm</h3>
+            <div class="venue">📍 SECC</div>
+            <div class="meta"><div class="price"><span class="from">From</span>1,500,000₫</div><span class="badge">Seated</span></div>
+          </div>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <!-- =========================================================
+       CHECKOUT — WITH SEATMAP
+       ========================================================= -->
+  <div class="page-stage" id="checkout">
+    <div class="container">
+      <h2 class="lvl"><span>04A ·</span> <span class="en">Checkout — with seatmap</span><span class="vi">Thanh toán — có sơ đồ ghế</span></h2>
+      <h3 class="frame-title"><span class="en">Pick your seats</span><span class="vi">Chọn ghế</span></h3>
+    </div>
+
+    <section class="container">
+      <div class="checkout-grid">
+        <div>
+          <div class="stage-label">— STAGE —</div>
+          <div class="seatmap" id="seatmap"></div>
+
+          <div class="seat-legend">
+            <div class="item"><span class="swatch" style="background:var(--seat-available); border:1px solid var(--seat-available-border);"></span><span class="en">Available</span><span class="vi">Còn ghế</span></div>
+            <div class="item"><span class="swatch" style="background:var(--seat-selected);"></span><span class="en">Selected</span><span class="vi">Đã chọn</span></div>
+            <div class="item"><span class="swatch" style="background:var(--seat-vip-soft); border:1px solid var(--seat-vip);"></span>VIP</div>
+            <div class="item"><span class="swatch" style="background:var(--seat-reserved);"></span><span class="en">Held</span><span class="vi">Đang giữ</span></div>
+            <div class="item"><span class="swatch" style="background:var(--seat-sold); border:1px solid var(--seat-sold-border);"></span><span class="en">Sold</span><span class="vi">Đã bán</span></div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="order-summary">
+            <h3><span class="en">Order summary</span><span class="vi">Tóm tắt</span></h3>
+            <div class="t-caption muted">Đen Vâu — Next Generation Tour</div>
+            <div class="divider"></div>
+            <div class="summary-row"><span class="l">VIP A1 · Row A · Seat 4</span><span class="r">2,500,000₫</span></div>
+            <div class="summary-row"><span class="l">A Zone · Row C · Seat 12</span><span class="r">1,500,000₫</span></div>
+            <div class="summary-row"><span class="l">A Zone · Row C · Seat 13</span><span class="r">1,500,000₫</span></div>
+            <div class="divider"></div>
+            <div class="summary-row"><span class="l"><span class="en">Subtotal</span><span class="vi">Tạm tính</span></span><span class="r">5,500,000₫</span></div>
+            <div class="summary-row"><span class="l"><span class="en">Service fee (5%)</span><span class="vi">Phí dịch vụ (5%)</span></span><span class="r">275,000₫</span></div>
+            <div class="summary-row"><span class="l">VAT (8%)</span><span class="r">462,000₫</span></div>
+            <div class="summary-total">
+              <span class="lbl">Total</span>
+              <span class="val">6,237,000₫</span>
+            </div>
+            <div class="t-caption" style="display:flex; align-items:center; gap:6px; color:var(--warning);">
+              ⏱ <span class="en">Seats held for 09:42</span><span class="vi">Giữ ghế trong 09:42</span>
+            </div>
+            <a class="btn btn-primary btn-lg full" href="#checkout-form"><span class="en">Continue to payment</span><span class="vi">Tiếp tục thanh toán</span></a>
+          </div>
+        </aside>
+      </div>
+
+      <!-- =========================================================
+           CHECKOUT — WITHOUT SEATMAP
+           ========================================================= -->
+      <div class="page-stage" id="checkout-no-seatmap" style="margin-top:48px; padding-top:32px; padding-bottom:0;">
+        <h2 class="lvl"><span>04B ·</span> <span class="en">Checkout — quantity only</span><span class="vi">Thanh toán — chỉ số lượng</span></h2>
+        <h3 class="frame-title"><span class="en">General admission</span><span class="vi">Vé phổ thông</span></h3>
+      </div>
+
+      <div class="checkout-grid" id="checkout-form" style="padding-top:0;">
+        <div class="col gap-24">
+          <div class="qty-card">
+            <div class="t-label muted mb-16"><span class="en">Select quantity</span><span class="vi">Chọn số lượng</span></div>
+            <div class="qty-row">
+              <div>
+                <div class="name">VIP Front</div>
+                <div class="t-caption muted"><span class="en">Includes meet &amp; greet</span><span class="vi">Bao gồm meet &amp; greet</span></div>
+              </div>
+              <div class="price">2,500,000₫</div>
+              <div class="stepper">
+                <button class="stepper-btn">−</button><span class="stepper-num">2</span><button class="stepper-btn">+</button>
+              </div>
+            </div>
+            <div class="qty-row">
+              <div>
+                <div class="name">Standard</div>
+                <div class="t-caption muted"><span class="en">General admission, standing</span><span class="vi">Vé đứng phổ thông</span></div>
+              </div>
+              <div class="price">800,000₫</div>
+              <div class="stepper">
+                <button class="stepper-btn">−</button><span class="stepper-num">1</span><button class="stepper-btn">+</button>
+              </div>
+            </div>
+            <div class="qty-row">
+              <div>
+                <div class="name"><span class="en">Student</span><span class="vi">Sinh viên</span></div>
+                <div class="t-caption muted"><span class="en">ID required at gate</span><span class="vi">Cần thẻ SV tại cổng</span></div>
+              </div>
+              <div class="price">450,000₫</div>
+              <div class="stepper">
+                <button class="stepper-btn">−</button><span class="stepper-num">0</span><button class="stepper-btn">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buyer info -->
+          <div class="card">
+            <div class="t-heading-md mb-16"><span class="en">Your details</span><span class="vi">Thông tin người mua</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="field">
+                <label><span class="en">Full name</span><span class="vi">Họ và tên</span></label>
+                <input class="input" value="Nguyễn Minh Anh">
+              </div>
+              <div class="field">
+                <label>Email</label>
+                <input class="input" value="minh.anh@example.com">
+              </div>
+              <div class="field">
+                <label><span class="en">Phone</span><span class="vi">Số điện thoại</span></label>
+                <input class="input" value="+84 901 234 567">
+              </div>
+              <div class="field">
+                <label><span class="en">National ID</span><span class="vi">CCCD</span></label>
+                <input class="input error" value="012">
+                <span class="err">⚠ <span class="en">Invalid format. Must be 12 digits.</span><span class="vi">Sai định dạng. Cần 12 chữ số.</span></span>
+              </div>
+            </div>
+            <label class="checkbox mt-16"><input type="checkbox" checked /> <span class="t-caption"><span class="en">Send my tickets to email + SMS</span><span class="vi">Gửi vé qua email + SMS</span></span></label>
+            <label class="checkbox mt-8"><input type="checkbox" /> <span class="t-caption"><span class="en">Subscribe to event updates</span><span class="vi">Nhận thông báo sự kiện</span></span></label>
+          </div>
+
+          <!-- Payment -->
+          <div class="card">
+            <div class="t-heading-md mb-16"><span class="en">Payment method</span><span class="vi">Phương thức thanh toán</span></div>
+            <div class="pay-grid">
+              <div class="pay-option selected">
+                <div class="pay-logo" style="font-weight:600; font-size:14px; color:var(--primary);">VNPay QR</div>
+                <div class="t-caption muted"><span class="en">Scan with banking app</span><span class="vi">Quét bằng app ngân hàng</span></div>
+              </div>
+              <div class="pay-option">
+                <div class="pay-logo" style="font-weight:600; font-size:14px;">MoMo</div>
+                <div class="t-caption muted"><span class="en">e-Wallet</span><span class="vi">Ví điện tử</span></div>
+              </div>
+              <div class="pay-option">
+                <div class="pay-logo" style="font-weight:600; font-size:14px;">Visa / MC</div>
+                <div class="t-caption muted"><span class="en">Card payment</span><span class="vi">Thẻ tín dụng</span></div>
+              </div>
+            </div>
+            <div class="t-caption muted mt-16"><span class="en">Payments are processed via licensed payment processors. We never store card details.</span><span class="vi">Thanh toán xử lý qua đối tác được cấp phép. Chúng tôi không lưu thông tin thẻ.</span></div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="order-summary">
+            <h3><span class="en">Order summary</span><span class="vi">Tóm tắt đơn hàng</span></h3>
+            <div class="summary-row"><span class="l">VIP Front × 2</span><span class="r">5,000,000₫</span></div>
+            <div class="summary-row"><span class="l">Standard × 1</span><span class="r">800,000₫</span></div>
+            <div class="divider"></div>
+            <div class="summary-row"><span class="l"><span class="en">Subtotal</span><span class="vi">Tạm tính</span></span><span class="r">5,800,000₫</span></div>
+            <div class="summary-row"><span class="l"><span class="en">Service fee</span><span class="vi">Phí dịch vụ</span></span><span class="r">290,000₫</span></div>
+            <div class="summary-row"><span class="l">VAT</span><span class="r">487,200₫</span></div>
+            <div class="divider"></div>
+            <div class="summary-total"><span class="lbl">Total</span><span class="val">6,577,200₫</span></div>
+            <a class="btn btn-primary btn-lg full" href="#qr-modal"><span class="en">Confirm &amp; pay</span><span class="vi">Xác nhận &amp; thanh toán</span></a>
+            <div class="t-caption subtle" style="text-align:center;">🔒 <span class="en">Secure SSL checkout</span><span class="vi">Thanh toán SSL an toàn</span></div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- QR Payment modal mock -->
+      <div class="page-stage" id="qr-modal" style="margin-top:48px;">
+        <h2 class="lvl"><span>04C ·</span> <span class="en">QR payment modal</span><span class="vi">Modal thanh toán QR</span></h2>
+        <h3 class="frame-title"><span class="en">Awaiting payment</span><span class="vi">Đang chờ thanh toán</span></h3>
+      </div>
+      <div class="modal-backdrop">
+        <div class="modal">
+          <div class="t-heading-lg"><span class="en">Scan to pay</span><span class="vi">Quét để thanh toán</span></div>
+          <div class="t-caption muted"><span class="en">Open your banking app and scan the QR code below.</span><span class="vi">Mở app ngân hàng và quét mã QR.</span></div>
+          <div class="qr-canvas">
+            <div class="qr-mock"></div>
+          </div>
+          <div class="t-mono-strong" style="color:var(--ink-strong);">VNPAY · 6,577,200₫</div>
+          <div class="t-caption muted">Order #ONX-2026-04A91C2D</div>
+          <div style="display:flex; align-items:center; gap:8px; padding: 8px 12px; background:var(--warning-soft); border-radius:var(--r-md); color:var(--warning);">
+            <span style="width:6px;height:6px;border-radius:50%; background:var(--warning); animation:pulse 1.5s infinite ease-in-out;"></span>
+            <span class="t-caption-strong"><span class="en">Waiting for payment · 04:38</span><span class="vi">Đang chờ thanh toán · 04:38</span></span>
+          </div>
+          <div class="flex gap-8 full">
+            <button class="btn btn-secondary" style="flex:1;"><span class="en">Cancel</span><span class="vi">Huỷ</span></button>
+            <button class="btn btn-primary" style="flex:1;"><span class="en">I have paid</span><span class="vi">Đã chuyển khoản</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- =========================================================
+       PROFILE PAGE
+       ========================================================= -->
+  <div class="page-stage" id="profile">
+    <div class="container">
+      <h2 class="lvl"><span>05 ·</span> <span class="en">Profile / My tickets</span><span class="vi">Hồ sơ / Vé của tôi</span></h2>
+      <h3 class="frame-title"><span class="en">Welcome back, Minh Anh</span><span class="vi">Chào mừng trở lại, Minh Anh</span></h3>
+    </div>
+
+    <section class="container">
+      <div class="profile-grid">
+        <aside class="profile-side">
+          <div class="ava">M</div>
+          <div class="t-heading-md mt-16">Nguyễn Minh Anh</div>
+          <div class="t-caption muted">minh.anh@example.com</div>
+          <div class="flex gap-8 mt-8">
+            <span class="badge badge-primary">Pro</span>
+            <span class="badge"><span class="en">Member · 2024</span><span class="vi">Thành viên · 2024</span></span>
+          </div>
+          <nav class="profile-nav">
+            <a class="active"><span class="en">Upcoming</span><span class="vi">Sắp tới</span></a>
+            <a><span class="en">Past tickets</span><span class="vi">Vé đã qua</span></a>
+            <a><span class="en">Order history</span><span class="vi">Lịch sử đơn hàng</span></a>
+            <a><span class="en">Saved events</span><span class="vi">Đã lưu</span></a>
+            <a><span class="en">Account settings</span><span class="vi">Cài đặt</span></a>
+          </nav>
+        </aside>
+
+        <div class="col gap-32">
+          <div>
+            <div class="section-head" style="margin-bottom:16px;">
+              <div>
+                <h2 class="t-heading-lg"><span class="en">Upcoming events</span><span class="vi">Sự kiện sắp tới</span></h2>
+                <div class="sub muted t-caption"><span class="en">3 tickets across 2 events</span><span class="vi">3 vé qua 2 sự kiện</span></div>
+              </div>
+              <a class="link-muted">Export ICS →</a>
+            </div>
+            <div class="col gap-12">
+              <div class="ticket-card">
+                <div class="info">
+                  <div class="flex gap-8"><span class="badge badge-success">Confirmed</span><span class="badge">VIP</span></div>
+                  <h4>Đen Vâu — Next Generation Tour</h4>
+                  <div class="ticket-meta">
+                    <span>📅 SAT · MAY 16 · 8:00 PM</span>
+                    <span>📍 SVĐ Mỹ Đình</span>
+                    <span class="code">#ONX-04A91C2D</span>
+                  </div>
+                  <div class="flex gap-8 mt-8">
+                    <button class="btn btn-secondary"><span class="en">View ticket</span><span class="vi">Xem vé</span></button>
+                    <button class="btn btn-ghost"><span class="en">Download PDF</span><span class="vi">Tải PDF</span></button>
+                  </div>
+                </div>
+                <div class="qr"><div class="qr-mini"></div></div>
+              </div>
+              <div class="ticket-card">
+                <div class="info">
+                  <div class="flex gap-8"><span class="badge badge-success">Confirmed</span><span class="badge">A Zone</span></div>
+                  <h4>Vietnam JS Day 2026</h4>
+                  <div class="ticket-meta">
+                    <span>📅 FRI · MAY 22 · 9:00 AM</span>
+                    <span>📍 GEM Center</span>
+                    <span class="code">#ONX-3F7B0A11</span>
+                  </div>
+                  <div class="flex gap-8 mt-8">
+                    <button class="btn btn-secondary"><span class="en">View ticket</span><span class="vi">Xem vé</span></button>
+                    <button class="btn btn-ghost"><span class="en">Add to calendar</span><span class="vi">Thêm lịch</span></button>
+                  </div>
+                </div>
+                <div class="qr"><div class="qr-mini"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="t-heading-lg mb-16"><span class="en">Order history</span><span class="vi">Lịch sử đơn hàng</span></div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th><span class="en">Order</span><span class="vi">Đơn</span></th>
+                  <th><span class="en">Event</span><span class="vi">Sự kiện</span></th>
+                  <th><span class="en">Date</span><span class="vi">Ngày</span></th>
+                  <th><span class="en">Total</span><span class="vi">Tổng</span></th>
+                  <th><span class="en">Status</span><span class="vi">Trạng thái</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="num">ONX-04A91C2D</td><td>Đen Vâu — Next Gen</td><td class="num">02 May 2026</td><td class="num">6,577,200₫</td><td><span class="badge badge-success">Paid</span></td></tr>
+                <tr><td class="num">ONX-3F7B0A11</td><td>Vietnam JS Day 2026</td><td class="num">28 Apr 2026</td><td class="num">1,200,000₫</td><td><span class="badge badge-success">Paid</span></td></tr>
+                <tr><td class="num">ONX-1A2D33C8</td><td>Stand-up Vietnam</td><td class="num">15 Apr 2026</td><td class="num">360,000₫</td><td><span class="badge badge-warning">Pending</span></td></tr>
+                <tr><td class="num">ONX-9CF12B04</td><td>SOOBIN — The Playah</td><td class="num">02 Apr 2026</td><td class="num">1,300,000₫</td><td><span class="badge badge-danger">Refunded</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- =========================================================
+       QUEUE / WAITING ROOM
+       ========================================================= -->
+  <div class="page-stage" id="queue">
+    <div class="container">
+      <h2 class="lvl"><span>06 ·</span> <span class="en">Queue / Waiting room</span><span class="vi">Phòng chờ</span></h2>
+      <h3 class="frame-title"><span class="en">Hold tight</span><span class="vi">Vui lòng chờ</span></h3>
+    </div>
+    <div class="frame">
+      <div class="frame-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">onyx.tickets/queue</span></div>
+      <div class="queue-stage">
+        <div class="queue-spinner"></div>
+        <span class="badge badge-primary"><span class="en">High demand event</span><span class="vi">Sự kiện đông khách</span></span>
+        <div class="t-display-md strong"><span class="en">You're in line</span><span class="vi">Bạn đang trong hàng đợi</span></div>
+        <p class="muted t-body" style="max-width:480px;">
+          <span class="en">Đen Vâu — Next Gen Tour just opened. Don't refresh — your spot is held automatically.</span>
+          <span class="vi">Đen Vâu — Next Gen Tour vừa mở bán. Đừng tải lại trang — chỗ của bạn được giữ tự động.</span>
+        </p>
+        <div class="queue-pos">#3,142</div>
+        <div class="t-caption muted"><span class="en">Estimated wait: 4–6 minutes</span><span class="vi">Thời gian chờ: 4–6 phút</span></div>
+        <div class="queue-bar"><div class="fill"></div></div>
+        <div class="t-mono subtle">38% · <span class="en">moving forward</span><span class="vi">đang tiến lên</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       SYSTEM PAGES — 404, EMPTY, ERROR, SUCCESS
+       ========================================================= -->
+  <div class="page-stage" id="system">
+    <div class="container">
+      <h2 class="lvl"><span>07 ·</span> <span class="en">System states</span><span class="vi">Trạng thái hệ thống</span></h2>
+      <h3 class="frame-title"><span class="en">404 · Empty · Error · Success</span><span class="vi">404 · Rỗng · Lỗi · Thành công</span></h3>
+
+      <div class="system-grid">
+        <div class="system-card">
+          <div class="code-404">404</div>
+          <div class="t-heading-md"><span class="en">This page is off the lineup.</span><span class="vi">Trang này không còn trong lineup.</span></div>
+          <p class="muted t-caption" style="max-width:320px;"><span class="en">The event you're looking for may have ended or been moved.</span><span class="vi">Sự kiện bạn tìm có thể đã kết thúc hoặc đã chuyển.</span></p>
+          <a class="btn btn-primary" href="#home"><span class="en">Back to home</span><span class="vi">Về trang chủ</span></a>
+        </div>
+
+        <div class="system-card">
+          <div class="icon-circle muted">🎫</div>
+          <div class="t-heading-md"><span class="en">No events match your filter.</span><span class="vi">Không có sự kiện phù hợp.</span></div>
+          <p class="muted t-caption" style="max-width:320px;"><span class="en">Try widening the date range or removing a category to see more.</span><span class="vi">Thử mở rộng khoảng ngày hoặc bỏ bớt danh mục.</span></p>
+          <button class="btn btn-secondary"><span class="en">Reset filters</span><span class="vi">Đặt lại bộ lọc</span></button>
+        </div>
+
+        <div class="system-card">
+          <div class="icon-circle danger">✕</div>
+          <div class="t-heading-md"><span class="en">Payment failed</span><span class="vi">Thanh toán thất bại</span></div>
+          <p class="muted t-caption" style="max-width:360px;">
+            <span class="en">Your bank declined the transaction. The seats remain held for 09:42.</span>
+            <span class="vi">Ngân hàng đã từ chối giao dịch. Ghế còn được giữ trong 09:42.</span>
+          </p>
+          <div class="flex gap-8">
+            <button class="btn btn-secondary"><span class="en">Try another method</span><span class="vi">Thử cách khác</span></button>
+            <button class="btn btn-primary"><span class="en">Retry</span><span class="vi">Thử lại</span></button>
+          </div>
+          <div class="t-mono subtle">err.code: payment.declined.51</div>
+        </div>
+
+        <div class="system-card">
+          <div class="icon-circle success">✓</div>
+          <div class="t-heading-md"><span class="en">Order confirmed</span><span class="vi">Đơn hàng đã xác nhận</span></div>
+          <p class="muted t-caption" style="max-width:360px;">
+            <span class="en">Your tickets are on the way to minh.anh@example.com.</span>
+            <span class="vi">Vé đã được gửi đến minh.anh@example.com.</span>
+          </p>
+          <div class="t-mono-strong" style="color:var(--ink-strong);">#ONX-04A91C2D · 6,577,200₫</div>
+          <div class="flex gap-8">
+            <a class="btn btn-secondary" href="#profile"><span class="en">View tickets</span><span class="vi">Xem vé</span></a>
+            <button class="btn btn-primary"><span class="en">Download PDF</span><span class="vi">Tải PDF</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       HELP / COMMUNITY
+       ========================================================= -->
+  <div class="page-stage" id="help">
+    <div class="container">
+      <h2 class="lvl"><span>08 ·</span> <span class="en">Help &amp; community</span><span class="vi">Trợ giúp &amp; cộng đồng</span></h2>
+      <h3 class="frame-title"><span class="en">How can we help?</span><span class="vi">Chúng tôi có thể giúp gì?</span></h3>
+
+      <div class="help-grid">
+        <aside class="help-side">
+          <h4><span class="en">Buying tickets</span><span class="vi">Mua vé</span></h4>
+          <a class="active"><span class="en">FAQ</span><span class="vi">Câu hỏi thường gặp</span></a>
+          <a><span class="en">Buying guide</span><span class="vi">Hướng dẫn mua</span></a>
+          <a><span class="en">Refund policy</span><span class="vi">Chính sách hoàn tiền</span></a>
+          <h4><span class="en">Safety</span><span class="vi">An toàn</span></h4>
+          <a><span class="en">Avoid scams</span><span class="vi">Tránh lừa đảo</span></a>
+          <a><span class="en">Spot fake tickets</span><span class="vi">Nhận biết vé giả</span></a>
+          <h4><span class="en">Account</span><span class="vi">Tài khoản</span></h4>
+          <a><span class="en">Login issues</span><span class="vi">Vấn đề đăng nhập</span></a>
+          <a><span class="en">Privacy</span><span class="vi">Riêng tư</span></a>
+        </aside>
+
+        <div class="col gap-32">
+          <!-- Warnings -->
+          <div class="col gap-12">
+            <div class="warn-card danger">
+              <div class="warn-icon" style="background:var(--danger-soft); color:var(--danger);">⚠</div>
+              <div>
+                <div class="t-heading-sm" style="color:var(--danger);"><span class="en">Beware of resale scams</span><span class="vi">Cảnh giác lừa đảo bán lại</span></div>
+                <p class="muted t-caption mt-8">
+                  <span class="en">We never sell tickets through Facebook DMs, Telegram, or third-party sites. If a deal asks you to pay outside Onyx, it's a scam.</span>
+                  <span class="vi">Chúng tôi không bao giờ bán vé qua Facebook DMs, Telegram hay trang khác. Nếu được yêu cầu chuyển khoản ngoài Onyx — đó là lừa đảo.</span>
+                </p>
+              </div>
+            </div>
+            <div class="warn-card warning">
+              <div class="warn-icon" style="background:var(--warning-soft); color:var(--warning);">🔒</div>
+              <div>
+                <div class="t-heading-sm" style="color:var(--warning);"><span class="en">Verify the QR at the gate</span><span class="vi">Kiểm tra QR ở cổng</span></div>
+                <p class="muted t-caption mt-8">
+                  <span class="en">Real Onyx tickets show the holder's name + the unique 8-character order code. Screenshots of QR alone are not enough.</span>
+                  <span class="vi">Vé Onyx hợp lệ luôn hiển thị tên + mã đơn 8 ký tự. Chỉ ảnh chụp màn hình QR là không đủ.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="t-heading-lg mb-16">FAQ</div>
+            <div>
+              <div class="faq-item">
+                <h4><span class="en">Can I refund my ticket?</span><span class="vi">Tôi có thể hoàn vé không?</span><span class="muted">−</span></h4>
+                <p>
+                  <span class="en">Most events allow full refund up to 7 days before the event. Look for the "Refundable" badge on the event page.</span>
+                  <span class="vi">Phần lớn sự kiện cho phép hoàn vé đầy đủ trước 7 ngày. Tìm huy hiệu "Có thể hoàn" trên trang sự kiện.</span>
+                </p>
+              </div>
+              <div class="faq-item"><h4><span class="en">When will I receive my ticket?</span><span class="vi">Khi nào tôi nhận được vé?</span><span class="muted">+</span></h4></div>
+              <div class="faq-item"><h4><span class="en">Can I transfer my ticket to someone else?</span><span class="vi">Tôi có thể chuyển vé cho người khác?</span><span class="muted">+</span></h4></div>
+              <div class="faq-item"><h4><span class="en">What ID do I need at the gate?</span><span class="vi">Cần mang giấy tờ gì khi vào cổng?</span><span class="muted">+</span></h4></div>
+              <div class="faq-item"><h4><span class="en">My event was cancelled — what now?</span><span class="vi">Sự kiện bị huỷ — phải làm gì?</span><span class="muted">+</span></h4></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       AUTH — LOGIN / REGISTER
+       ========================================================= -->
+  <div class="page-stage" id="auth">
+    <div class="container">
+      <h2 class="lvl"><span>09 ·</span> <span class="en">Login / Register</span><span class="vi">Đăng nhập / Đăng ký</span></h2>
+      <h3 class="frame-title"><span class="en">Account access</span><span class="vi">Truy cập tài khoản</span></h3>
+
+      <div class="auth-grid">
+        <div class="auth-card">
+          <h2><span class="en">Sign in</span><span class="vi">Đăng nhập</span></h2>
+          <div class="sub"><span class="en">Welcome back. Pick up where you left off.</span><span class="vi">Tiếp tục hành trình của bạn.</span></div>
+          <div class="form-stack">
+            <div class="field"><label>Email</label><input class="input" placeholder="you@example.com"></div>
+            <div class="field"><label><span class="en">Password</span><span class="vi">Mật khẩu</span></label><input class="input" type="password" value="••••••••"></div>
+            <div class="flex between items-center">
+              <label class="checkbox"><input type="checkbox" checked /> <span class="t-caption"><span class="en">Remember me</span><span class="vi">Ghi nhớ</span></span></label>
+              <a class="link-inline t-caption"><span class="en">Forgot password?</span><span class="vi">Quên mật khẩu?</span></a>
+            </div>
+            <button class="btn btn-primary btn-lg full"><span class="en">Sign in</span><span class="vi">Đăng nhập</span></button>
+            <div class="divider-or"><span class="en">or</span><span class="vi">hoặc</span></div>
+            <button class="social-btn">G  <span class="en">Continue with Google</span><span class="vi">Tiếp tục với Google</span></button>
+            <button class="social-btn">  <span class="en">Continue with Apple</span><span class="vi">Tiếp tục với Apple</span></button>
+          </div>
+        </div>
+
+        <div class="auth-card">
+          <h2><span class="en">Create account</span><span class="vi">Tạo tài khoản</span></h2>
+          <div class="sub"><span class="en">Free to join. Tickets in 30 seconds.</span><span class="vi">Miễn phí. Có vé trong 30 giây.</span></div>
+          <div class="form-stack">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="field"><label><span class="en">First name</span><span class="vi">Tên</span></label><input class="input" placeholder="Minh"></div>
+              <div class="field"><label><span class="en">Last name</span><span class="vi">Họ</span></label><input class="input" placeholder="Anh"></div>
+            </div>
+            <div class="field"><label>Email</label><input class="input" placeholder="you@example.com"></div>
+            <div class="field">
+              <label><span class="en">Password</span><span class="vi">Mật khẩu</span></label>
+              <input class="input" type="password" value="••••••••••">
+              <span class="help"><span class="en">8+ characters · 1 number · 1 symbol</span><span class="vi">8+ ký tự · 1 số · 1 ký hiệu</span></span>
+            </div>
+            <div class="field">
+              <label>Email <span class="en">— success state</span><span class="vi">— trạng thái OK</span></label>
+              <input class="input" value="newuser@example.com" style="border-color: var(--success);">
+              <span class="help" style="color:var(--success);">✓ <span class="en">Available</span><span class="vi">Có thể dùng</span></span>
+            </div>
+            <label class="checkbox"><input type="checkbox" /> <span class="t-caption"><span class="en">I agree to the Terms &amp; Privacy</span><span class="vi">Tôi đồng ý Điều khoản &amp; Riêng tư</span></span></label>
+            <button class="btn btn-primary btn-lg full"><span class="en">Create account</span><span class="vi">Tạo tài khoản</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       COMPONENTS DEMO — modal / toast / dropdown / skeleton / form states
+       ========================================================= -->
+  <div class="page-stage" id="components">
+    <div class="container">
+      <h2 class="lvl"><span>10 ·</span> <span class="en">Component library</span><span class="vi">Thư viện thành phần</span></h2>
+      <h3 class="frame-title"><span class="en">Modal · Toast · Dropdown · Skeleton</span><span class="vi">Modal · Toast · Dropdown · Skeleton</span></h3>
+
+      <div class="demo-row">
+        <!-- Toasts -->
+        <div class="demo-card">
+          <h4>Toast</h4>
+          <div class="toast">
+            <span class="ic" style="color:var(--success);">✓</span>
+            <div>
+              <div class="t-body-strong"><span class="en">Ticket sent to your email.</span><span class="vi">Đã gửi vé qua email.</span></div>
+              <div class="t-caption muted">minh.anh@example.com · 2s ago</div>
+            </div>
+          </div>
+          <div class="toast">
+            <span class="ic" style="color:var(--danger);">⚠</span>
+            <div>
+              <div class="t-body-strong"><span class="en">Card declined.</span><span class="vi">Thẻ bị từ chối.</span></div>
+              <div class="t-caption muted"><span class="en">Try a different payment method.</span><span class="vi">Hãy thử phương thức khác.</span></div>
+            </div>
+          </div>
+          <div class="toast">
+            <span class="ic" style="color:var(--info);">ℹ</span>
+            <div>
+              <div class="t-body-strong"><span class="en">New venue policy in effect.</span><span class="vi">Có chính sách địa điểm mới.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dropdown -->
+        <div class="demo-card">
+          <h4>Dropdown</h4>
+          <div class="dropdown-mock">
+            <div class="item active">✓ <span><span class="en">Account settings</span><span class="vi">Cài đặt</span></span></div>
+            <div class="item">🎫 <span><span class="en">My tickets</span><span class="vi">Vé của tôi</span></span></div>
+            <div class="item">💳 <span><span class="en">Payment methods</span><span class="vi">Thanh toán</span></span></div>
+            <div class="sep"></div>
+            <div class="item">🌐 <span class="en">Language: English</span><span class="vi">Ngôn ngữ: Tiếng Việt</span></div>
+            <div class="item">⏻ <span><span class="en">Sign out</span><span class="vi">Đăng xuất</span></span></div>
+          </div>
+        </div>
+
+        <!-- Loading skeleton -->
+        <div class="demo-card">
+          <h4><span class="en">Loading skeleton</span><span class="vi">Skeleton tải</span></h4>
+          <div class="skeleton skeleton-thumb"></div>
+          <div class="skeleton skeleton-line" style="width:30%;"></div>
+          <div class="skeleton skeleton-line" style="width:80%;"></div>
+          <div class="skeleton skeleton-line" style="width:60%;"></div>
+        </div>
+      </div>
+
+      <div class="demo-row" style="margin-top:24px;">
+        <!-- Form states -->
+        <div class="demo-card" style="grid-column: span 2;">
+          <h4><span class="en">Form states</span><span class="vi">Trạng thái form</span></h4>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <div class="field"><label><span class="en">Default</span><span class="vi">Mặc định</span></label><input class="input" placeholder="Type here..."></div>
+            <div class="field"><label><span class="en">Focus</span><span class="vi">Đang focus</span></label><input class="input" value="Focused" style="border-color: var(--primary); box-shadow: 0 0 0 2px var(--canvas), 0 0 0 4px var(--primary-ring);"></div>
+            <div class="field"><label><span class="en">Filled</span><span class="vi">Đã nhập</span></label><input class="input" value="minh.anh@example.com"></div>
+            <div class="field">
+              <label><span class="en">Error</span><span class="vi">Lỗi</span></label>
+              <input class="input error" value="invalid-email">
+              <span class="err"><span class="en">Enter a valid email address.</span><span class="vi">Vui lòng nhập email hợp lệ.</span></span>
+            </div>
+            <div class="field">
+              <label><span class="en">Success</span><span class="vi">Thành công</span></label>
+              <input class="input" value="newuser@onyx.tickets" style="border-color: var(--success);">
+              <span class="help" style="color:var(--success);">✓ <span class="en">Verified</span><span class="vi">Đã xác minh</span></span>
+            </div>
+            <div class="field"><label><span class="en">Disabled</span><span class="vi">Vô hiệu</span></label><input class="input" value="readonly@onyx.tickets" disabled style="opacity:0.5;"></div>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="demo-card">
+          <h4>Modal</h4>
+          <div class="modal" style="padding: 24px; max-width: 100%; box-shadow: none; gap: 12px;">
+            <div class="t-heading-md"><span class="en">Cancel order?</span><span class="vi">Huỷ đơn?</span></div>
+            <div class="muted t-caption"><span class="en">Refund will be returned to your original payment method within 5–7 days.</span><span class="vi">Tiền hoàn về phương thức gốc trong 5–7 ngày.</span></div>
+            <div class="flex gap-8 full" style="margin-top:8px;">
+              <button class="btn btn-ghost" style="flex:1;"><span class="en">Keep</span><span class="vi">Giữ lại</span></button>
+              <button class="btn btn-danger" style="flex:1;"><span class="en">Cancel order</span><span class="vi">Huỷ đơn</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="#home"><span class="brand-mark">O</span><span>Onyx</span></a>
+        <p class="muted t-caption mt-16" style="max-width:320px;">
+          <span class="en">Ticketing infrastructure for live events across Vietnam. Verified organizers, transparent pricing, instant delivery.</span>
+          <span class="vi">Hạ tầng vé cho sự kiện trực tiếp khắp Việt Nam. Nhà tổ chức xác minh, giá minh bạch, vé tức thì.</span>
+        </p>
+      </div>
+      <div>
+        <h5><span class="en">Product</span><span class="vi">Sản phẩm</span></h5>
+        <ul>
+          <li><a href="#home"><span class="en">Browse events</span><span class="vi">Khám phá</span></a></li>
+          <li><a href="#organizer"><span class="en">For organizers</span><span class="vi">Cho nhà tổ chức</span></a></li>
+          <li><a><span class="en">Pricing</span><span class="vi">Giá</span></a></li>
+          <li><a><span class="en">API</span><span class="vi">API</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span class="en">Company</span><span class="vi">Công ty</span></h5>
+        <ul>
+          <li><a><span class="en">About</span><span class="vi">Giới thiệu</span></a></li>
+          <li><a><span class="en">Careers</span><span class="vi">Tuyển dụng</span></a></li>
+          <li><a><span class="en">Press</span><span class="vi">Báo chí</span></a></li>
+          <li><a href="#help"><span class="en">Help center</span><span class="vi">Trợ giúp</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h5><span class="en">Legal</span><span class="vi">Pháp lý</span></h5>
+        <ul>
+          <li><a><span class="en">Terms of service</span><span class="vi">Điều khoản</span></a></li>
+          <li><a><span class="en">Privacy policy</span><span class="vi">Riêng tư</span></a></li>
+          <li><a><span class="en">Cookie settings</span><span class="vi">Cookie</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bot">
+      <span>© 2026 Onyx Tickets · <span class="en">All rights reserved</span><span class="vi">Đã đăng ký bản quyền</span></span>
+      <span class="t-mono">v1.0.0 · build 2026.05.02</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   I18N — toggle EN/VI on the body data-lang attribute
+   ========================================================= */
+const langToggle = document.getElementById('langToggle');
+langToggle.addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-lang]');
+  if (!btn) return;
+  const lang = btn.dataset.lang;
+  document.body.dataset.lang = lang;
+  langToggle.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+});
+
+/* =========================================================
+   SEAT MAP — generate a synthetic seat grid (CSS-only render)
+   ========================================================= */
+(function buildSeatmap(){
+  const root = document.getElementById('seatmap');
+  if(!root) return;
+  const rows = ['A','B','C','D','E','F','G','H','J','K','L','M'];
+  const seatsPerRow = 22;
+  const aisleAfter = [7, 14]; // create two aisles
+  const sold = new Set([
+    'B-3','B-4','C-9','C-10','D-15','D-16','D-17','E-2','F-12','F-13','F-14',
+    'G-20','H-5','H-6','H-7','J-11','K-16','L-19','L-20','M-1','M-22'
+  ]);
+  const reserved = new Set(['A-12','A-13','C-2','E-18','G-9','J-3','K-4']);
+  const vipRows = ['A','B'];
+  const selected = new Set(['A-4','C-12','C-13']); // matches order summary
+
+  const wrap = document.createElement('div');
+  wrap.className = 'seat-rows';
+
+  rows.forEach(rowLetter => {
+    const r = document.createElement('div');
+    r.className = 'seat-row';
+    const lblL = document.createElement('span');
+    lblL.className = 'row-letter'; lblL.textContent = rowLetter;
+    r.appendChild(lblL);
+
+    for (let i = 1; i <= seatsPerRow; i++){
+      const s = document.createElement('div');
+      s.className = 'seat';
+      const id = rowLetter + '-' + i;
+      if (vipRows.includes(rowLetter)) s.classList.add('vip');
+      if (sold.has(id))     s.classList.replace('seat','seat'), s.classList.add('sold');
+      if (reserved.has(id)) s.classList.add('reserved');
+      if (selected.has(id)) s.classList.add('selected');
+      s.title = 'Row ' + rowLetter + ' · Seat ' + i;
+      r.appendChild(s);
+
+      if (aisleAfter.includes(i)) {
+        const a = document.createElement('span'); a.className = 'aisle'; r.appendChild(a);
+      }
+    }
+    const lblR = document.createElement('span');
+    lblR.className = 'row-letter'; lblR.textContent = rowLetter;
+    r.appendChild(lblR);
+    wrap.appendChild(r);
+  });
+  root.appendChild(wrap);
+})();
+</script>
+</body>
+</html>

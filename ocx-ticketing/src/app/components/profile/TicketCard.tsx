@@ -1,5 +1,7 @@
 "use client";
 
+import { Calendar, MapPin } from "lucide-react";
+import { OnyxIcon } from "@/components/ui/OnyxIcon";
 import type { ProfileTicket } from "./types";
 
 export interface TicketCardProps {
@@ -16,57 +18,77 @@ export default function TicketCard({
   const isDisabled = ticket.disabled ?? ticket.status !== "upcoming";
   const statusLabel =
     ticket.status === "upcoming"
-      ? "Sắp diễn ra"
+      ? "Đã xác nhận"
       : ticket.status === "used"
         ? "Đã sử dụng"
         : "Hết hạn";
 
+  const orderRef = `#ONX-${ticket.id.toUpperCase().replace(/[^A-Z0-9]/gi, "").slice(0, 8) || "TICKET"}`;
+
   return (
     <article
-      className={`rounded-xl border border-white/10 bg-black/30 p-4 md:p-5 transition-colors ${
-        isDisabled ? "opacity-75" : "hover:border-white/20"
-      } ${className}`}
+      className={`grid grid-cols-1 items-center gap-6 rounded-xl border border-[#262626] bg-[#141414] p-5 md:grid-cols-[1fr_96px] ${isDisabled ? "opacity-80" : ""} ${className}`}
     >
-      <div className="flex flex-col gap-3">
-        <h3 className="text-base font-semibold text-white/95 line-clamp-2">
-          {ticket.eventName}
-        </h3>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/60">
-          <span>{ticket.date}</span>
-          <span>{ticket.time}</span>
-          <span className="w-full md:w-auto truncate" title={ticket.venue}>
-            {ticket.venue}
-          </span>
-        </div>
-        <div className="flex flex-wrap items-center justify-between gap-2 mt-1">
-          <span
-            className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
-              ticket.status === "upcoming"
-                ? "bg-emerald-500/20 text-emerald-300"
-                : ticket.status === "used"
-                  ? "bg-slate-500/20 text-slate-300"
-                  : "bg-red-500/20 text-red-300"
-            }`}
-          >
-            {statusLabel}
-          </span>
-          {ticket.transferable && ticket.status === "upcoming" && (
-            <span className="text-xs text-white/50">Có thể chuyển</span>
+      <div className="flex min-w-0 flex-col gap-3">
+        <div className="flex flex-wrap gap-2">
+          {ticket.status === "upcoming" && (
+            <span className="rounded-full border border-transparent bg-[#34D39914] px-2 py-0.5 text-xs font-medium text-[#34D399]">
+              {statusLabel}
+            </span>
+          )}
+          {ticket.status !== "upcoming" && (
+            <span className="rounded-full border border-[#262626] bg-[#212121] px-2 py-0.5 text-xs font-medium text-[#A1A1A1]">
+              {statusLabel}
+            </span>
           )}
         </div>
-        {!isDisabled && (onViewDetails || true) && (
-          <button
-            type="button"
-            onClick={() => onViewDetails?.(ticket)}
-            disabled={isDisabled}
-            className="mt-2 w-full md:w-auto rounded-full px-4 py-2 text-sm font-semibold text-white border border-white/50 hover:bg-white/10 transition-colors disabled:opacity-50 disabled:pointer-events-none"
-            style={{
-              background: "linear-gradient(180deg, #d43922 0%, #9a1a15 100%)",
-            }}
-          >
-            Xem chi tiết
-          </button>
+        <h3 className="text-lg font-semibold leading-snug text-[#FAFAFA] line-clamp-2">
+          {ticket.eventName}
+        </h3>
+        <div className="flex flex-col gap-1.5 text-sm text-[#A1A1A1]">
+          <span className="inline-flex items-center gap-2">
+            <OnyxIcon icon={Calendar} size={16} className="shrink-0 text-[#737373]" />
+            {ticket.date} · {ticket.time}
+          </span>
+          <span className="inline-flex items-center gap-2 truncate" title={ticket.venue}>
+            <OnyxIcon icon={MapPin} size={16} className="shrink-0 text-[#737373]" />
+            {ticket.venue}
+          </span>
+          <span className="font-mono text-xs text-[#737373]">{orderRef}</span>
+        </div>
+        {ticket.transferable && ticket.status === "upcoming" && (
+          <p className="text-xs text-[#737373]">Có thể chuyển vé (sắp có)</p>
         )}
+        {!isDisabled && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => onViewDetails?.(ticket)}
+              className="inline-flex min-h-10 items-center justify-center rounded-lg border border-[#262626] bg-[#212121] px-4 text-sm font-medium text-[#FAFAFA] transition-colors hover:bg-[#262626]"
+            >
+              Xem vé
+            </button>
+            <button
+              type="button"
+              disabled
+              className="inline-flex min-h-10 cursor-not-allowed items-center justify-center rounded-lg border border-dashed border-[#333333] px-4 text-sm font-medium text-[#525252]"
+            >
+              Tải PDF
+            </button>
+          </div>
+        )}
+      </div>
+      <div
+        className="mx-auto flex size-24 shrink-0 items-center justify-center rounded-lg border border-[#262626] bg-[#0A0A0A] p-1.5 md:size-[96px]"
+        aria-hidden
+      >
+        <div
+          className="size-full rounded-md opacity-90"
+          style={{
+            background:
+              "repeating-conic-gradient(#FAFAFA 0 25%, #0A0A0A 0 50%) 0 0 / 8px 8px",
+          }}
+        />
       </div>
     </article>
   );

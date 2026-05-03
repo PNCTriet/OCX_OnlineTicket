@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ProfileTicket, TicketStatusTab } from "./types";
+import { Ticket as TicketIcon } from "lucide-react";
 import TicketCard from "./TicketCard";
 import EmptyState from "./EmptyState";
 
@@ -30,20 +31,19 @@ export default function TicketSection({
 
   return (
     <section
-      className={`rounded-xl border border-white/10 bg-black/20 overflow-hidden ${className}`}
+      className={`overflow-hidden rounded-xl border border-[#262626] bg-[#141414] ${className}`}
     >
       <h2 className="sr-only">Vé của tôi</h2>
-      {/* Tabs */}
-      <div className="flex border-b border-white/10">
+      <div className="flex border-b border-[#262626]">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
+            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
               activeTab === tab.id
-                ? "text-white border-b-2 border-red-500 bg-white/5"
-                : "text-white/60 hover:text-white/80"
+                ? "border-b-2 border-[#FF6B1A] bg-[#212121] text-[#FAFAFA]"
+                : "text-[#A1A1A1] hover:text-[#FAFAFA]"
             }`}
           >
             {tab.label}
@@ -51,13 +51,13 @@ export default function TicketSection({
         ))}
       </div>
 
-      <div className="p-4 md:p-5 min-h-[200px]">
+      <div className="min-h-[200px] p-4 md:p-5">
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-32 rounded-xl bg-white/5 animate-pulse"
+                className="h-32 animate-pulse rounded-xl bg-[#212121]"
                 aria-hidden
               />
             ))}
@@ -73,8 +73,8 @@ export default function TicketSection({
                   : "Chưa có vé hết hạn."
             }
             ctaLabel={activeTab === "upcoming" ? "Khám phá sự kiện" : undefined}
-            ctaHref={activeTab === "upcoming" ? "/OCX5" : undefined}
-            iconLabel="🎟️"
+            ctaHref={activeTab === "upcoming" ? "/ticket" : undefined}
+            icon={TicketIcon}
           />
         ) : (
           <ul className="space-y-4 list-none p-0 m-0">

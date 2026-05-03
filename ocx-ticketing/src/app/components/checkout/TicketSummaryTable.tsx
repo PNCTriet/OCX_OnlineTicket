@@ -1,5 +1,7 @@
 "use client";
+import { Clock } from "lucide-react";
 import { Ticket } from "../../types/ticket";
+import { EVENT_INFO } from "../../constants/ticket";
 
 interface CouponValidationResponse {
   valid: boolean;
@@ -13,51 +15,84 @@ type TicketSummaryTableProps = {
   totalAmount: number;
   finalAmount?: number;
   appliedCoupon?: CouponValidationResponse | null;
+  /** Mặc định dùng `EVENT_INFO.name` */
+  eventName?: string;
 };
 
-export default function TicketSummaryTable({ 
-  selectedTickets, 
-  totalAmount, 
-  finalAmount, 
-  appliedCoupon 
+/** Bám Onyx — khối order-summary (Ticketing Platform.html) */
+export default function TicketSummaryTable({
+  selectedTickets,
+  totalAmount,
+  finalAmount,
+  appliedCoupon,
+  eventName,
 }: TicketSummaryTableProps) {
+  const pay = finalAmount ?? totalAmount;
+  const title = eventName ?? EVENT_INFO.name;
+
   return (
-    <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm text-white">
-      <h2 className="text-xl font-bold mb-4">Chi tiết vé</h2>
-      <table className="w-full text-left table-auto">
-        <thead>
-          <tr className="border-b border-zinc-700">
-            <th className="py-2">Loại vé</th>
-            <th className="py-2 text-center">SL</th>
-            <th className="py-2 text-right">Giá</th>
-          </tr>
-        </thead>
-        <tbody>
-          {selectedTickets.filter(t => t.quantity > 0).map(ticket => (
-            <tr key={ticket.id} className="border-b border-zinc-800 last:border-b-0">
-              <td className="py-2">{ticket.name}</td>
-              <td className="py-2 text-center">{ticket.quantity}</td>
-              <td className="py-2 text-right">{ticket.price.toLocaleString()}đ</td>
-            </tr>
+    <div className="rounded-xl border border-[#262626] bg-[#141414] p-6">
+      <h3 className="text-lg font-semibold tracking-tight text-[#FAFAFA]">
+        Tóm tắt đơn hàng
+      </h3>
+      <p className="mt-1 text-[13px] text-[#A1A1A1]">{title}</p>
+      <div className="my-4 h-px bg-[#262626]" />
+
+      <div className="space-y-3">
+        {selectedTickets
+          .filter((t) => t.quantity > 0)
+          .map((ticket) => (
+            <div
+              key={ticket.id}
+              className="flex items-start justify-between gap-4 text-[15px]"
+            >
+              <span className="text-[#A1A1A1]">
+                {ticket.name}{" "}
+                <span className="text-[#737373]">×{ticket.quantity}</span>
+              </span>
+              <span className="shrink-0 font-medium tabular-nums text-[#FAFAFA]">
+                {(ticket.price * ticket.quantity).toLocaleString("vi-VN")}₫
+              </span>
+            </div>
           ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colSpan={2} className="py-2 text-sm text-zinc-400">Tạm tính</td>
-            <td className="py-2 text-sm text-zinc-400 text-right">{totalAmount.toLocaleString()}đ</td>
-          </tr>
-          {appliedCoupon && (
-            <tr>
-              <td colSpan={2} className="py-2 text-sm text-green-400">Giảm giá</td>
-              <td className="py-2 text-sm text-green-400 text-right">-{appliedCoupon.discount_amount.toLocaleString()}đ</td>
-            </tr>
-          )}
-          <tr className="border-t border-zinc-600">
-            <td colSpan={2} className="py-4 text-lg font-bold">Tổng cộng</td>
-            <td className="py-4 text-lg font-bold text-right">{(finalAmount || totalAmount).toLocaleString()}đ</td>
-          </tr>
-        </tfoot>
-      </table>
+      </div>
+
+      <div className="my-4 h-px bg-[#262626]" />
+
+      <div className="space-y-2 text-[15px]">
+        <div className="flex justify-between text-[#A1A1A1]">
+          <span>Tạm tính</span>
+          <span className="tabular-nums text-[#FAFAFA]">
+            {totalAmount.toLocaleString("vi-VN")}₫
+          </span>
+        </div>
+        {appliedCoupon && (
+          <div className="flex justify-between text-[#34D399]">
+            <span>Giảm giá</span>
+            <span className="tabular-nums">
+              −{appliedCoupon.discount_amount.toLocaleString("vi-VN")}₫
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-4 flex items-end justify-between border-t border-[#262626] pt-4">
+        <span className="text-xs font-medium uppercase tracking-wide text-[#A1A1A1]">
+          Tổng cộng
+        </span>
+        <span className="font-mono text-2xl font-medium tabular-nums tracking-tight text-[#FF6B1A]">
+          {pay.toLocaleString("vi-VN")}₫
+        </span>
+      </div>
+
+      <p className="mt-4 flex items-center gap-2 text-[13px] text-[#FBBF24]">
+        <Clock
+          className="size-4 shrink-0 text-[#FBBF24]"
+          strokeWidth={1.75}
+          aria-hidden
+        />
+        Hoàn tất thanh toán trong phiên để giữ vé.
+      </p>
     </div>
   );
-} 
+}

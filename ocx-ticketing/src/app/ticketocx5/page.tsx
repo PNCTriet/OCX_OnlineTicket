@@ -15,8 +15,13 @@ import { SEAT_LAYOUT_CONFIG } from "../constants/ticket";
 import { EventInfo, TicketType, Zone } from "../types/ticket";
 import { useAuth } from "@/components/AuthProvider";
 import { createClient } from "@/lib/supabase";
+import { isV2Enabled } from "@/lib/flags";
+import PageLayout from "@/components/v2/PageLayout";
+import Header from "@/components/v2/Header";
+import V2Footer from "@/components/v2/Footer";
+import TicketList from "@/components/v2/TicketList";
+import TicketDetail from "@/components/v2/TicketDetail";
 
-// Function to generate random colors for tickets (same behavior as /ticket) - for redeploy
 const getRandomColor = () => {
   const colors = [
     "#56F482",
@@ -202,6 +207,43 @@ function mapOcx5TicketNameToZoneId(name: string | undefined | null): Ocx5ZoneId 
   return null;
 }
 
+function Ocx5AlertBanners({
+  error,
+  showNoTicketsError,
+  showMaxTicketsError,
+  zoneUnavailableMessage,
+}: {
+  error: string | null;
+  showNoTicketsError: boolean;
+  showMaxTicketsError: boolean;
+  zoneUnavailableMessage: string | null;
+}) {
+  return (
+    <>
+      {error && (
+        <div className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-center text-red-500">
+          <p>{error}</p>
+        </div>
+      )}
+      {showNoTicketsError && (
+        <div className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-red-500">
+          <p className="text-center">Vui lòng chọn ít nhất một vé để tiếp tục.</p>
+        </div>
+      )}
+      {showMaxTicketsError && (
+        <div className="mb-6 rounded-lg border border-amber-500/20 bg-amber-500/10 p-4 text-amber-300">
+          <p className="text-center">Mỗi người chỉ được mua tối đa 10 vé trong 1 phiên.</p>
+        </div>
+      )}
+      {zoneUnavailableMessage && (
+        <div className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-red-400">
+          <p className="text-center">{zoneUnavailableMessage}</p>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function TicketOCX5Page() {
   const { user, loading, signOut } = useAuth();
   const router = useRouter();
@@ -214,10 +256,6 @@ export default function TicketOCX5Page() {
   const [showSeatmapIntro, setShowSeatmapIntro] = useState(false);
   const [seatmapIntroEntered, setSeatmapIntroEntered] = useState(false);
   const [seatmapIntroText, setSeatmapIntroText] = useState("");
-  // For-fun trade option: 3 GRY → 1 XOAY TÍT MÙ (Hoàng Dũng)
-  const [showTradePopup, setShowTradePopup] = useState(false);
-  const [showTradeSuccessNotif, setShowTradeSuccessNotif] = useState(false);
-  const [tradeMessageText, setTradeMessageText] = useState("");
 
   const [selectedTickets, setSelectedTickets] = useState<
     (TicketType & { quantity: number; availableQty: number; seatSectionId?: string | null })[]
@@ -300,62 +338,6 @@ export default function TicketOCX5Page() {
 
     return () => window.clearInterval(iv);
   }, [showSeatmapIntro]);
-
-  // Typing effect for trade popup message (chat style)
-  const TRADE_MESSAGE_FULL =
-    "Hay tin anh Dũng Day 2 ở SG, lòng nôn nao nhưng phận dev nghèo làm show indie không cho phép bảnh ao ước, bảo bối nào chốt cái deal trade vé với bảnh thì bấm cái nút bên dưới bảnh alo liền !";
-  useEffect(() => {
-    if (!showTradePopup) {
-      setTradeMessageText("");
-      return;
-    }
-    const reduce =
-      typeof window !== "undefined"
-        ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        : false;
-    if (reduce) {
-      setTradeMessageText(TRADE_MESSAGE_FULL);
-      return;
-    }
-    setTradeMessageText("");
-    let i = 0;
-    const iv = setInterval(() => {
-      i += 1;
-      setTradeMessageText(TRADE_MESSAGE_FULL.slice(0, i));
-      if (i >= TRADE_MESSAGE_FULL.length) clearInterval(iv);
-    }, 35);
-    return () => clearInterval(iv);
-  }, [showTradePopup]);
-
-  // Auto-hide trade success notif + trigger confetti (pháo hoa)
-  useEffect(() => {
-    if (!showTradeSuccessNotif) return;
-    const fireConfetti = async () => {
-      try {
-        const confetti = (await import("canvas-confetti")).default;
-        const count = 200;
-        const defaults = { origin: { y: 0.7 }, zIndex: 100 };
-        const fire = (particleRatio: number, opts: { spread?: number; startVelocity?: number }) => {
-          confetti({
-            ...defaults,
-            ...opts,
-            particleCount: Math.floor(count * particleRatio),
-          });
-        };
-        fire(0.25, { spread: 26, startVelocity: 55 });
-        fire(0.2, { spread: 60 });
-        fire(0.35, { spread: 100, startVelocity: 45 });
-        fire(0.2, { spread: 120, startVelocity: 25 });
-        setTimeout(() => fire(0.15, { spread: 80 }), 200);
-        setTimeout(() => fire(0.1, { spread: 90 }), 400);
-      } catch {
-        // ignore if confetti fails
-      }
-    };
-    fireConfetti();
-    const t = setTimeout(() => setShowTradeSuccessNotif(false), 3500);
-    return () => clearTimeout(t);
-  }, [showTradeSuccessNotif]);
 
   // Redirect to login (same pattern as /ticket)
   useEffect(() => {
@@ -621,11 +603,180 @@ export default function TicketOCX5Page() {
     }
   };
 
+  const zoneConfirmationModal = (
+    <ZoneConfirmationModal
+      isOpen={isModalOpen}
+      onClose={handleCloseModal}
+      onConfirm={handleConfirmZone}
+      zone={pendingZone}
+      initialQuantity={pendingInitialQty}
+      maxQuantity={pendingMaxQty}
+    />
+  );
+
+  const seatmapIntroModal =
+    showSeatmapIntro ? (
+      <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+        <div className="absolute inset-0 bg-black/70" onClick={closeSeatmapIntro} />
+        <div
+          className={`relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 shadow-2xl ${
+            seatmapIntroEntered ? "scale-100 opacity-100" : "scale-95 opacity-0"
+          }`}
+          style={{
+            background:
+              "linear-gradient(180deg, rgb(0,0,0) 0%, rgb(44,9,11) 55%, rgb(60,10,12) 100%)",
+            transition: "opacity 240ms ease, transform 240ms ease",
+          }}
+        >
+          <div className="relative aspect-[4/5] w-full">
+            <Image
+              src="/images/ocx5_seatmap_alt2.jpg"
+              alt="OCX5 Seatmap"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+          <div className="p-5">
+            <p className="text-center font-semibold text-white">
+              {seatmapIntroText.split("\n").map((line, idx, arr) => (
+                <span key={idx}>
+                  {line}
+                  {idx < arr.length - 1 ? <br /> : null}
+                </span>
+              ))}
+              <span
+                className="ml-0.5 inline-block w-[10px] translate-y-[1px]"
+                style={{
+                  opacity: seatmapIntroText.length % 2 ? 1 : 0.35,
+                  transition: "opacity 120ms linear",
+                }}
+              >
+                |
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    ) : null;
+
   if (loading || !user) {
+    if (isV2Enabled()) {
+      return (
+        <PageLayout>
+          <Header
+            lang={lang}
+            onLangChange={setLang}
+            actions={<span className="text-sm text-[#737373]">Đang tải...</span>}
+          />
+          <div className="flex min-h-[40vh] items-center justify-center text-[#FAFAFA]">
+            Đang tải...
+          </div>
+        </PageLayout>
+      );
+    }
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-white text-xl">Đang tải...</div>
       </div>
+    );
+  }
+
+  if (isV2Enabled()) {
+    return (
+      <>
+        <PageLayout>
+          <Header
+            lang={lang}
+            onLangChange={setLang}
+            actions={
+              <button
+                type="button"
+                onClick={() => signOut()}
+                className="inline-flex h-9 items-center justify-center rounded-lg border border-[#262626] bg-[#212121] px-4 text-sm font-medium text-[#FAFAFA] transition-colors hover:bg-[#262626]"
+              >
+                Đăng xuất
+              </button>
+            }
+          />
+          <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
+            <Ocx5AlertBanners
+              error={error}
+              showNoTicketsError={showNoTicketsError}
+              showMaxTicketsError={showMaxTicketsError}
+              zoneUnavailableMessage={zoneUnavailableMessage}
+            />
+
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              <div className="min-h-0 space-y-6 lg:col-span-2">
+                <div
+                  className={isMobile ? "h-[380px]" : "h-[520px] lg:h-[640px]"}
+                  style={{ minHeight: 0 }}
+                >
+                  <StageMapCard
+                    selectedZoneId={highlightedZoneId}
+                    onZoneSelect={handleZoneSelect}
+                    tooltipBySectionId={tooltipBySectionId}
+                    iconBySectionId={{
+                      A: HOUSE_BY_ZONE_ID.A.logo,
+                      B: HOUSE_BY_ZONE_ID.B.logo,
+                      C: HOUSE_BY_ZONE_ID.C.logo,
+                      D: HOUSE_BY_ZONE_ID.D.logo,
+                    }}
+                    layoutConfig={OCX5_SEAT_LAYOUT_CONFIG}
+                    initialScale={isMobile ? 0.72 : 1}
+                  />
+                </div>
+              </div>
+
+              <div className="lg:col-span-1">
+                <div className="max-h-[640px] overflow-y-auto rounded-xl border border-[#262626] bg-[#141414] p-6 lg:h-[640px]">
+                  <div className="space-y-6">
+                    <TicketDetail event={EVENT_INFO_OCX5} />
+
+                    <div className="overflow-hidden rounded-lg border border-[#262626] bg-black/30">
+                      <p className="px-3 py-1.5 text-xs text-[#A1A1A1]">Vị trí</p>
+                      <div className="relative aspect-video w-full">
+                        <iframe
+                          title="Bản đồ Thủ Đô Hà Nội"
+                          src={VENUE_MAP_EMBED_SRC}
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          allowFullScreen
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          className="absolute inset-0 h-full w-full"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="h-[320px] overflow-hidden sm:h-[360px]">
+                      <TicketList
+                        tickets={selectedTickets}
+                        onQuantityChange={handleQuantityChange}
+                        selectedZoneId={activeZoneId}
+                        requireSeatmapSelection={false}
+                      />
+                    </div>
+
+                    <OrderSummaryCard
+                      totalAmount={totalAmount}
+                      onContinue={handleContinue}
+                      hasTickets={selectedTickets.some((ticket) => ticket.quantity > 0)}
+                      selectedTickets={selectedTickets}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+          <V2Footer />
+        </PageLayout>
+
+        {zoneConfirmationModal}
+        {seatmapIntroModal}
+      </>
     );
   }
 
@@ -653,29 +804,12 @@ export default function TicketOCX5Page() {
 
         {/* Allow page scroll (same pattern as /ticket-seatmap) */}
         <main className="max-w-7xl mx-auto w-full flex-1 px-2 sm:px-4 lg:px-6 py-8 pt-24 sm:pt-28 md:pt-32">
-          {error && (
-            <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-500">
-              <p className="text-center">{error}</p>
-            </div>
-          )}
-
-          {showNoTicketsError && (
-            <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-500">
-              <p className="text-center">Vui lòng chọn ít nhất một vé để tiếp tục.</p>
-            </div>
-          )}
-
-          {showMaxTicketsError && (
-            <div className="mb-6 bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 text-amber-300">
-              <p className="text-center">Mỗi người chỉ được mua tối đa 10 vé trong 1 phiên.</p>
-            </div>
-          )}
-
-          {zoneUnavailableMessage && (
-            <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
-              <p className="text-center">{zoneUnavailableMessage}</p>
-            </div>
-          )}
+          <Ocx5AlertBanners
+            error={error}
+            showNoTicketsError={showNoTicketsError}
+            showMaxTicketsError={showMaxTicketsError}
+            zoneUnavailableMessage={zoneUnavailableMessage}
+          />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Seatmap */}
@@ -732,9 +866,6 @@ export default function TicketOCX5Page() {
                     </div>
                   </div>
 
-                  {/* For-fun trade option: 3 GRY đổi 1 vé XOAY TÍT MÙ (Hoàng Dũng) – có thể gỡ khi không dùng */}
-                  
-
                   {/* Ticket list scrolls inside this box so seatmap doesn't make the page too tall */}
                   <div className="h-[320px] sm:h-[360px] overflow-hidden">
                     <TicketSelectionCard
@@ -770,129 +901,8 @@ export default function TicketOCX5Page() {
         </div>
       </div>
 
-      <ZoneConfirmationModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmZone}
-        zone={pendingZone}
-        initialQuantity={pendingInitialQty}
-        maxQuantity={pendingMaxQty}
-      />
-
-      {/* Intro seatmap popup */}
-      {showSeatmapIntro && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
-          <div
-            className="absolute inset-0 bg-black/70"
-            onClick={closeSeatmapIntro}
-          />
-          <div
-            className={`relative w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden ${
-              seatmapIntroEntered ? "opacity-100 scale-100" : "opacity-0 scale-95"
-            }`}
-            style={{
-              background:
-                "linear-gradient(180deg, rgb(0,0,0) 0%, rgb(44,9,11) 55%, rgb(60,10,12) 100%)",
-              transition: "opacity 240ms ease, transform 240ms ease",
-            }}
-          >
-            <div className="relative w-full aspect-[4/5]">
-              <Image
-                src="/images/ocx5_seatmap_alt2.jpg"
-                alt="OCX5 Seatmap"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-            <div className="p-5">
-              <p className="text-white text-center font-semibold">
-                {seatmapIntroText.split("\n").map((line, idx, arr) => (
-                  <span key={idx}>
-                    {line}
-                    {idx < arr.length - 1 ? <br /> : null}
-                  </span>
-                ))}
-                <span
-                  className="inline-block w-[10px] translate-y-[1px] ml-0.5"
-                  style={{
-                    opacity: seatmapIntroText.length % 2 ? 1 : 0.35,
-                    transition: "opacity 120ms linear",
-                  }}
-                >
-                  |
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Trade vé popup (for fun): 3 GRY → 1 XOAY TÍT MÙ Hoàng Dũng */}
-      {showTradePopup && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4 py-6 overflow-y-auto">
-          <div
-            className="absolute inset-0 bg-black/75"
-            onClick={() => setShowTradePopup(false)}
-            aria-hidden
-          />
-          <div
-            className="relative w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden bg-black/95"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative w-full aspect-[9/16] max-h-[50vh] bg-black">
-              <Image
-                src="/images/xoaytron_post_ss5_alt1.png"
-                alt="XOAY TRÒN Hoàng Dũng Day 2 - Seatmap"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <div className="p-4 space-y-4">
-              {/* Tin nhắn kiểu chat bubble (bên phải, không mũi nhọn) + chạy chữ */}
-              <div className="flex justify-end">
-                <div className="relative max-w-[90%] rounded-2xl bg-slate-700/90 px-4 py-3 shadow-md">
-                  <p className="text-white/95 text-sm leading-relaxed">
-                    {tradeMessageText}
-                    <span
-                      className="trade-message-cursor inline-block w-[2px] min-h-[1em] ml-0.5 align-middle bg-white/90"
-                      aria-hidden
-                    />
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={async () => {
-                  if (user?.email) {
-                    try {
-                      await fetch("/api/log-trade", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ email: user.email }),
-                      });
-                    } catch {
-                      // bỏ qua lỗi log
-                    }
-                  }
-                  setShowTradePopup(false);
-                  setShowTradeSuccessNotif(true);
-                }}
-                className="w-full rounded-lg py-2.5 px-5 text-white bg-white/15 border border-white/30 hover:bg-white/25 transition-colors font-medium"
-              >
-                Đổi liền
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Success notif sau "Đổi liền" — pháo hoa + toast scale-in (CSS) */}
-      {showTradeSuccessNotif && (
-        <div className="trade-success-toast fixed bottom-8 left-1/2 -translate-x-1/2 z-[70] px-6 py-3.5 rounded-2xl bg-emerald-600/95 text-white font-semibold shadow-2xl ring-2 ring-emerald-400/40 backdrop-blur-sm">
-          đợi bảnh nha !!!
-        </div>
-      )}
+      {zoneConfirmationModal}
+      {seatmapIntroModal}
     </div>
   );
 }

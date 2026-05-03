@@ -44,5 +44,8 @@ export type EventInfo = {
   date: string;
   time: string;
   location: string;
+  /** Ảnh vuông nhỏ (checkout, ban tổ chức, v.v.) */
   avatar?: string;
+  /** Ảnh poster / hero lớn trên trang vé */
+  thumbnail?: string;
 }; 

@@ -1,7 +1,7 @@
 "use client";
 import { EventInfo } from "../../types/ticket";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type EventInfoCardProps = {
   event: EventInfo;
@@ -9,12 +9,6 @@ type EventInfoCardProps = {
 };
 
 export default function EventInfoCard({ event, showBackButton = false }: EventInfoCardProps) {
-  const router = useRouter();
-
-  const handleBackClick = () => {
-    router.push("/ticketocx5");
-  };
-
   return (
     <div className="bg-zinc-800/50 rounded-lg p-6 flex flex-col justify-center h-full">
       <div className="grid grid-cols-[auto,1fr] gap-4 items-center">
@@ -35,15 +29,15 @@ export default function EventInfoCard({ event, showBackButton = false }: EventIn
           <div className="flex items-start justify-between">
             <h2 className="text-xl font-bold text-white leading-tight">{event.name}</h2>
             {showBackButton && (
-              <button
-                onClick={handleBackClick}
+              <Link
+                href="/ticket"
                 className="flex items-center space-x-2 bg-[#c53e00] hover:bg-[#b33800] text-white px-3 py-2 rounded-lg transition-colors text-sm font-medium"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                   <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd"></path>
                 </svg>
                 <span>Mua thêm</span>
-              </button>
+              </Link>
             )}
           </div>
 

@@ -20,7 +20,7 @@ type SePayWebhookPayload = {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log('📦 Received SePay webhook:', body);
+    console.log("Received SePay webhook:", body);
 
     // Validate webhook payload
     const {
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     const orderMatch = content.match(/OCX4\d{2}\d{2}\d{6}\d{2}\d{8}/);
     
     if (!orderMatch) {
-      console.log('⚠️ Payment not for our system:', content);
+      console.log("Payment not for our system:", content);
       return NextResponse.json({ success: true, message: 'Payment not for our system' });
     }
 
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       // Create basic email data (you can enhance this with more details)
       const emailData = {
         to: 'triet.pnc@gmail.com', // Default email for testing
-        subject: `🎫 Vé điện tử Ớt Cay Xè - Đơn hàng #${orderNumber}`,
+        subject: `Vé điện tử Ớt Cay Xè — Đơn #${orderNumber}`,
         tickets: [
           {
             id: 'auto-generated',
@@ -91,12 +91,12 @@ export async function POST(request: NextRequest) {
       const emailResult = await emailResponse.json();
 
       if (emailResult.success) {
-        console.log('📧 Email sent automatically via webhook:', emailResult);
+        console.log("Email sent via webhook:", emailResult);
       } else {
-        console.error('❌ Failed to send email via webhook:', emailResult);
+        console.error("Failed to send email via webhook:", emailResult);
       }
     } catch (emailError) {
-      console.error('❌ Error sending email via webhook:', emailError);
+      console.error("Error sending email via webhook:", emailError);
     }
 
     return NextResponse.json({ 

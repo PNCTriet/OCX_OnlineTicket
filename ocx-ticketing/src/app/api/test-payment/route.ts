@@ -17,7 +17,7 @@ export async function POST() {
       bank_name: "Vietcombank"
     };
 
-    console.log('🧪 Test payment received:', webhookPayload);
+    console.log("Test payment received:", webhookPayload);
 
     // Create email content
     const htmlContent = `
@@ -76,13 +76,13 @@ export async function POST() {
       <body>
         <div class="container">
           <div class="header">
-            <h1>✅ Xác nhận thanh toán test</h1>
+            <h1>Xác nhận thanh toán (test)</h1>
             <p>Ớt Cay Xè - Test Payment Confirmation</p>
           </div>
           
           <div class="content">
             <div class="payment-info">
-              <h3>💰 Thông tin giao dịch</h3>
+              <h3>Thông tin giao dịch</h3>
               <p><strong>Số tiền:</strong> 10,000đ</p>
               <p><strong>Nội dung:</strong> #ocx-10000</p>
               <p><strong>Mã giao dịch:</strong> ${webhookPayload.transaction_id}</p>
@@ -91,7 +91,7 @@ export async function POST() {
             </div>
             
             <div style="background-color: #fff3cd; border-radius: 8px; padding: 20px; margin: 20px 0;">
-              <h3>🎉 Test thành công!</h3>
+              <h3>Test thành công</h3>
               <p>Webhook đã nhận được giao dịch và gửi email xác nhận thành công.</p>
               <p>Hệ thống đã sẵn sàng cho production!</p>
             </div>
@@ -109,11 +109,11 @@ export async function POST() {
     const result = await resend.emails.send({
       from: 'Ớt Cay Xè <noreply@otcayxe.com>',
       to: ['triet.pnc@gmail.com'],
-      subject: '✅ Xác nhận thanh toán test - Ớt Cay Xè',
+      subject: "Xác nhận thanh toán (test) — Ớt Cay Xè",
       html: htmlContent,
     });
 
-    console.log('📧 Test email sent successfully:', result);
+    console.log("Test email sent successfully:", result);
     
     return NextResponse.json({ 
       success: true, 
@@ -123,7 +123,7 @@ export async function POST() {
     });
 
   } catch (error) {
-    console.error('❌ Test payment error:', error);
+    console.error("Test payment error:", error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }

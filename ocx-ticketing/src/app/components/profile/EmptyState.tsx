@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
+import { Inbox } from "lucide-react";
+import { OnyxIcon } from "@/components/ui/OnyxIcon";
 
 export interface EmptyStateProps {
   title: string;
@@ -9,7 +12,8 @@ export interface EmptyStateProps {
   ctaLabel?: string;
   ctaHref?: string;
   onCtaClick?: () => void;
-  iconLabel?: string;
+  /** Lucide, mặc định Inbox */
+  icon?: LucideIcon;
   className?: string;
 }
 
@@ -19,26 +23,24 @@ export default function EmptyState({
   ctaLabel,
   ctaHref,
   onCtaClick,
-  iconLabel = "📭",
+  icon: Icon = Inbox,
   className = "",
 }: EmptyStateProps) {
   return (
     <div
-      className={`flex flex-col items-center justify-center rounded-xl border border-white/10 bg-black/30 px-6 py-10 text-center ${className}`}
+      className={`flex flex-col items-center justify-center rounded-xl border border-[#262626] bg-[#0F0F0F] px-6 py-10 text-center ${className}`}
     >
-      <span className="text-4xl mb-3 opacity-80" aria-hidden>
-        {iconLabel}
-      </span>
-      <h3 className="text-lg font-semibold text-white/95">{title}</h3>
+      <OnyxIcon icon={Icon} size={40} className="mb-3 text-[#737373]" />
+      <h3 className="text-lg font-semibold text-[#FAFAFA]">{title}</h3>
       {description && (
-        <p className="mt-2 text-sm text-white/60 max-w-xs">{description}</p>
+        <p className="mt-2 max-w-xs text-sm text-[#A1A1A1]">{description}</p>
       )}
       {(ctaLabel && (ctaHref || onCtaClick)) && (
         <div className="mt-4">
           {ctaHref ? (
             <Link
               href={ctaHref}
-              className="inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold text-white border border-white/50 hover:bg-white/10 transition-colors"
+              className="inline-flex min-h-10 items-center justify-center rounded-lg bg-[#FF6B1A] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#e55f15]"
             >
               {ctaLabel}
             </Link>
@@ -46,7 +48,7 @@ export default function EmptyState({
             <button
               type="button"
               onClick={onCtaClick}
-              className="inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold text-white border border-white/50 hover:bg-white/10 transition-colors"
+              className="inline-flex min-h-10 items-center justify-center rounded-lg bg-[#FF6B1A] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#e55f15]"
             >
               {ctaLabel}
             </button>

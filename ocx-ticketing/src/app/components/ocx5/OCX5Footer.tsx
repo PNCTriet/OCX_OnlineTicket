@@ -41,7 +41,7 @@ export default function OCX5Footer() {
           >
             <div className="text-sm">Powered by</div>
             <a
-              href="https://howlstudio.tech"
+              href="https://ticket.howlstudio.tech"
               target="_blank"
               rel="noreferrer"
               className="howlTicket block mt-1 text-white hover:text-white/90 transition-colors"

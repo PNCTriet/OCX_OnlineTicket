@@ -1,5 +1,6 @@
 "use client";
 
+import { BadgeCheck, Mail } from "lucide-react";
 import type { ProfileUser } from "./types";
 
 export interface ProfileHeaderProps {
@@ -38,13 +39,29 @@ export default function ProfileHeader({ user, className = "" }: ProfileHeaderPro
           <p className="text-sm text-white/60 truncate">{user.email}</p>
           <div className="mt-1 flex items-center gap-2">
             <span
-              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${
                 user.verified
                   ? "bg-emerald-500/20 text-emerald-300"
                   : "bg-amber-500/20 text-amber-300"
               }`}
             >
-              {user.verified ? "✓ Verified" : "Unverified"}
+              {user.verified ? (
+                <>
+                  <BadgeCheck
+                    className="size-3.5 shrink-0 text-emerald-300"
+                    aria-hidden
+                  />
+                  Đã xác thực
+                </>
+              ) : (
+                <>
+                  <Mail
+                    className="size-3.5 shrink-0 text-amber-300"
+                    aria-hidden
+                  />
+                  Chưa xác thực
+                </>
+              )}
             </span>
             {user.totalTickets != null && user.totalTickets > 0 && (
               <span className="text-xs text-white/50">

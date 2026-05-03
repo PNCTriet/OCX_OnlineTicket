@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     // Check if payment was received
     const paymentReceived = checkPaymentReceived(orderNumber, expectedAmount);
 
-    console.log('🔍 Payment check result:', {
+    console.log("Payment check result:", {
       orderNumber,
       expectedAmount,
       paymentReceived,
