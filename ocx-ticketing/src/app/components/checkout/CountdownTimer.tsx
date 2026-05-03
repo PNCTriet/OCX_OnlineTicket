@@ -19,7 +19,7 @@ export default function CountdownTimer({ seconds, onExpire }: CountdownTimerProp
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCountdown(prev => {
+      setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
           handleExpire();
@@ -32,15 +32,18 @@ export default function CountdownTimer({ seconds, onExpire }: CountdownTimerProp
     return () => clearInterval(timer);
   }, [handleExpire]);
 
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  const formatTime = (sec: number) => {
+    const minutes = Math.floor(sec / 60);
+    const remainingSeconds = sec % 60;
+    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   return (
-    <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm text-white text-center">
-      <p className="text-xl font-bold">Thời gian giữ vé còn lại: {formatTime(countdown)}</p>
+    <div className="rounded-xl border border-[#FBBF24]/25 bg-[#FBBF24]/10 p-5 text-center backdrop-blur-sm">
+      <p className="text-[15px] font-medium tracking-tight text-[#FAFAFA]">
+        Thời gian giữ vé còn lại:{" "}
+        <span className="font-mono tabular-nums text-[#FBBF24]">{formatTime(countdown)}</span>
+      </p>
     </div>
   );
-} 
+}

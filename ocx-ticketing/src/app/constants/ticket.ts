@@ -102,11 +102,12 @@ export const ZONES: Zone[] = [
 ];
 
 export const EVENT_INFO: EventInfo = {
-  id: "ocx-4",
+  id: "ocx5",
   name: "Ớt Cay Xè Hà Nội",
   time: "15:00",
   location: "Thủ Đô Hà Nội",
-  avatar: "/images/client_logo_ss5_alt1.jpg",
+  thumbnail: "/images/ocx5_hanoi/ocx5_hanoi_thumb.jpg",
+  avatar: "/images/ocx5_hanoi/ocx5_hanoi_ava.jpg",
   date: "07/2026",
 };
 

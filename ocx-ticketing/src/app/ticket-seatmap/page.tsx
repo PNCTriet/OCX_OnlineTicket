@@ -1,20 +1,23 @@
 "use client";
-import { useState, useEffect } from "react";
-import SimpleHeader from "../components/SimpleHeader";
-import EventInfoCard from "../components/ticket/EventInfoCard";
-import TicketSelectionCard from "../components/ticket/TicketSelectionCard";
-import OrderSummaryCard from "../components/ticket/OrderSummaryCard";
-import StageMapCard from "../components/ticket/StageMapCard";
-import ZoneConfirmationModal from "../components/ticket/ZoneConfirmationModal";
-import Footer from "../components/Footer";
-import { TICKETS, ZONES, EVENT_INFO, SEAT_LAYOUT_CONFIG } from "../constants/ticket";
-import { TicketType, Zone } from "../types/ticket";
-import { useRouter } from 'next/navigation';
 
-export default function TicketPage() {
-  const [selectedTickets, setSelectedTickets] = useState<(TicketType & { quantity: number })[]>(
-    TICKETS.map(ticket => ({ ...ticket, quantity: 0 }))
-  );
+/** Checkout + zone seatmap (04A). Lưới ghế từng ô: `/demo/seatmap`. */
+
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import PageLayout from "@/components/v2/PageLayout";
+import Header from "@/components/v2/Header";
+import V2Footer from "@/components/v2/Footer";
+import SeatMapLegend from "@/components/v2/SeatMapLegend";
+import StageMapCard from "../components/ticket/StageMapCard";
+import SeatmapOrderSummary from "../components/ticket/SeatmapOrderSummary";
+import ZoneConfirmationModal from "../components/ticket/ZoneConfirmationModal";
+import { TICKETS, ZONES, EVENT_INFO, SEAT_LAYOUT_CONFIG } from "../constants/ticket";
+import type { TicketType, Zone } from "../types/ticket";
+
+export default function TicketSeatmapPage() {
+  const [selectedTickets, setSelectedTickets] = useState<
+    (TicketType & { quantity: number })[]
+  >(TICKETS.map((ticket) => ({ ...ticket, quantity: 0 })));
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [lang, setLang] = useState<"vi" | "en">("vi");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,52 +27,23 @@ export default function TicketPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if we came from checkout without tickets
     const urlParams = new URLSearchParams(window.location.search);
-    const noTickets = urlParams.get('noTickets');
-    if (noTickets === 'true') {
-      setShowNoTicketsError(true);
-    }
+    if (urlParams.get("noTickets") === "true") setShowNoTicketsError(true);
   }, []);
 
-  const handleQuantityChange = (ticketId: string, change: number) => {
-    setShowNoTicketsError(false); // Clear error when user selects tickets
-    setSelectedTickets(prev =>
-      prev.map(ticket => {
-        if (ticket.id === ticketId) {
-          const newQuantity = ticket.quantity + change;
-          // Prevent negative quantities
-          if (newQuantity < 0) return ticket;
-          // Prevent exceeding max limit of 5 tickets per type
-          if (newQuantity > 5) return ticket;
-          return { ...ticket, quantity: newQuantity };
-        }
-        return ticket;
-      })
-    );
-  };
-
-  const totalAmount = selectedTickets.reduce(
-    (sum, ticket) => sum + ticket.price * ticket.quantity,
-    0
-  );
-
   const handleZoneSelect = (sectionId: string) => {
-    const sectionConfig = SEAT_LAYOUT_CONFIG.SECTIONS.find(s => s.id === sectionId);
-    if (!sectionConfig) {
-      return;
-    }
+    const sectionConfig = SEAT_LAYOUT_CONFIG.SECTIONS.find((s) => s.id === sectionId);
+    if (!sectionConfig) return;
 
-    const correspondingZone = ZONES.find(z => z.ticketTypeId === sectionConfig.ticketTypeId);
-    if (!correspondingZone) {
-      console.error(`No corresponding Zone found for ticketTypeId: ${sectionConfig.ticketTypeId}`);
-      return;
-    }
+    const correspondingZone = ZONES.find(
+      (z) => z.ticketTypeId === sectionConfig.ticketTypeId
+    );
+    if (!correspondingZone) return;
 
     if (selectedZone === sectionId) {
       setSelectedZone(null);
-      setSelectedTickets(prevTickets =>
-        prevTickets.map(ticket => {
+      setSelectedTickets((prevTickets) =>
+        prevTickets.map((ticket) => {
           if (ticket.id === correspondingZone.ticketTypeId && ticket.quantity > 0) {
             return { ...ticket, quantity: ticket.quantity - 1 };
           }
@@ -83,12 +57,15 @@ export default function TicketPage() {
   };
 
   const handleConfirmZone = () => {
+    setShowNoTicketsError(false);
     if (pendingZone) {
-      const sectionIdForPendingZone = SEAT_LAYOUT_CONFIG.SECTIONS.find(s => s.ticketTypeId === pendingZone.ticketTypeId)?.id || null;
+      const sectionIdForPendingZone =
+        SEAT_LAYOUT_CONFIG.SECTIONS.find((s) => s.ticketTypeId === pendingZone.ticketTypeId)
+          ?.id ?? null;
       setSelectedZone(sectionIdForPendingZone);
 
-      setSelectedTickets(prevTickets =>
-        prevTickets.map(ticket => {
+      setSelectedTickets((prevTickets) =>
+        prevTickets.map((ticket) => {
           if (ticket.id === pendingZone.ticketTypeId) {
             return { ...ticket, quantity: ticket.quantity + 1 };
           }
@@ -106,7 +83,7 @@ export default function TicketPage() {
   };
 
   const handleContinue = () => {
-    const ticketsToBuy = selectedTickets.filter(t => t.quantity > 0);
+    const ticketsToBuy = selectedTickets.filter((t) => t.quantity > 0);
     if (ticketsToBuy.length === 0) {
       setShowNoTicketsError(true);
       return;
@@ -116,68 +93,84 @@ export default function TicketPage() {
       const ticketsJson = JSON.stringify(ticketsToBuy);
       const encodedTickets = encodeURIComponent(ticketsJson);
       router.push(`/checkout?tickets=${encodedTickets}`);
-    } catch (error) {
-      console.error('Error encoding tickets for checkout:', error);
-      // Fallback: redirect without tickets
-      router.push('/checkout');
+    } catch {
+      router.push("/checkout");
     }
   };
 
+  const sortedTickets = useMemo(
+    () =>
+      [...selectedTickets].sort((a, b) => {
+        const statusOrder = (s: string) => {
+          if (s === "ACTIVE") return 0;
+          if (s === "INACTIVE") return 1;
+          return 2;
+        };
+        return statusOrder(a.status) - statusOrder(b.status);
+      }),
+    [selectedTickets]
+  );
+
+  const hasTickets = selectedTickets.some((t) => t.quantity > 0);
+
   return (
-    <div className="min-h-screen relative">
-      <div 
-        className="fixed inset-0 z-0"
-        style={{
-          backgroundImage: 'url(/images/hero_backround_ss3_alt1.svg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          opacity: 0.8
-        }}
-      />
-      <div className="relative z-10">
-        <SimpleHeader lang={lang} setLang={setLang} />
-        <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-8 pt-24 sm:pt-28 md:pt-32">
-          {showNoTicketsError && (
-            <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-500">
-              {/* <p className="text-center">Vui lòng chọn ít nhất một vé để tiếp tục.</p> */}
-            </div>
-          )}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6 flex flex-col h-full">
-              <StageMapCard
-                selectedZoneId={selectedZone}
-                onZoneSelect={handleZoneSelect}
-              />
+    <>
+      <PageLayout>
+        <Header lang={lang} onLangChange={setLang} />
+        <main className="mx-auto max-w-[1280px] px-6">
+          <section className="mt-12 border-t border-[#262626] py-12">
+            <div className="mb-8">
+              <h2 className="mb-2 text-[13px] font-medium uppercase tracking-wide text-[#737373]">
+                {lang === "vi" ? "Thanh toán — có sơ đồ ghế" : "Checkout — with seatmap"}
+              </h2>
+              <h3 className="text-[32px] font-semibold leading-[1.15] tracking-[-0.7px] text-[#FAFAFA]">
+                {lang === "vi" ? "Chọn ghế" : "Pick your seats"}
+              </h3>
             </div>
 
-            <div className="lg:col-span-1">
-              <div className="bg-zinc-900/30 rounded-xl p-6 shadow-lg backdrop-blur-sm">
-                <div className="space-y-6">
-                  <EventInfoCard event={EVENT_INFO} />
-                  <TicketSelectionCard 
-                    tickets={selectedTickets} 
-                    onQuantityChange={handleQuantityChange}
+            {showNoTicketsError && (
+              <div className="mb-8 rounded-lg border border-[#F8717140] bg-[#F8717114] p-4 text-center text-sm text-[#F87171]">
+                Vui lòng chọn ít nhất một vé để tiếp tục.
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 gap-8 py-12 lg:grid-cols-[1fr_400px] lg:items-start">
+              <div>
+                <div className="mx-auto mb-8 max-w-[480px] text-center">
+                  <p className="rounded-lg border border-[#262626] bg-[#1A1A1A] px-3 py-3 text-xs font-medium uppercase tracking-wide text-[#A1A1A1]">
+                    {lang === "vi" ? "— SÂN KHẤU —" : "— STAGE —"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-[#262626] bg-[#0F0F0F] p-8">
+                  <StageMapCard
+                    embedInSeatmapShell
                     selectedZoneId={selectedZone}
-                  />
-                  <OrderSummaryCard 
-                    totalAmount={totalAmount} 
-                    onContinue={handleContinue}
-                    hasTickets={selectedTickets.some(ticket => ticket.quantity > 0)}
-                    selectedTickets={selectedTickets}
+                    onZoneSelect={handleZoneSelect}
                   />
                 </div>
+
+                <SeatMapLegend lang={lang} />
               </div>
+
+              <aside>
+                <SeatmapOrderSummary
+                  lang={lang}
+                  eventTitle={EVENT_INFO.name}
+                  selectedTickets={sortedTickets}
+                  onContinue={handleContinue}
+                  hasTickets={hasTickets}
+                />
+              </aside>
             </div>
-          </div>
+          </section>
         </main>
-        <Footer />
-      </div>
+        <V2Footer />
+      </PageLayout>
 
       <ZoneConfirmationModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        // ticket-seatmap: keep old UX (confirm adds 1)
         onConfirm={(qty) => {
           if (qty <= 0) {
             handleCloseModal();
@@ -189,6 +182,6 @@ export default function TicketPage() {
         initialQuantity={1}
         maxQuantity={1}
       />
-    </div>
+    </>
   );
-} 
+}

@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     const orderNumber = `OCX-${orderId}`;
 
     // Log the purchase for debugging
-    console.log('🎫 Purchase processed:', {
+    console.log("Purchase processed:", {
       userId: user.id,
       userEmail: user.email,
       tickets,

@@ -1,19 +1,19 @@
 import { useMemo } from "react";
 
 const messagesVi = [
-  "Mua đi em, do dự, idol nghỉ hưu mất 😗",
-  "Đại đại đi, nghèo mà có kỷ niệm",
-  "Không bây giờ thì bao giờ?",
-  "Vô tới đây rồi sao còn chưa mua vé 😗",
-  "Nhanh tay thì còn chậm tay thì tiếc",
+  "Chốt vé sớm — không chờ đợi.",
+  "Đi hết mình, ít nhất còn kỷ niệm.",
+  "Không phải bây giờ thì khi nào?",
+  "Đã vào trang rồi — còn chờ gì nữa?",
+  "Nhanh tay kẻo lỡ slot.",
 ];
 
 const messagesEn = [
-  "Buy it, hesitant one, or your idol will retire 😗",
-  "Go big, even if you're poor, at least you'll have memories",
-  "If not now, then when?",
-  "You're already here, why haven't you paid yet? 😗",
-  "Act fast, or you'll regret it",
+  "Book now — hesitation costs seats.",
+  "Go all in; even on a budget you keep the memory.",
+  "If not now, when?",
+  "You made it here — complete checkout.",
+  "Act fast before tickets close.",
 ];  
 
 const Tooltip = ({ showTooltip, lang }: { showTooltip: boolean; lang: "vi" | "en" }) => {

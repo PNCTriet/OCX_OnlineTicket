@@ -131,7 +131,7 @@ export default function OCX5HeaderNav({ showSectionNav = true }: OCX5HeaderNavPr
                     type="button"
                     onClick={() => {
                       setIsUserMenuOpen(false);
-                      alert("Profile sẽ sớm ra mắt ✨");
+                      alert("Trang hồ sơ sẽ ra mắt trong thời gian tới.");
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-white/85 hover:bg-white/10 transition-colors flex items-center gap-2"
                   >

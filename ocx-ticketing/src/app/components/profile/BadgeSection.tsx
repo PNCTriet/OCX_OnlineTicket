@@ -1,6 +1,7 @@
 "use client";
 
 import type { ProfileBadge } from "./types";
+import { Medal } from "lucide-react";
 import BadgeCard from "./BadgeCard";
 import EmptyState from "./EmptyState";
 
@@ -19,18 +20,18 @@ export default function BadgeSection({
 }: BadgeSectionProps) {
   return (
     <section
-      className={`rounded-xl border border-white/10 bg-black/20 overflow-hidden ${className}`}
+      className={`overflow-hidden rounded-xl border border-[#262626] bg-[#141414] ${className}`}
     >
-      <h2 className="px-4 py-3 text-lg font-semibold text-white border-b border-white/10">
+      <h2 className="border-b border-[#262626] px-4 py-3 text-lg font-semibold text-[#FAFAFA]">
         Huy hiệu / Thành tựu
       </h2>
-      <div className="p-4 md:p-5 min-h-[180px]">
+      <div className="min-h-[180px] p-4 md:p-5">
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="h-28 rounded-xl bg-white/5 animate-pulse"
+                className="h-28 animate-pulse rounded-xl bg-[#212121]"
                 aria-hidden
               />
             ))}
@@ -39,7 +40,7 @@ export default function BadgeSection({
           <EmptyState
             title="Chưa có huy hiệu"
             description="Tham gia sự kiện và mua vé để mở khóa huy hiệu."
-            iconLabel="🏅"
+            icon={Medal}
           />
         ) : (
           <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3 list-none p-0 m-0">

@@ -1,0 +1,170 @@
+# Cursor Rules — UI Refactor (Ticket Frontend)
+
+## Role & Context
+
+You are a senior frontend engineer helping refactor the UI of a production ticket-selling
+Next.js (Pages Router) app. The new UI design is defined in a single reference HTML file
+(`ui-reference.html`) that contains all pages. Your job is to translate that design into
+React components — nothing more, nothing less.
+
+---
+
+## 🔴 Absolute Rules (never break these)
+
+### 1. Never touch business logic
+- Do NOT modify API call functions, hooks, or service files
+- Do NOT modify order creation, payment check, or order status logic
+- Do NOT modify URL routes or page file structure
+- Do NOT modify types/interfaces that are consumed by API layers
+- If a task seems to require touching logic → STOP and ask first
+
+### 2. Never work outside the current plan
+- Every task must map to a checkbox in `UI_RELEASE_PLAN.md`
+- If something is not in the plan → propose it, wait for approval, then act
+- Do NOT refactor "while you're at it" — scope creep is a bug
+
+### 3. Never assume — always confirm
+Before starting any task, explicitly state:
+- Which component/file you will create or modify
+- Which section of `ui-reference.html` you are referencing (describe it)
+- What you will NOT touch
+Then wait for the user to say "go ahead" or equivalent
+
+### 4. One component per session
+- Do one component at a time
+- Do not start the next component until the current one is reviewed and approved
+- Each component = 1 PR in the release plan
+
+---
+
+## 🟡 Planning Rules
+
+### Before writing any code
+1. Read the relevant section of `ui-reference.html` carefully
+2. List every UI element you see (layout, colors, typography, spacing, interactions)
+3. List the props the component needs (match existing component interface if replacing one)
+4. State explicitly: "I will not change [X logic/file]"
+5. Ask: "Does this plan look correct before I proceed?"
+
+### Component structure to follow
+```
+components/
+  v2/
+    layout/
+      PageLayout.tsx
+      Header.tsx
+      Footer.tsx
+    tickets/
+      TicketList.tsx
+      TicketCard.tsx
+      TicketDetail.tsx
+    checkout/
+      CheckoutForm.tsx
+      OrderConfirm.tsx
+```
+
+All new components go in `components/v2/`. Never place v2 files elsewhere.
+
+---
+
+## 🟢 Implementation Rules
+
+### HTML reference usage
+- `ui-reference.html` is the single source of truth for visual design
+- Copy class names, spacing, color values, and layout structure from it exactly
+- If something in the HTML is ambiguous → describe what you see and ask which interpretation is correct
+- Do not invent UI elements not present in `ui-reference.html`
+
+### Component contract (non-negotiable)
+- New v2 components must accept the **same props** as the component they replace
+- Do not rename props, change prop types, or add required props without approval
+- All event handlers (`onSubmit`, `onChange`, `onClick`) must be passed through unchanged
+
+### Styling
+- Use the same styling approach as the existing codebase (CSS Modules / Tailwind — match what's there)
+- Extract color values, font sizes, and spacing from `ui-reference.html` directly
+- Do not introduce a new styling library or utility without asking
+
+### Feature flag pattern (mandatory for every page swap)
+```tsx
+// pages/[page].tsx
+import ComponentOld from '@/components/[name]'
+import ComponentV2  from '@/components/v2/[name]'
+import { isV2Enabled } from '@/lib/flags'
+
+export default function Page(props) {
+  return isV2Enabled() ? <ComponentV2 {...props} /> : <ComponentOld {...props} />
+}
+```
+Never remove the old component until Phase 4 is explicitly started.
+
+### What you may do freely
+- Create new files inside `components/v2/`
+- Add/modify CSS inside `components/v2/` scope
+- Add display-only helper components (icons, badges, labels) with no logic
+- Fix obvious typos in new v2 files
+
+### What requires explicit approval
+- Any edit to files outside `components/v2/`
+- Any edit to `pages/` files (even adding an import)
+- Any change to existing component props or interfaces
+- Adding a new npm package
+- Changing the feature flag mechanism
+
+---
+
+## 🔵 Communication Rules
+
+### When starting a task, always output this block first:
+
+```
+## Task: [component name]
+**Reference:** ui-reference.html → [describe the section, e.g. "checkout form section, lines ~120-180"]
+**File to create:** components/v2/[path]
+**Props interface:** [list props, copied from existing component]
+**Files I will NOT touch:** [list]
+**Question before proceeding:** [any ambiguity to resolve]
+```
+
+### When you are uncertain
+- Do not guess and proceed — state the uncertainty and ask
+- Offer 2–3 options maximum, with your recommendation
+- Wait for a response before writing code
+
+### When you finish a component
+- Show a summary of what was built
+- List any deviations from `ui-reference.html` (even minor ones) with reason
+- Ask: "Ready to move to the next component, or any changes needed here?"
+
+### Prohibited phrases (do not use these to justify unplanned work)
+- "While I'm here, I also..."
+- "I noticed X could be improved, so I..."
+- "I refactored this to be cleaner..."
+- "I took the liberty of..."
+
+---
+
+## 🗂️ Reference Files
+
+| File | Purpose |
+|------|---------|
+| `ui-reference.html` | Single source of truth for all UI design |
+| `UI_RELEASE_PLAN.md` | Task checklist — only work on checked-out tasks |
+| `lib/flags.ts` | Feature flag helper |
+| `components/v2/` | All new UI components live here |
+
+---
+
+## Release Phase Awareness
+
+Always know which phase is active. Ask if unsure.
+
+| Phase | What's allowed |
+|-------|---------------|
+| 0 — Prep | No component work yet |
+| 1 — Build v2 | Create in `components/v2/` only |
+| 2 — Flag swap | Edit `pages/` files to add flag switch |
+| 3 — Canary | No code changes unless hotfix |
+| 4 — Cleanup | Delete old components, remove flags |
+
+Working outside the current phase = blocked, propose to user first.

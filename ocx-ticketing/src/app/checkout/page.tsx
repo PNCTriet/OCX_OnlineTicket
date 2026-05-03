@@ -1,15 +1,25 @@
 "use client";
 import React, { useState, useCallback, useEffect, Suspense, useMemo } from "react";
-import EventInfoCard from "../components/ticket/EventInfoCard";
+import { useSearchParams, useRouter } from "next/navigation";
 import { EVENT_INFO } from "../constants/ticket";
 import TicketSummaryTable from "../components/checkout/TicketSummaryTable";
-import UserInfoForm from "../components/checkout/UserInfoForm";
+import TicketDetail from "@/components/v2/TicketDetail";
+import CheckoutForm from "@/components/v2/CheckoutForm";
+import PageLayout from "@/components/v2/PageLayout";
+import Header from "@/components/v2/Header";
+import V2Footer from "@/components/v2/Footer";
 import CountdownTimer from "../components/checkout/CountdownTimer";
 import PolicyCheckbox from "../components/checkout/PolicyCheckbox";
 import PaymentModal from "../components/checkout/PaymentModal";
-import OCX5HeaderNav from "../components/ocx5/OCX5HeaderNav";
-import StarsBackground from "../components/ocx5/StarsBackground";
-import HorizonBridge from "../components/ocx5/HorizonBridge";
+import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
+import { Ticket } from "../types/ticket";
+import { useAuth } from "@/components/AuthProvider";
+import { createClient } from "@/lib/supabase";
+import { CHECKOUT_PROMO_ENABLED } from "@/lib/flags";
+import {
+  loadCheckoutContact,
+  saveCheckoutContact,
+} from "@/lib/checkout-contact-session";
 
 type OrderInfo = {
   id: string;
@@ -30,12 +40,6 @@ interface CouponValidationResponse {
   discount_type: string;
   message?: string;
 }
-
-import SessionExpiryModal from "../components/checkout/SessionExpiryModal";
-import { useSearchParams, useRouter } from "next/navigation";
-import { Ticket } from "../types/ticket";
-import { useAuth } from "@/components/AuthProvider";
-import { createClient } from "@/lib/supabase";
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
@@ -173,14 +177,23 @@ function CheckoutContent() {
     // setOrderTime(now.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })); // Removed as per edit hint
   }, [selectedTickets]); // Add selectedTickets to dependencies since we use it
 
-  // Auto-fill user info when user is logged in
+  // Auto-fill user info when user is logged in — ưu tiên cache session (SĐT / Facebook) nếu đã nhập trước đó
   useEffect(() => {
     if (user && !loading) {
+      const cached = loadCheckoutContact(user.id);
+      const metaPhone =
+        user.user_metadata?.phone != null
+          ? String(user.user_metadata.phone)
+          : "";
+      const metaFb =
+        user.user_metadata?.facebook != null
+          ? String(user.user_metadata.facebook)
+          : "";
       setUserInfo({
         fullName: user.user_metadata?.full_name || user.user_metadata?.name || "",
         email: user.email || "",
-        phone: user.user_metadata?.phone || "",
-        facebook: user.user_metadata?.facebook || "",
+        phone: cached !== null ? cached.phone : metaPhone,
+        facebook: cached !== null ? cached.facebook : metaFb,
         refcode: "",
       });
     }
@@ -254,10 +267,16 @@ function CheckoutContent() {
   }, [orderInfo?.id]);
 
   const handleUserInfoChange = (field: string, value: string) => {
-    setUserInfo((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setUserInfo((prev) => {
+      const next = { ...prev, [field]: value };
+      if (
+        user?.id &&
+        (field === "phone" || field === "facebook")
+      ) {
+        saveCheckoutContact(user.id, next.phone, next.facebook);
+      }
+      return next;
+    });
   };
 
   // Validate coupon
@@ -543,21 +562,24 @@ function CheckoutContent() {
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="text-white text-xl">Đang tải...</div>
-      </div>
+      <PageLayout>
+        <div className="mx-auto flex min-h-[50vh] max-w-7xl items-center justify-center px-4">
+          <p className="text-lg text-[#A1A1A1]">Đang tải...</p>
+        </div>
+        <V2Footer />
+      </PageLayout>
     );
   }
 
   // Show login required if no user
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="text-center">
-          <div className="text-white text-xl mb-4">Vui lòng đăng nhập để tiếp tục</div>
-          {/* Nút đăng nhập hoặc redirect sẽ được xử lý ở nơi khác */}
+      <PageLayout>
+        <div className="mx-auto flex min-h-[50vh] max-w-7xl flex-col items-center justify-center px-4 text-center">
+          <p className="text-lg text-[#FAFAFA]">Vui lòng đăng nhập để tiếp tục</p>
         </div>
-      </div>
+        <V2Footer />
+      </PageLayout>
     );
   }
 
@@ -570,128 +592,70 @@ function CheckoutContent() {
     return null; // Return null instead of loading state
   }
 
-  return (
-    <div className="min-h-screen relative">
-      {/* Background: match OCX5 ticket concept */}
-      <div
-        className="fixed inset-0 z-0"
-        style={{
-          background:
-            "linear-gradient(to bottom,rgb(0, 0, 0) 0%,rgb(39, 28, 28) 25%, #2c090b 50%, #9a1a15 75%, #d43922 100%)",
-        }}
-      />
-      {/* Stars overlay */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="relative w-full h-full">
-          <StarsBackground />
-        </div>
-      </div>
+  const checkoutPageMain = (
+    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <h1 className="mb-2 text-center text-3xl font-semibold tracking-tight text-[#FAFAFA]">
+        Thanh toán
+      </h1>
+      <p className="mb-8 text-center text-sm text-[#A1A1A1]">
+        Kiểm tra lại đơn và hoàn tất thông tin người mua.
+      </p>
 
-      <div className="relative z-10">
-        <OCX5HeaderNav showSectionNav={false} />
-        
-        {/* User Info Bar */}
-        <div className="bg-black/25 border-b border-white/10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-[#d43922] rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">
-                    {user?.email?.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-white text-sm font-medium">
-                    {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email}
-                  </p>
-                  <p className="text-zinc-400 text-xs">{user?.email}</p>
-                </div>
-              </div>
-              <button
-                onClick={signOut}
-                className="px-4 py-2 rounded-full bg-white/10 border border-white/15 text-white/80 hover:text-white hover:bg-white/15 transition-colors text-sm font-semibold"
-              >
-                Đăng xuất
-              </button>
-            </div>
-          </div>
-        </div>
+      <div className="flex flex-col gap-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(300px,420px)] lg:items-start lg:gap-12">
+        {/* Cột trái (desktop): form — mobile: thứ tự sau sidebar */}
+        <div className="order-2 flex flex-col gap-6 lg:order-1">
+          <CheckoutForm
+            userInfo={userInfo}
+            onUserInfoChange={handleUserInfoChange}
+            validationErrors={validationErrors}
+          />
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 sm:pt-28 md:pt-32">
-          <h1 className="text-3xl font-bold text-white text-center mb-8">
-            Thanh Toán
-          </h1>
-          
-          {/* Mobile Layout - Single Column */}
-          <div className="lg:hidden space-y-6">
-            {/* CountdownTimer at top for mobile */}
-            <CountdownTimer
-              seconds={checkoutCountdown}
-              onExpire={handleCountdownExpire}
-            />
-            
-            {/* Event Info */}
-            <div className="max-h-[300px] overflow-hidden">
-              <EventInfoCard event={EVENT_INFO} showBackButton={true} />
-            </div>
-            
-            {/* Ticket Summary */}
-            <TicketSummaryTable
-              selectedTickets={selectedTickets}
-              totalAmount={totalAmount}
-              finalAmount={finalAmount}
-              appliedCoupon={appliedCoupon}
-            />
-            
-            {/* User Info Form */}
-            <UserInfoForm
-              userInfo={userInfo}
-              onUserInfoChange={handleUserInfoChange}
-              validationErrors={validationErrors}
-            />
-            
-            {/* Coupon Section */}
-            <div className="bg-black/25 border border-white/10 rounded-xl p-6 shadow-lg">
-              <h3 className="text-xl font-bold text-white mb-4">Mã Giảm Giá</h3>
+          {CHECKOUT_PROMO_ENABLED && (
+            <div className="rounded-xl border border-[#262626] bg-[#141414] p-6">
+              <h3 className="mb-4 text-lg font-semibold text-[#FAFAFA]">
+                Mã giảm giá
+              </h3>
               <div className="space-y-4">
-                <div className="flex gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
                   <input
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                     placeholder="Nhập mã coupon"
-                    className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white/40"
+                    className="min-h-11 flex-1 rounded-lg border border-[#262626] bg-[#0A0A0A] px-4 py-2.5 text-[#FAFAFA] placeholder:text-[#737373] focus:border-[#FF6B1A] focus:outline-none focus:ring-1 focus:ring-[#FF6B1A]"
                     disabled={isValidatingCoupon}
                   />
                   <button
+                    type="button"
                     onClick={validateCoupon}
                     disabled={isValidatingCoupon || !couponCode.trim()}
-                    className="px-6 py-2 text-white rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_18px_rgba(212,57,34,0.35)] active:scale-95"
-                    style={{
-                      background:
-                        "linear-gradient(180deg, #d43922 0%, #9a1a15 100%)",
-                    }}
+                    className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-[#FF6B1A] px-6 text-sm font-semibold text-white transition hover:bg-[#e55f15] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {isValidatingCoupon ? "Đang kiểm tra..." : "Áp dụng"}
                   </button>
                 </div>
-                
+
                 {couponError && (
-                  <div className="text-red-400 text-sm">{couponError}</div>
+                  <p className="text-sm text-[#F87171]">{couponError}</p>
                 )}
-                
+
                 {appliedCoupon && (
-                  <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-                    <div className="flex items-center justify-between">
+                  <div className="rounded-lg border border-[#34D399]/30 bg-[#34D399]/10 p-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <p className="text-green-400 font-medium">Coupon đã áp dụng: {couponCode}</p>
-                        <p className="text-green-300 text-sm">
-                          Giảm {appliedCoupon.discount_amount.toLocaleString('vi-VN')} VNĐ
+                        <p className="font-medium text-[#34D399]">
+                          Đã áp dụng: {couponCode}
+                        </p>
+                        <p className="text-sm text-[#A7F3D0]">
+                          Giảm{" "}
+                          {appliedCoupon.discount_amount.toLocaleString("vi-VN")}{" "}
+                          ₫
                         </p>
                       </div>
                       <button
+                        type="button"
                         onClick={removeCoupon}
-                        className="px-3 py-1 rounded-full text-sm font-bold border border-[#d43922]/35 bg-[#d43922]/15 text-[#ffd3cc] hover:bg-[#d43922]/25 transition-colors"
+                        className="rounded-lg border border-[#262626] bg-[#212121] px-4 py-2 text-sm font-medium text-[#FAFAFA] hover:bg-[#262626]"
                       >
                         Xóa
                       </button>
@@ -700,144 +664,103 @@ function CheckoutContent() {
                 )}
               </div>
             </div>
-            
-            {/* Policy and Payment Button at bottom for mobile */}
-            <div className="bg-black/25 border border-white/10 rounded-xl p-6 shadow-lg">
-              <PolicyCheckbox
-                agreedToPolicies={agreedToPolicies}
-                onAgreementChange={setAgreedToPolicies}
-              />
-              <button
-                onClick={handlePayment}
-                disabled={!agreedToPolicies || isProcessingPayment}
-                className="w-full py-3 px-4 text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center hover:shadow-[0_0_18px_rgba(212,57,34,0.35)] active:scale-95"
-                style={{
-                  background:
-                    "linear-gradient(180deg, #d43922 0%, #9a1a15 100%)",
-                }}
-              >
-                {isProcessingPayment ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Đang xử lý...
-                  </>
-                ) : (
-                  "Thanh toán"
-                )}
-              </button>
-            </div>
-          </div>
+          )}
 
-          {/* Desktop Layout - Two Columns */}
-          <div className="hidden lg:grid lg:grid-cols-2 gap-6">
-            {/* Left Column */}
-            <div className="space-y-6">
-              <div className="max-h-[300px] overflow-hidden">
-                <EventInfoCard event={EVENT_INFO} showBackButton={true} />
-              </div>
-              <TicketSummaryTable
-                selectedTickets={selectedTickets}
-                totalAmount={totalAmount}
-                finalAmount={finalAmount}
-                appliedCoupon={appliedCoupon}
-              />
-              <div className="bg-black/25 border border-white/10 rounded-xl p-6 shadow-lg">
-                <PolicyCheckbox
-                  agreedToPolicies={agreedToPolicies}
-                  onAgreementChange={setAgreedToPolicies}
-                />
-                <button
-                  onClick={handlePayment}
-                  disabled={!agreedToPolicies}
-                  className="w-full py-3 px-4 text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_18px_rgba(212,57,34,0.35)] active:scale-95"
-                  style={{
-                    background:
-                      "linear-gradient(180deg, #d43922 0%, #9a1a15 100%)",
-                  }}
-                >
-                  Thanh toán
-                </button>
-              </div>
-            </div>
-
-            {/* Right Column */}
-            <div className="space-y-6">
-              <CountdownTimer
-                seconds={checkoutCountdown}
-                onExpire={handleCountdownExpire}
-              />
-              <UserInfoForm
-                userInfo={userInfo}
-                onUserInfoChange={handleUserInfoChange}
-                validationErrors={validationErrors}
-              />
-              
-              {/* Coupon Section for Desktop */}
-              <div className="bg-black/25 border border-white/10 rounded-xl p-6 shadow-lg">
-                <h3 className="text-xl font-bold text-white mb-4">Mã Giảm Giá</h3>
-                <div className="space-y-4">
-                  <div className="flex gap-3">
-                    <input
-                      type="text"
-                      value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
-                      placeholder="Nhập mã coupon"
-                      className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white/40"
-                      disabled={isValidatingCoupon}
+          <div className="rounded-xl border border-[#262626] bg-[#141414] p-6">
+            <PolicyCheckbox
+              agreedToPolicies={agreedToPolicies}
+              onAgreementChange={setAgreedToPolicies}
+            />
+            <button
+              type="button"
+              onClick={handlePayment}
+              disabled={!agreedToPolicies || isProcessingPayment}
+              className="mt-4 flex w-full min-h-12 items-center justify-center rounded-xl bg-[#FF6B1A] py-3 text-base font-semibold text-white transition hover:bg-[#e55f15] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isProcessingPayment ? (
+                <>
+                  <svg
+                    className="mr-3 h-5 w-5 animate-spin text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    aria-hidden
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
                     />
-                    <button
-                      onClick={validateCoupon}
-                      disabled={isValidatingCoupon || !couponCode.trim()}
-                      className="px-6 py-2 text-white rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_18px_rgba(212,57,34,0.35)] active:scale-95"
-                      style={{
-                        background:
-                          "linear-gradient(180deg, #d43922 0%, #9a1a15 100%)",
-                      }}
-                    >
-                      {isValidatingCoupon ? "Đang kiểm tra..." : "Áp dụng"}
-                    </button>
-                  </div>
-                  
-                  {couponError && (
-                    <div className="text-red-400 text-sm">{couponError}</div>
-                  )}
-                  
-                  {appliedCoupon && (
-                    <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-green-400 font-medium">Coupon đã áp dụng: {couponCode}</p>
-                          <p className="text-green-300 text-sm">
-                            Giảm {appliedCoupon.discount_amount.toLocaleString('vi-VN')} VNĐ
-                          </p>
-                        </div>
-                        <button
-                          onClick={removeCoupon}
-                          className="px-3 py-1 rounded-full text-sm font-bold border border-[#d43922]/35 bg-[#d43922]/15 text-[#ffd3cc] hover:bg-[#d43922]/25 transition-colors"
-                        >
-                          Xóa
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Đang xử lý...
+                </>
+              ) : (
+                "Thanh toán"
+              )}
+            </button>
           </div>
-        </main>
-        <div className="relative w-full">
-          <HorizonBridge
-            baseName="imgi_56_horizons_train"
-            imageAlt="OCX5 Checkout Horizon"
-            parallaxSpeed={0}
-            position="flow"
-            imageClassName="block h-auto w-full md:w-full max-w-none transform origin-bottom md:scale-110"
+        </div>
+
+        {/* Cột phải (desktop): đếm ngược + sự kiện + tóm tắt — mobile: lên trước */}
+        <div className="order-1 flex min-w-0 flex-col gap-6 lg:sticky lg:top-24 lg:order-2 lg:self-start">
+          <CountdownTimer
+            seconds={checkoutCountdown}
+            onExpire={handleCountdownExpire}
+          />
+          <div className="overflow-hidden rounded-xl border border-[#262626]">
+            <TicketDetail
+              event={EVENT_INFO}
+              showBackButton
+              hideThumbnailBanner
+            />
+          </div>
+          <TicketSummaryTable
+            selectedTickets={selectedTickets}
+            totalAmount={totalAmount}
+            finalAmount={finalAmount}
+            appliedCoupon={appliedCoupon}
+            eventName={EVENT_INFO.name}
           />
         </div>
       </div>
+    </main>
+  );
+
+  return (
+    <>
+      <PageLayout>
+        <Header
+          actions={
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="hidden min-w-0 max-w-[200px] text-right sm:block">
+                <p className="truncate text-sm font-medium text-[#FAFAFA]">
+                  {user?.user_metadata?.full_name ||
+                    user?.user_metadata?.name ||
+                    user?.email}
+                </p>
+                <p className="truncate text-xs text-[#737373]">{user?.email}</p>
+              </div>
+              <button
+                type="button"
+                onClick={signOut}
+                className="inline-flex h-9 items-center justify-center rounded-lg border border-[#262626] bg-[#212121] px-4 text-sm font-medium text-[#FAFAFA] transition-colors hover:bg-[#262626]"
+              >
+                Đăng xuất
+              </button>
+            </div>
+          }
+        />
+        <div className="relative z-10">{checkoutPageMain}</div>
+        <V2Footer />
+      </PageLayout>
 
       {mounted && isPaymentModalOpen && orderInfo && (
         <PaymentModal
@@ -878,7 +801,7 @@ function CheckoutContent() {
       <SessionExpiryModal
         isOpen={isSessionExpiryModalOpen}
       />
-    </div>
+    </>
   );
 }
 

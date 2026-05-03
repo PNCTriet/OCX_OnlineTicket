@@ -54,7 +54,7 @@ export function storePaymentFromWebhook(transactionId: string, orderNumber: stri
     }
   }
 
-  console.log('💾 Stored payment for verification:', {
+  console.log("Stored payment for verification:", {
     transactionId,
     orderNumber,
     amount,

@@ -16,8 +16,13 @@ type TicketWithQuantity = {
 export async function POST(request: Request) {
   try {
     // Debug: Check if API key is loaded
-    console.log('🔑 API Key loaded:', process.env.RESEND_API_KEY ? 'Yes' : 'No');
-    console.log('🔑 API Key value:', process.env.RESEND_API_KEY ? `${process.env.RESEND_API_KEY.substring(0, 10)}...` : 'Not found');
+    console.log("API key loaded:", process.env.RESEND_API_KEY ? "Yes" : "No");
+    console.log(
+      "API key value:",
+      process.env.RESEND_API_KEY
+        ? `${process.env.RESEND_API_KEY.substring(0, 10)}...`
+        : "Not found"
+    );
     
     // Initialize Resend inside the function to ensure env vars are loaded
     const resend = new Resend(process.env.RESEND_API_KEY);
@@ -154,7 +159,7 @@ export async function POST(request: Request) {
       <body>
         <div class="container">
           <div class="header">
-            <h1>🎫 Vé điện tử Ớt Cay Xè</h1>
+            <h1>Vé điện tử · Ớt Cay Xè</h1>
             <p>Chào mừng bạn đến với đêm nhạc!</p>
           </div>
           
@@ -165,20 +170,20 @@ export async function POST(request: Request) {
             </div>
             
             <div class="order-details">
-              <h3>📋 Thông tin đơn hàng</h3>
+              <h3>Thông tin đơn hàng</h3>
               <p><strong>Mã đơn hàng:</strong> #${orderNumber}</p>
               <p><strong>Ngày đặt:</strong> ${orderDate} ${orderTime}</p>
             </div>
             
             <div class="customer-info">
-              <h3>👤 Thông tin khách hàng</h3>
+              <h3>Thông tin khách hàng</h3>
               <p><strong>Họ tên:</strong> ${customerInfo.fullName}</p>
               <p><strong>Email:</strong> ${customerInfo.email}</p>
               <p><strong>Số điện thoại:</strong> ${customerInfo.phone}</p>
             </div>
             
             <div class="ticket-info">
-              <h3>🎭 THÔNG TIN VÉ</h3>
+              <h3>Thông tin vé</h3>
               ${tickets.map((ticket: TicketWithQuantity) => `
                 <div class="ticket-item">
                   <div>
@@ -197,14 +202,14 @@ export async function POST(request: Request) {
             </div>
             
             <div class="event-details">
-              <h3>📅 Thông tin sự kiện</h3>
+              <h3>Thông tin sự kiện</h3>
               <p><strong>Thời gian:</strong> 27/09/2025</p>
               <p><strong>Địa điểm:</strong> Quận Sài Gòn</p>
               <p><strong>Loại vé:</strong> Single - 489.000đ/vé</p>
             </div>
             
             <div class="terms">
-              <h3>📋 Điều khoản và điều kiện</h3>
+              <h3>Điều khoản và điều kiện</h3>
               <ul>
                 <li>Mỗi vé chỉ dành cho 1 (một) người vào cửa.</li>
                 <li>Người tham gia phải trình vé ở cửa để vào sự kiện.</li>
@@ -214,7 +219,7 @@ export async function POST(request: Request) {
             </div>
             
             <div class="qr-code">
-              <h3>📱 Mã QR vé</h3>
+              <h3>Mã QR vé</h3>
               <p>Quét mã QR này tại cửa vào để được kiểm tra vé</p>
               ${(() => {
                 let qrCodes = '';
@@ -240,10 +245,10 @@ export async function POST(request: Request) {
             </div>
             
             <div class="contact-info">
-              <h3>📞 Mọi thắc mắc xin liên hệ</h3>
-              <p><strong>💌 Email:</strong> otconcert@gmail.com</p>
-              <p><strong>☎️ Phone:</strong> 0934782703 - Bora</p>
-              <p><strong>✨ Fanpage:</strong> Fanpage chương trình</p>
+              <h3>Liên hệ</h3>
+              <p><strong>Email:</strong> otconcert@gmail.com</p>
+              <p><strong>Điện thoại:</strong> 0934782703 — Bora</p>
+              <p><strong>Fanpage:</strong> Fanpage chương trình</p>
             </div>
           </div>
           
@@ -263,10 +268,10 @@ export async function POST(request: Request) {
       html: htmlContent,
     });
 
-    console.log('📧 Email sent successfully:', result);
+    console.log("Email sent successfully:", result);
     return NextResponse.json({ success: true, data: result });
   } catch (error) {
-    console.error('❌ Error sending email:', error);
+    console.error("Error sending email:", error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }

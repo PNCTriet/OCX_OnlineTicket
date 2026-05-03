@@ -107,7 +107,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className="antialiased">
+      <body className="font-sans antialiased bg-[#0A0A0A] text-[#FAFAFA]">
         <AuthProvider>{children}</AuthProvider>
         <SpeedInsights />
       </body>

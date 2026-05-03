@@ -26,31 +26,34 @@ export default function OrderSummaryCard({
   selectedTickets 
 }: OrderSummaryCardProps) {
   return (
-    <div className="bg-zinc-800/50 rounded-lg p-6 flex flex-col h-full">
-      <div className="space-y-4 mb-4">
+    <div className="flex h-full flex-col rounded-xl border border-[#262626] bg-[#0F0F0F] p-6">
+      <h3 className="text-base font-semibold text-[#FAFAFA]">Tóm tắt</h3>
+      <div className="mt-4 space-y-4">
         {selectedTickets.map((ticket) => (
           ticket.quantity > 0 && (
-            <div key={ticket.id} className="border border-zinc-700/50 rounded-lg p-4">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex-1">
-                  <p className="text-white font-medium">{ticket.name}</p>
-                  <p className="text-zinc-400 text-sm">Số lượng: {ticket.quantity}</p>
+            <div key={ticket.id} className="rounded-lg border border-[#262626] bg-[#141414] p-4">
+              <div className="mb-2 flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-[#FAFAFA]">{ticket.name}</p>
+                  <p className="text-sm text-[#A1A1A1]">Số lượng: {ticket.quantity}</p>
                 </div>
-                <p className="text-white font-medium">{(ticket.price * ticket.quantity).toLocaleString()}đ</p>
+                <p className="shrink-0 font-mono text-sm font-medium text-[#FAFAFA]">
+                  {(ticket.price * ticket.quantity).toLocaleString()}đ
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                {ticket.status === 'ACTIVE' && (
-                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+              <div className="flex flex-wrap items-center gap-2">
+                {ticket.status === "ACTIVE" && (
+                  <span className="rounded-full border border-transparent bg-[#34D39914] px-2 py-1 text-xs font-medium text-[#34D399]">
                     Còn vé
                   </span>
                 )}
-                {ticket.status === 'INACTIVE' && (
-                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                {ticket.status === "INACTIVE" && (
+                  <span className="rounded-full border border-transparent bg-[#FBBF2414] px-2 py-1 text-xs font-medium text-[#FBBF24]">
                     Chưa mở bán
                   </span>
                 )}
-                {ticket.status === 'SOLD_OUT' && (
-                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30">
+                {ticket.status === "SOLD_OUT" && (
+                  <span className="rounded-full border border-transparent bg-[#F8717114] px-2 py-1 text-xs font-medium text-[#F87171]">
                     Hết vé
                   </span>
                 )}
@@ -58,40 +61,40 @@ export default function OrderSummaryCard({
             </div>
           )
         ))}
-        <div className="border-t border-zinc-700 pt-4 space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-zinc-400">Tạm tính:</span>
-            <span className="text-white">{totalAmount.toLocaleString()}đ</span>
+        <div className="space-y-2 border-t border-[#262626] pt-4">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-sm text-[#A1A1A1]">Tạm tính</span>
+            <span className="font-mono text-sm text-[#FAFAFA]">{totalAmount.toLocaleString()}đ</span>
           </div>
-          
+
           {appliedCoupon && (
-            <div className="flex justify-between items-center">
-              <span className="text-green-400">Giảm giá:</span>
-              <span className="text-green-400">-{appliedCoupon.discount_amount.toLocaleString()}đ</span>
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-sm text-[#34D399]">Giảm giá</span>
+              <span className="font-mono text-sm text-[#34D399]">
+                -{appliedCoupon.discount_amount.toLocaleString()}đ
+              </span>
             </div>
           )}
-          
-          <div className="flex justify-between items-center border-t border-zinc-600 pt-2">
-            <span className="text-zinc-400 font-medium">Tổng cộng:</span>
-            <span className="text-xl font-bold text-white">
+
+          <div className="flex items-center justify-between gap-3 border-t border-[#262626] pt-3">
+            <span className="text-xs font-medium uppercase tracking-wide text-[#A1A1A1]">
+              Tổng cộng
+            </span>
+            <span className="font-mono text-2xl font-medium tracking-tight text-[#FF6B1A]">
               {(finalAmount || totalAmount).toLocaleString()}đ
             </span>
           </div>
         </div>
       </div>
       <button
+        type="button"
         onClick={onContinue}
         disabled={!hasTickets}
-        className="w-full py-3 px-4 text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_18px_rgba(212,57,34,0.35)] active:scale-95"
-        style={{
-          background: hasTickets
-            ? "linear-gradient(180deg, #d43922 0%, #9a1a15 100%)"
-            : "rgba(255,255,255,0.12)",
-        }}
+        className="mt-6 flex w-full min-h-12 items-center justify-center rounded-xl bg-[#FF6B1A] py-3 text-base font-semibold text-white transition hover:bg-[#e55f15] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        Tiếp tục
+        Tiếp tục thanh toán
       </button>
-      <p className="mt-2 text-xs text-zinc-400 italic text-center">
+      <p className="mt-2 text-center text-xs text-[#737373]">
         Nhấn tiếp tục để nhập thông tin thanh toán.
       </p>
     </div>
