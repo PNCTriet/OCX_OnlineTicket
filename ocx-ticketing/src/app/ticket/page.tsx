@@ -140,10 +140,6 @@ export default function TicketPage() {
   }, []);
 
   useEffect(() => {
-    if (!loading && !user) router.replace("/auth/login?redirectTo=/ticket");
-  }, [user, loading, router]);
-
-  useEffect(() => {
     const checkBackendAuth = async () => {
       if (!user) return;
       const supabase = createClient();
@@ -236,25 +232,45 @@ export default function TicketPage() {
       setShowNoTicketsError(true);
       return;
     }
+    let checkoutUrl = "/checkout";
     try {
       const encoded = encodeURIComponent(JSON.stringify(ticketsToBuy));
-      router.push(`/checkout?tickets=${encoded}`);
+      checkoutUrl = `/checkout?tickets=${encoded}`;
     } catch {
-      router.push("/checkout");
+      /* giữ /checkout */
     }
+    if (!user) {
+      router.push(
+        `/auth/login?redirectTo=${encodeURIComponent(checkoutUrl)}`
+      );
+      return;
+    }
+    router.push(checkoutUrl);
   };
 
-  const headerActions = (
-    <button
-      type="button"
-      onClick={() => signOut()}
-      className="inline-flex h-9 items-center justify-center rounded-lg border border-[#262626] bg-[#212121] px-4 text-sm font-medium text-[#FAFAFA] transition-colors hover:bg-[#262626]"
-    >
-      Đăng xuất
-    </button>
-  );
+  const headerActions = useMemo(() => {
+    if (!user) {
+      return (
+        <Link
+          href="/auth/login?redirectTo=/ticket"
+          className="inline-flex h-9 items-center justify-center rounded-lg border border-[#262626] bg-[#212121] px-4 text-sm font-medium text-[#FAFAFA] transition-colors hover:bg-[#262626]"
+        >
+          Đăng nhập
+        </Link>
+      );
+    }
+    return (
+      <button
+        type="button"
+        onClick={() => signOut()}
+        className="inline-flex h-9 items-center justify-center rounded-lg border border-[#262626] bg-[#212121] px-4 text-sm font-medium text-[#FAFAFA] transition-colors hover:bg-[#262626]"
+      >
+        Đăng xuất
+      </button>
+    );
+  }, [user, signOut]);
 
-  if (loading || !user) {
+  if (loading) {
     return (
       <PageLayout>
         <Header
