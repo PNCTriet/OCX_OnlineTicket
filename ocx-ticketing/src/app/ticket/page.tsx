@@ -68,12 +68,6 @@ const getRandomColor = () => {
 /** Bật lại khi đã chốt ngày giờ chính thức */
 const SHOW_EVENT_COUNTDOWN = false;
 
-/**
- * Tạm thời: bấm thanh toán chỉ hiện popup bảo trì, không chuyển trang.
- * Gỡ: đặt `false` (hoặc xóa khối `if` trong `handleContinue` + state/modal bên dưới).
- */
-const PAYMENT_UNDER_MAINTENANCE = true;
-
 /** Countdown tới sự kiện (bật cùng SHOW_EVENT_COUNTDOWN) */
 const EVENT_START = new Date("2026-07-07T15:00:00+07:00");
 
@@ -119,7 +113,6 @@ export default function TicketPage() {
   >([]);
   const [lang, setLang] = useState<"vi" | "en">("vi");
   const [showNoTicketsError, setShowNoTicketsError] = useState(false);
-  const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [eventInfoTab, setEventInfoTab] = useState<EventInfoTab>("intro");
   const router = useRouter();
@@ -237,10 +230,6 @@ export default function TicketPage() {
     const ticketsToBuy = selectedTickets.filter((t) => t.quantity > 0);
     if (ticketsToBuy.length === 0) {
       setShowNoTicketsError(true);
-      return;
-    }
-    if (PAYMENT_UNDER_MAINTENANCE) {
-      setShowMaintenanceModal(true);
       return;
     }
     let checkoutUrl = "/checkout";
@@ -670,34 +659,6 @@ export default function TicketPage() {
           Tiếp tục thanh toán
         </button>
       </div>
-
-      {PAYMENT_UNDER_MAINTENANCE && showMaintenanceModal ? (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-6 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="maintenance-title"
-        >
-          <div className="w-full max-w-md rounded-xl border border-[#262626] bg-[#141414] p-6 shadow-xl">
-            <h2
-              id="maintenance-title"
-              className="text-lg font-semibold text-[#FAFAFA]"
-            >
-              Trang web đang bảo trì
-            </h2>
-            <p className="mt-3 text-[15px] leading-relaxed text-[#A1A1A1]">
-              Kênh thanh toán đang được cập nhật. Vui lòng quay lại sau.
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowMaintenanceModal(false)}
-              className="mt-6 flex h-11 w-full items-center justify-center rounded-lg bg-[#FF6B1A] text-[15px] font-medium text-[#0A0A0A] transition-colors hover:bg-[#FF7A33]"
-            >
-              Đã hiểu
-            </button>
-          </div>
-        </div>
-      ) : null}
 
       <V2Footer />
     </PageLayout>
