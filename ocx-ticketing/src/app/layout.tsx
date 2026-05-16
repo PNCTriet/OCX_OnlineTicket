@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { getSiteMetadataBase } from "@/lib/metadata-ticket";
 
 const baseUrl = "https://www.otcayxe.com";
+const ticketUrl = `${baseUrl}/ticket`;
+const ogImage = `${baseUrl}/images/client_logo_ss5_thumb.png`;
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -15,57 +18,54 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Get the base URL from environment variables
-const getBaseUrl = () => { 
-  // Use production URL by default, fallback to localhost for development
-  if (process.env.NODE_ENV === 'production') {
-    return 'https://www.otcayxe.com';
-  }
-  
-  return 'http://localhost:3000';
-};
-
+/** Metadata mặc định site (trang con như /ticket ghi đè trong layout riêng). */
 export const metadata: Metadata = {
-  title: "Ớt Cay Xè Hà Nội",
-  description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
+  title: "Ớt Cay Xè Hà Nội | 08.2026",
+  description:
+    "OCX indie show | Sự kiện âm nhạc Ớt Cay Xè tại Hà Nội. Mua vé online · 08/2026.",
   keywords: [
     "OCX",
+    "Ớt Cay Xè",
+    "Ớt Cay Xè Hà Nội",
     "Online Ticket",
     "Mua vé",
     "Sự kiện âm nhạc",
     "Concert",
     "Lineup",
-    "Nghệ sĩ",
+    "Hà Nội",
+    "08/2026",
     "Vé online",
   ],
   authors: [{ name: "OCX Team" }],
   robots: "index, follow",
-
-  metadataBase: new URL(getBaseUrl()),
-
+  metadataBase: getSiteMetadataBase(),
+  alternates: {
+    canonical: ticketUrl,
+  },
   openGraph: {
-    url: baseUrl,
+    url: ticketUrl,
     type: "website",
-    title: "Ớt Cay Xè Hà Nội",
-    description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
+    title: "Ớt Cay Xè Hà Nội | 08.2026",
+    description:
+      "OCX indie show | Sự kiện âm nhạc tại Hà Nội. Mua vé online · 08/2026.",
     images: [
       {
-        url: "https://www.otcayxe.com/images/client_logo_ss5_thumb.png",
-        width: 800,
-        height: 600,
-        alt: "OCX Online Ticket Logo",
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: "Ớt Cay Xè Hà Nội",
       },
     ],
   },
-
   twitter: {
     card: "summary_large_image",
-    title: "Ớt Cay Xè Hà Nội",
-    description: "OCX indie show | Sự kiện âm nhạc đỉnh VKL",
+    title: "Ớt Cay Xè Hà Nội | 08.2026",
+    description:
+      "OCX indie show | Sự kiện âm nhạc tại Hà Nội. Mua vé online · 08/2026.",
     images: [
       {
-        url: "https://www.otcayxe.com/images/client_logo_ss5_thumb.png",
-        alt: "OCX Online Ticket Logo",
+        url: ogImage,
+        alt: "Ớt Cay Xè Hà Nội",
       },
     ],
     site: "@ocx_ticket",

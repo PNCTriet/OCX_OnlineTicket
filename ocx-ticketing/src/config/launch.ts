@@ -1,15 +1,14 @@
 // Launch configuration
 export const LAUNCH_CONFIG = {
-  // Set your launch date here (ISO string with timezone)
-  LAUNCH_TIME: '2025-08-01T19:00:00+07:00',
-  
-  // Event information
+  /** Thời điểm mở bán / mở site (đã qua → isSiteLaunched() = true). */
+  LAUNCH_TIME: "2026-05-01T00:00:00+07:00",
+
   EVENT_INFO: {
-    name: "Ớt Cay Xè mùa 4",
-    description: "Sự kiện âm nhạc indie đỉnh VKL",
-    date: "27/09/2025 - 15:00",
+    name: "Ớt Cay Xè Hà Nội",
+    description: "OCX indie show | Sự kiện âm nhạc India",
+    date: "08/2026 · 15:00",
     location: "Thủ Đô Hà Nội",
-    organizer: "Ớt Cay Xè Organization"
+    organizer: "Ớt Cay Xè Organization",
   },
   
   // Brand information
