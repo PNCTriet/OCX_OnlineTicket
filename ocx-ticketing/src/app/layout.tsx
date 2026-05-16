@@ -41,7 +41,6 @@ export const metadata: Metadata = {
   authors: [{ name: "OCX Team" }],
   robots: "index, follow",
 
-  // Use a function to get the base URL to ensure it's always valid
   metadataBase: new URL(getBaseUrl()),
 
   openGraph: {
@@ -70,10 +69,6 @@ export const metadata: Metadata = {
       },
     ],
     site: "@ocx_ticket",
-  },
-
-  other: {
-    "fb:app_id": "1241434124376586", 
   },
 
   icons: {

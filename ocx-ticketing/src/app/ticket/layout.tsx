@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { ticketPageMetadata } from "@/lib/metadata-ticket";
 
-/** /OCX5 redirect về /ticket — dùng chung metadata trang vé. */
 export const metadata: Metadata = ticketPageMetadata;
 
-export default function OCX5Layout({
+export default function TicketLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return children;
 }
