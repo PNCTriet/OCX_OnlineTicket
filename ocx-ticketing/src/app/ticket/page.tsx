@@ -69,7 +69,7 @@ const getRandomColor = () => {
 const SHOW_EVENT_COUNTDOWN = false;
 
 /** Countdown tới sự kiện (bật cùng SHOW_EVENT_COUNTDOWN) */
-const EVENT_START = new Date("2026-07-07T15:00:00+07:00");
+const EVENT_START = new Date("2026-08-07T15:00:00+07:00");
 
 function useEventCountdown(target: Date) {
   const [parts, setParts] = useState({ d: 0, h: 0, m: 0, s: 0 });

@@ -59,7 +59,7 @@ const EVENT_INFO_OCX5: EventInfo = {
   time: "15:00",
   location: "Thủ Đô Hà Nội",
   avatar: "/images/client_logo_ss5_alt1.jpg",
-  date: "07/2026",
+  date: "08/2026",
 };
 
 // Google Map embed – Thủ Đô Hà Nội (15-17 Cộng Hòa, P.4, Tân Bình, HCM)

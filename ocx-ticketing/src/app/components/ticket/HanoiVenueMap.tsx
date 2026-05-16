@@ -40,7 +40,7 @@ export default function HanoiVenueMap() {
               Thủ đô Hà Nội
             </span>
             <br />
-            <span className="text-xs text-[#A1A1A1]">Ớt Cay Xè Hà Nội · 07/2026</span>
+            <span className="text-xs text-[#A1A1A1]">Ớt Cay Xè Hà Nội · 08/2026</span>
           </Popup>
         </CircleMarker>
       </MapContainer>

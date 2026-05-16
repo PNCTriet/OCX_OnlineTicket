@@ -108,7 +108,7 @@ export const EVENT_INFO: EventInfo = {
   location: "Thủ Đô Hà Nội",
   thumbnail: "/images/ocx5_hanoi/ocx5_hanoi_thumb.jpg",
   avatar: "/images/ocx5_hanoi/ocx5_hanoi_ava.jpg",
-  date: "07/2026",
+  date: "08/2026",
 };
 
 // New layout configuration for the seat map

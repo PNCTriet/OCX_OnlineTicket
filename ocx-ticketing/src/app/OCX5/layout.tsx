@@ -11,24 +11,22 @@ const getBaseUrl = () => {
 };
 
 export const metadata: Metadata = {
-  title: "Ớt Cay Xè Hà Nội — Học Viện Âm Nhạc & Phép Thuật | 07.2026",
+  title: "Ớt Cay Xè Hà Nội | 08.2026",
   description:
-    "Học Viện Âm Nhạc & Phép Thuật Ớt Cay Xè: công bố ngày tựu trường, live indie, giới hạn vé. 18/04/2026 · Sài Gòn. Standing 569.000₫ · Seating 589.000₫. Liên hệ: otconcert@gmail.com",
+    "OCX indie show | Sự kiện âm nhạc Ớt Cay Xè tại Hà Nội. Mua vé online, lineup indie, giới hạn số lượng. Liên hệ: otconcert@gmail.com",
   keywords: [
     "Ớt Cay Xè",
     "Otcayxe",
-    "OCX5",
+    "OCX",
     "Ớt Cay Xè Hà Nội",
     "indie music",
     "music show",
-    "indiemusic",
     "concert",
     "show âm nhạc",
-    "Sài Gòn",
+    "Hà Nội",
     "mua vé",
     "vé concert",
-    "standing",
-    "seating",
+    "vé online",
     "otconcert@gmail.com",
   ],
   authors: [{ name: "OCX Team" }],
@@ -37,27 +35,27 @@ export const metadata: Metadata = {
   openGraph: {
     url: `${baseUrl}/OCX5`,
     type: "website",
-    title: "Học Viện Âm Nhạc & Phép Thuật Ớt Cay Xè — OCX5 | 07.2026",
+    title: "Ớt Cay Xè Hà Nội | 08.2026",
     description:
-      "Năm học mới tại Trường phép thuật Ớt Cay Xè chính thức bắt đầu. Nhạc cực căng, vibe cực bén. Vé tàu tốc hành chỉ dành cho ai nhanh tay nhất. 18/04/2026 • Sài Gòn • Standing 569.000₫ • Seating 589.000₫.",
+      "OCX indie show | Sự kiện âm nhạc tại Hà Nội. Mua vé online — lineup indie, số lượng có hạn.",
     images: [
       {
         url: "https://www.otcayxe.com/images/client_logo_ss5_thumb.png",
         width: 1200,
         height: 630,
-        alt: "Ớt Cay Xè Hà Nội (OCX5) — Official",
+        alt: "Ớt Cay Xè Hà Nội — Official",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ớt Cay Xè Hà Nội (OCX5) — Official Ticket | 07.2026",
+    title: "Ớt Cay Xè Hà Nội | 08.2026",
     description:
-      "Học Viện Âm Nhạc & Phép Thuật Ớt Cay Xè. 18/04/2026 · Sài Gòn · Standing 569.000₫ · Seating 589.000₫. Theo dõi Ớt Cay Xè để cập nhật.",
+      "OCX indie show | Sự kiện âm nhạc tại Hà Nội. Mua vé online — theo dõi Ớt Cay Xè để cập nhật.",
     images: [
       {
         url: "https://www.otcayxe.com/images/client_logo_ss5_thumb.png",
-        alt: "Ớt Cay Xè Hà Nội (OCX5) — Official",
+        alt: "Ớt Cay Xè Hà Nội — Official",
       },
     ],
     site: "@ocx_ticket",
