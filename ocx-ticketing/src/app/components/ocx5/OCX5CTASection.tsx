@@ -48,7 +48,7 @@ export default function OCX5CTASection({
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <Link
-                href="/ticket"
+                href="/"
                 className="group relative inline-flex items-center justify-center px-8 py-4 bg-[#d43922] rounded-full font-bold overflow-hidden transition-all duration-300 hover:scale-[1.03] active:scale-95 shadow-lg shadow-[0_0_15px_rgba(212,57,34,0.35)] hover:shadow-[0_0_28px_rgba(212,57,34,0.55)]"
               >
                 <span className="relative z-10 uppercase tracking-[0.18em]">
@@ -57,7 +57,7 @@ export default function OCX5CTASection({
                 <span className="pointer-events-none absolute inset-0 -translate-x-[120%] bg-white/20 skew-x-[-20deg] transition-transform duration-500 group-hover:translate-x-[120%]" />
               </Link>
               <Link
-                href="/ticket"
+                href="/"
                 className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold border border-white/25 text-white/90 hover:text-white hover:border-white/45 transition-colors"
               >
                 View Ticket Types

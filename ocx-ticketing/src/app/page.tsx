@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { sitePageMetadata } from "@/lib/metadata-ticket";
 
-export default function Page() {
-  redirect("/ticket");
-}
+export const metadata = sitePageMetadata;
+
+export { default } from "./ticket/page";

@@ -30,7 +30,7 @@ export default function EventInfoCard({ event, showBackButton = false }: EventIn
             <h2 className="text-xl font-bold text-white leading-tight">{event.name}</h2>
             {showBackButton && (
               <Link
-                href="/ticket"
+                href="/"
                 className="flex items-center space-x-2 bg-[#c53e00] hover:bg-[#b33800] text-white px-3 py-2 rounded-lg transition-colors text-sm font-medium"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

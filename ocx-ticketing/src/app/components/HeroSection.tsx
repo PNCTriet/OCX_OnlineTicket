@@ -81,7 +81,7 @@ export default function HeroSection() {
         {/* Buy Ticket Button with animated text */}
         <div className="relative flex flex-col items-center">
             <button
-            onClick={() => router.push('/ticket')}
+            onClick={() => router.push('/')}
             onMouseEnter={() => setIsButtonHovered(true)}
             onMouseLeave={() => setIsButtonHovered(false)}
             className="relative z-20 inline-flex items-center px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 text-base sm:text-lg md:text-xl font-bold text-white bg-[#c53e00] rounded-full hover:bg-[#b33800] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 overflow-hidden cursor-pointer"

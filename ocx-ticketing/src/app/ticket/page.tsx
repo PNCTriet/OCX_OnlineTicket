@@ -162,14 +162,14 @@ export default function TicketPage() {
             "Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại!"
           );
           await signOut();
-          router.replace("/auth/login?redirectTo=/ticket");
+          router.replace("/auth/login?redirectTo=/");
         }
       } catch {
         window.alert(
           "Không thể xác thực tài khoản với hệ thống backend! Vui lòng đăng nhập lại."
         );
         await signOut();
-        router.replace("/auth/login?redirectTo=/ticket");
+        router.replace("/auth/login?redirectTo=/");
       }
     };
     checkBackendAuth();
@@ -252,7 +252,7 @@ export default function TicketPage() {
     if (!user) {
       return (
         <Link
-          href="/auth/login?redirectTo=/ticket"
+          href="/auth/login?redirectTo=/"
           className="inline-flex h-9 items-center justify-center rounded-lg border border-[#262626] bg-[#212121] px-4 text-sm font-medium text-[#FAFAFA] transition-colors hover:bg-[#262626]"
         >
           Đăng nhập

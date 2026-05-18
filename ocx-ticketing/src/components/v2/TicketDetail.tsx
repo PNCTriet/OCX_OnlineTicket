@@ -59,7 +59,7 @@ export default function TicketDetail({
             </h2>
             {showBackButton && (
               <Link
-                href="/ticket"
+                href="/"
                 className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-[#212121] px-3 py-2 text-sm font-medium text-[#FAFAFA] ring-1 ring-[#262626] transition-colors hover:bg-[#262626]"
               >
                 <svg className="size-4" fill="currentColor" viewBox="0 0 20 20">

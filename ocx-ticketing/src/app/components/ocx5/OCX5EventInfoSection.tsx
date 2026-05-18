@@ -43,7 +43,7 @@ export default function OCX5EventInfoSection({
 
           <button
             type="button"
-            onClick={() => router.push("/ticket")}
+            onClick={() => router.push("/")}
             className="group relative inline-flex items-center justify-center px-10 py-4 bg-[#d43922] rounded-full font-bold overflow-hidden transition-all duration-200 hover:scale-[1.02] active:scale-95 shadow-lg shadow-[0_0_15px_rgba(212,57,34,0.35)] hover:shadow-[0_0_28px_rgba(212,57,34,0.55)]"
           >
             <span className="relative z-10 uppercase tracking-[0.2em]">

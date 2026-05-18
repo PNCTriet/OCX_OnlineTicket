@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 
 const baseUrl = "https://www.otcayxe.com";
-const ogImage = "https://www.otcayxe.com/images/client_logo_ss5_thumb.png";
-const ticketUrl = `${baseUrl}/ticket`;
+const ogImage = `${baseUrl}/images/client_logo_ss5_thumb.png`;
+
+/** URL chính để share (www.otcayxe.com). */
+export const SITE_URL = baseUrl;
 
 export function getSiteMetadataBase() {
   if (process.env.NODE_ENV === "production") {
@@ -11,11 +13,11 @@ export function getSiteMetadataBase() {
   return new URL("http://localhost:3000");
 }
 
-/** Metadata cho trang mua vé /ticket (OG, Twitter, canonical). */
-export const ticketPageMetadata: Metadata = {
-  title: "Mua vé | Ớt Cay Xè Hà Nội | 08.2026",
+/** Metadata trang chủ / mua vé — canonical & og:url trỏ domain gốc. */
+export const sitePageMetadata: Metadata = {
+  title: "Ớt Cay Xè Hà Nội | 08.2026",
   description:
-    "Mua vé online Ớt Cay Xè Hà Nội — OCX indie show, lineup indie, số lượng có hạn. Thủ đô Hà Nội · 08/2026. Liên hệ: otconcert@gmail.com",
+    "OCX indie show | Mua vé online Ớt Cay Xè Hà Nội — lineup indie, số lượng có hạn. Thủ đô Hà Nội · 08/2026. Liên hệ: otconcert@gmail.com",
   keywords: [
     "Ớt Cay Xè",
     "Otcayxe",
@@ -35,14 +37,14 @@ export const ticketPageMetadata: Metadata = {
   robots: "index, follow",
   metadataBase: getSiteMetadataBase(),
   alternates: {
-    canonical: ticketUrl,
+    canonical: SITE_URL,
   },
   openGraph: {
-    url: ticketUrl,
+    url: SITE_URL,
     type: "website",
-    title: "Mua vé | Ớt Cay Xè Hà Nội | 08.2026",
+    title: "Ớt Cay Xè Hà Nội | 08.2026",
     description:
-      "Mua vé online Ớt Cay Xè Hà Nội — OCX indie show tại Hà Nội. Lineup indie, số lượng có hạn · 08/2026.",
+      "OCX indie show | Mua vé online tại Hà Nội. Lineup indie, số lượng có hạn · 08/2026.",
     images: [
       {
         url: ogImage,
@@ -54,9 +56,9 @@ export const ticketPageMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mua vé | Ớt Cay Xè Hà Nội | 08.2026",
+    title: "Ớt Cay Xè Hà Nội | 08.2026",
     description:
-      "Mua vé online Ớt Cay Xè Hà Nội — OCX indie show · 08/2026. Theo dõi Ớt Cay Xè để cập nhật.",
+      "OCX indie show | Mua vé online · 08/2026. Theo dõi Ớt Cay Xè để cập nhật.",
     images: [
       {
         url: ogImage,
@@ -66,3 +68,6 @@ export const ticketPageMetadata: Metadata = {
     site: "@ocx_ticket",
   },
 };
+
+/** @deprecated Dùng sitePageMetadata — giữ alias cho layout /ticket. */
+export const ticketPageMetadata = sitePageMetadata;

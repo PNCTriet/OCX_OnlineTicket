@@ -99,7 +99,7 @@ export default function TicketsSection({ lang }: { lang: "vi" | "en" }) {
 
         {/* Ticket Card Container */}
         <div className="grid grid-cols-1 gap-2 sm:gap-8"> {/* Reduced gap on mobile */}
-          <Link href="/ticket" className="block">
+          <Link href="/" className="block">
             <div className="group perspective cursor-pointer hover:scale-105 transition-transform duration-300">
               {/* Ticket Flip Container */}
               <div 
@@ -139,7 +139,7 @@ export default function TicketsSection({ lang }: { lang: "vi" | "en" }) {
           <div className="flex justify-center mt-2 sm:mt-2">
             <div className="relative">
               <Link 
-                href="/ticket" 
+                href="/" 
                 className="inline-flex items-center px-8 py-3 text-lg font-bold text-white bg-[#c53e00] rounded-full hover:bg-[#b33800] transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                 style={{ fontFamily: 'BDStreetSignSans' }}
               >

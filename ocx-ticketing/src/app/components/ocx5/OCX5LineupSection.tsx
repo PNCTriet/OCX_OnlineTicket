@@ -209,7 +209,7 @@ export default function OCX5LineupSection({ debugLayout }: { debugLayout: boolea
               style={{ transformStyle: "preserve-3d" }}
             >
               <Link
-                href="/ticket"
+                href="/"
                 className="block relative"
                 aria-label="Go to tickets"
               >
@@ -238,7 +238,7 @@ export default function OCX5LineupSection({ debugLayout }: { debugLayout: boolea
               Tickets
             </h3>
             <Link
-              href="/ticket"
+              href="/"
               className="text-sm text-white/80 hover:text-white transition-colors underline underline-offset-4"
             >
               Open Seatmap
@@ -249,7 +249,7 @@ export default function OCX5LineupSection({ debugLayout }: { debugLayout: boolea
             {ticketCards.map((t) => (
               <Link
                 key={t.id}
-                href="/ticket"
+                href="/"
                 className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b ${t.tone} p-5 shadow-[0_25px_60px_-25px_rgba(0,0,0,0.9)] transition-transform hover:-translate-y-1 active:translate-y-0`}
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">

@@ -28,7 +28,7 @@ const FULL_RULES_VI: string[] = [
   "Mỗi vé chỉ dành cho một khán giả, không kèm trẻ em hoặc trẻ vị thành niên. Người giám hộ đi kèm trẻ vị thành niên phải mua vé hợp lệ để vào sự kiện.",
   "Vé đã mua không được đổi/trả dưới bất kỳ hình thức nào. Khán giả có trách nhiệm bảo quản mã vé và thông tin thanh toán. Trong trường hợp trùng mã vé, người check-in đầu tiên sẽ được phép tham gia sự kiện.",
   "Vui lòng kiểm tra kỹ thông tin trước khi đặt, BTC không hỗ trợ đổi vé hoặc hoàn tiền trong trường hợp chọn nhầm số lượng vé.",
-  "Chỉ mua vé tại kênh chính thức (ví dụ: https://www.otcayxe.com/ticket). BTC từ chối xử lý mọi trường hợp vé giả, vé sai thông tin do mua từ nguồn không chính thống.",
+  "Chỉ mua vé tại kênh chính thức (ví dụ: https://www.otcayxe.com). BTC từ chối xử lý mọi trường hợp vé giả, vé sai thông tin do mua từ nguồn không chính thống.",
   "Khi tham gia chương trình, khán giả đồng ý cho phép BTC sử dụng hình ảnh, video cá nhân trong hoạt động ghi hình, truyền thông, quảng bá sự kiện.",
   "BTC có quyền kiểm tra giấy tờ tùy thân nếu nghi ngờ sai phạm độ tuổi và có quyền từ chối phục vụ mà không hoàn tiền nếu khán giả không tuân thủ quy định.",
   "BTC có quyền thay đổi line-up mà không cần thông báo trước và không hoàn tiền (nếu nghệ sĩ hủy ngoài ý muốn BTC).",
@@ -47,7 +47,7 @@ const FULL_RULES_EN: string[] = [
   "Each ticket admits one guest only; no bundled children or minors. A guardian accompanying a minor must hold a valid ticket to enter.",
   "Tickets cannot be exchanged or refunded. You are responsible for safeguarding ticket codes and payment details. If codes are duplicated, the first successful check-in will be admitted.",
   "Please verify all details before purchase; the organizer will not exchange tickets or refund if the wrong quantity is selected.",
-  "Buy tickets only through official channels (e.g. https://www.otcayxe.com/ticket). The organizer will not handle fake tickets or incorrect data from unofficial sources.",
+  "Buy tickets only through official channels (e.g. https://www.otcayxe.com). The organizer will not handle fake tickets or incorrect data from unofficial sources.",
   "By attending, you consent to the organizer using your image and video for recording, communications, and event promotion.",
   "The organizer may check ID if age rules are suspected to be broken and may refuse service without refund if you do not comply.",
   "The lineup may change without prior notice and without refund (including if an artist cancels outside the organizer’s control).",
@@ -65,7 +65,7 @@ const HELP_BEFORE_VI = [
   "Phụ nữ mang thai và người có vấn đề sức khỏe nên cân nhắc; BTC không chịu trách nhiệm về sức khỏe phát sinh.",
   "Mỗi vé cho một khán giả; trẻ vị thành niên đi kèm cần người giám hộ có vé hợp lệ.",
   "Kiểm tra kỹ số lượng và thông tin trước khi đặt — chọn nhầm số lượng vé sẽ không được đổi hoặc hoàn tiền.",
-  "Chỉ mua tại kênh chính thức (ví dụ https://www.otcayxe.com/ticket); vé từ nguồn không chính thống có thể bị từ chối.",
+  "Chỉ mua tại kênh chính thức (ví dụ https://www.otcayxe.com); vé từ nguồn không chính thống có thể bị từ chối.",
 ];
 
 const HELP_BEFORE_EN = [
@@ -73,7 +73,7 @@ const HELP_BEFORE_EN = [
   "Pregnant guests and anyone with health concerns should weigh risks carefully; the organizer is not liable for health issues.",
   "One ticket per guest; minors need a guardian with their own valid ticket.",
   "Double-check quantity and details before paying — wrong quantity is not eligible for exchange or refund.",
-  "Purchase only via official channels (e.g. https://www.otcayxe.com/ticket); unofficial tickets may be refused.",
+  "Purchase only via official channels (e.g. https://www.otcayxe.com); unofficial tickets may be refused.",
 ];
 
 const HELP_AFTER_VI = [
@@ -205,8 +205,8 @@ export default function CommunityPage() {
               </p>
               <p className="mt-1 text-sm leading-relaxed text-[#A1A1A1]">
                 {t
-                  ? "Ví dụ: https://www.otcayxe.com/ticket — vé không hợp lệ từ nguồn khác có thể bị từ chối."
-                  : "e.g. https://www.otcayxe.com/ticket — unofficial tickets may be refused."}
+                  ? "Ví dụ: https://www.otcayxe.com — vé không hợp lệ từ nguồn khác có thể bị từ chối."
+                  : "e.g. https://www.otcayxe.com — unofficial tickets may be refused."}
               </p>
             </div>
           </div>

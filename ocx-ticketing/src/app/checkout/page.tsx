@@ -227,7 +227,7 @@ function CheckoutContent() {
 
   useEffect(() => {
     if (!hasValidTickets && mounted) {
-      router.replace('/ticket?noTickets=true');
+      router.replace('/?noTickets=true');
     }
   }, [hasValidTickets, mounted, router]);
 

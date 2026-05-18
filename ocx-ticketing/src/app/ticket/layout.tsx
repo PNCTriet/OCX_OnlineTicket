@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { ticketPageMetadata } from "@/lib/metadata-ticket";
+import { sitePageMetadata } from "@/lib/metadata-ticket";
 
-export const metadata: Metadata = ticketPageMetadata;
+export const metadata: Metadata = sitePageMetadata;
 
 export default function TicketLayout({
   children,
