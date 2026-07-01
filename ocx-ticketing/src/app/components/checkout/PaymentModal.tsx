@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase";
 import OrderConfirm from "@/components/v2/OrderConfirm";
+import { buildVietQrImageUrl } from "@/config/payment";
 
 type OrderItem = {
   ticket_id: string;
@@ -193,7 +194,7 @@ export default function PaymentModal({
   if (!isOpen || !orderInfo) return null;
 
   const paymentAmount = finalAmount ?? orderInfo.total_amount;
-  const qrUrl = `https://img.vietqr.io/image/VPB-0966512476-compact.png?amount=${paymentAmount}&addInfo=OCX${orderInfo.id}&accountName=TRUONG HOANG NHI`;
+  const qrUrl = buildVietQrImageUrl(paymentAmount, `OCX${orderInfo.id}`);
 
   return (
     <>
@@ -249,7 +250,7 @@ export default function PaymentModal({
           </div>
 
           <p className="mt-5 font-mono text-lg font-semibold tabular-nums text-[#FAFAFA]">
-            VPBank · {Number(paymentAmount).toLocaleString("vi-VN")}₫
+            {Number(paymentAmount).toLocaleString("vi-VN")}₫
           </p>
           <p className="mt-1 text-xs text-[#737373]">
             Mã đơn · OCX{maskOrderIdForDisplay(orderInfo.id)}
