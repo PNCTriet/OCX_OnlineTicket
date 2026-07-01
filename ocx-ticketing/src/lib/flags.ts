@@ -6,4 +6,4 @@ export function isV2Enabled(): boolean {
  * Tạm tắt: ẩn ô **mã giới thiệu** (CheckoutForm) và khối **mã giảm giá** (checkout).
  * Bật lại khi cần: đổi thành `true`.
  */
-export const CHECKOUT_PROMO_ENABLED = false;
+export const CHECKOUT_PROMO_ENABLED = true;
