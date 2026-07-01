@@ -14,6 +14,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { Clock, MapPin } from "lucide-react";
 import { OnyxIcon } from "@/components/ui/OnyxIcon";
 import { createClient } from "@/lib/supabase";
+import { formatTicketDisplayName } from "@/lib/ticket-display";
 
 type EventInfoTab = "intro" | "lineup" | "venue";
 
@@ -187,12 +188,12 @@ export default function TicketPage() {
       setSelectedTickets(
         data.map((ticket) => ({
           id: ticket.id,
-          name: ticket.name,
+          name: formatTicketDisplayName(ticket.name),
           price: parseInt(ticket.price, 10),
           color: getRandomColor(),
           quantity: 0,
           sold: ticket.sold_qty,
-          label: ticket.description,
+          label: formatTicketDisplayName(ticket.description),
           status: ticket.status as TicketType["status"],
           availableQty: ticket.total_qty - ticket.sold_qty,
         }))
