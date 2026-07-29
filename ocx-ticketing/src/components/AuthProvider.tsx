@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut();
     // Centralized logout via Auth Gateway, then return to this site
     const returnUrl = `${window.location.origin}/`;
-    const gatewayLogout = 'https://auth.howlstudio.tech/auth/logout?redirect_to=' + encodeURIComponent(returnUrl);
+    const gatewayLogout = 'https://auth.otcayxe.com/auth/logout?redirect_to=' + encodeURIComponent(returnUrl);
     window.location.href = gatewayLogout;
   };
 
@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Use Auth Gateway start route with redirect back to this site's /inject
     const postLoginRedirect = redirectTo ?? '/';
     const injectUrl = `${window.location.origin}/inject?post_login_redirect=${encodeURIComponent(postLoginRedirect)}${tickets ? `&tickets=${encodeURIComponent(tickets)}` : ''}`;
-    const gatewayStart = 'https://auth.howlstudio.tech/auth/start?redirect_to=' + encodeURIComponent(injectUrl);
+    const gatewayStart = 'https://auth.otcayxe.com/auth/start?redirect_to=' + encodeURIComponent(injectUrl);
     window.location.href = gatewayStart;
   };
 
